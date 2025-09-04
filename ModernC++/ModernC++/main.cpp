@@ -1,91 +1,25 @@
 #include <iostream>
-#include <vector>
-#include <list>
-#include <map>
-#include <algorithm>
 using namespace std;
 
-struct Comp 
+int main()
 {
-	bool operator()(int a, int b) {
-		return a > b;
-	}
-};
+	const int v1 = 0;
+	auto a = v1;				// a 의 자료형은? int
 
-struct Big
-{
-	bool operator()(int n) {
-		return n > 10;
-	}
-};
+	const int v2 = 0;
+	auto& b = v2;				// b 의 자료형은? const int&
 
-void main()
-{
-	// 다음의 문자열을 vector 에 담아 출력하는 코드를 작성하세요.
-	// "apple","melon","banana"s
-	cout << "1 -----------------" << endl;
-	vector<string> vec1 = { "apple","melon","banana"};
-	for (auto v : vec1)cout << v << endl;
+	int* v3 = nullptr;
+	auto c = v3;				// c 의 자료형은? int*
 
+	const int* v4 = 0;
+	auto d = v4;				// d 의 자료형은? const int* 
 
+	const int v5 = 0;
+	auto&& e = v5;				// e 의 자료형은? const int&
 
-	//백터 vec 를 내림차순으로 출력하세요.		// 함수객체 사용
-	cout << endl << endl << "2 -----------------" << endl;
-	vector<int>  vec2 = { 1,3,2,7,5,9 };
-	sort(vec2.begin(), vec2.end(), Comp());
-	for (auto v : vec2) cout << v << ' ';
-	
-	
-	//백터 v 의 내용 중 10보다 큰 숫자를 제거하는 코드를 작성하세요.		//erase(), remove_if() 사용
-	cout << endl << endl << "3 -----------------" << endl;
-	vector<int>  vec3 = { 11, 3, 25, 71, 5, 9, 12, 7, 89 };
-	vector<int>::iterator it = remove_if(vec3.begin(), vec3.end(), Big());
-	vec3.erase(it);
-	for (auto v : vec3) cout << v << ' ';
+	auto v6 = std::move(v1);
+	auto&& f = v6;				// f 의 자료형은? int&
 
-	
-
-	////백터 v 에서 홀수의 개수를 출력하세요 ------------------------------
-	//vector<int>  v = { 3,2,7,9,4,1,3 };
-
-
-	////---------------------------------------------------------------
-	////백터 내용 중 중복을 제거하세료.  //unique 사용
-	//vector <int> v = { 1,1,2,3,4,5,3,3,5,6 };
-
-	////---------------------------------------------------------------
-	////리스트의 내용 중 10보다 작은 숫자를 제거하는 코드를 작성하세요.	//remove_if() 사용
-	//list<int> ls = { 11, 3, 25, 71, 5, 9, 12, 7, 89 };
-
-
-	////---------------------------------------------------------------
-	////아래 list 에서 2를 삭제하세요.(람다)
-	//std::list<int> ls = { 1,2,2,3,2,4,2 };
-
-
-	////---------------------------------------------------------------
-	//// 아래 두 리스트를 합치는 코드를 작성하세요	//합친 결과는 { 1,2,10,20,30,3,4,5 }; //splice() 사용
-	//list<int> list1 = { 1,2,3,4,5 };
-	//list<int> list2 = { 10,20,30 };
-
-	////---------------------------------------------------------------
-	////아래 리스트의 값에 2씩 더한 값을 출력하세요.		// for_each() 사용
-	//list<int> list3 = { 1,2,3,4,5 };
-
-
-	////---------------------------------------------------------------
-	//// 합을 구하라. 	 accumulate
-	//std::vector<int> v2{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-	////---------------------------------------------------------------
-	//// 다음과 같은 이름과 점수가 주어졌을때 데이타를 STL map 을 활용하여, 랭킹을 출력하세요 
-	//// 민수 10000 
-	//// 수연 5200 
-	//// 지수 2500
-	//// 민호 5200
-
-	////---------------------------------------------------------------
-	////(예) 7 이상 10 이하의 숫자가 몇 개인지 출력하세요.
-	//vector<int> arr = { 1,3,5,5,7,8,8,10,10,11,13 };
-
+	return 0;
 }

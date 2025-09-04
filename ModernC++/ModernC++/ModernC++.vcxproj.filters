@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="auto">
+      <UniqueIdentifier>{a88e6696-3e5e-40ec-b574-cfe1c6b0dfd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{a07dd01a-e2d0-4e97-8ece-ee0598f9c0c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -25,8 +31,63 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="01_auto.cpp">
+      <Filter>auto</Filter>
+    </ClCompile>
+    <ClCompile Include="02_auto.cpp">
+      <Filter>auto</Filter>
+    </ClCompile>
+    <ClCompile Include="03_auto.cpp">
+      <Filter>auto</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="C++ 클래스 quiz 01.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 02.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 03.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 04.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 05.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 06.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 07.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 08.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 09.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 10.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 11.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 12.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 13.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 14.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="C++ 클래스 quiz 15.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="연습문제 STL 문제.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
