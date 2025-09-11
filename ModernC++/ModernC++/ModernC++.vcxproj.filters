@@ -13,17 +13,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="auto">
+    <Filter Include="00. auto">
       <UniqueIdentifier>{a88e6696-3e5e-40ec-b574-cfe1c6b0dfd9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Test">
+    <Filter Include="99. Test">
       <UniqueIdentifier>{a07dd01a-e2d0-4e97-8ece-ee0598f9c0c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="for">
+    <Filter Include="01. for">
       <UniqueIdentifier>{8b2f584c-3ed5-4fba-86ed-608891e1ed4d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="typeid">
+    <Filter Include="02. type">
       <UniqueIdentifier>{a3ae6980-7013-4183-8386-7292594262b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="100. Lab">
+      <UniqueIdentifier>{dae4e20a-f302-403c-889e-5240c78c5cf5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,104 +41,122 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01_auto.cpp">
-      <Filter>auto</Filter>
+      <Filter>00. auto</Filter>
     </ClCompile>
     <ClCompile Include="02_auto.cpp">
-      <Filter>auto</Filter>
+      <Filter>00. auto</Filter>
     </ClCompile>
     <ClCompile Include="03_auto.cpp">
-      <Filter>auto</Filter>
+      <Filter>00. auto</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="C++ 클래스 quiz 01.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 02.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 03.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 04.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 05.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 06.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 07.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 08.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 09.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 10.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 11.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 12.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 13.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 14.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="C++ 클래스 quiz 15.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="연습문제 STL 문제.cpp">
-      <Filter>Test</Filter>
+      <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="01_Ranged-based for.cpp">
-      <Filter>for</Filter>
+      <Filter>01. for</Filter>
     </ClCompile>
     <ClCompile Include="02_Ranged-based for.cpp">
-      <Filter>for</Filter>
+      <Filter>01. for</Filter>
     </ClCompile>
     <ClCompile Include="03_Ranged-based for.cpp">
-      <Filter>for</Filter>
+      <Filter>01. for</Filter>
     </ClCompile>
-    <ClCompile Include="001_typeid 1.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="07_auto templete.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="002_typeid 2.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="0auto_type.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="003_typeid 3.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="01_typeid_1.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="004_decltype.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="01_typeid_2.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="005_decltype1.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="01_typeid_3.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="006_decltype2.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="02_decltype_1.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="007_decltype3(auto).cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="02_decltype_2.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="008_template_type.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="03_decltype_3.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="009_auto_type.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="03_decltype3%28auto%29.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="010_auto_type2.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="04_template_type.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
-    <ClCompile Include="011_auto_type3.cpp">
-      <Filter>typeid</Filter>
+    <ClCompile Include="05_auto_type_1.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="05_auto_type_2.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="06_auto_type_3.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="과제\테스트1_auto.cpp">
+      <Filter>100. Lab</Filter>
+    </ClCompile>
+    <ClCompile Include="과제\테스트2_decltype.cpp">
+      <Filter>100. Lab</Filter>
+    </ClCompile>
+    <ClCompile Include="과제\테스트3_template 타입추론.cpp">
+      <Filter>100. Lab</Filter>
+    </ClCompile>
+    <ClCompile Include="과제\테스트4_ranged for.cpp">
+      <Filter>100. Lab</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

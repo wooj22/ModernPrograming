@@ -1,0 +1,27 @@
+//함수의 값 카테고리
+
+int g();			// 함수
+
+class A {	
+
+public:
+	static int s();	// static 인 멤버 함수
+	int f();		// static 이 아닌 멤버 함수
+};
+
+int main() {	
+
+	decltype(g)		o1;	
+	decltype(A::s)	o2;
+	decltype(A::f)	o3;    
+}
+
+nullptr 은 lvalue ? rvalue ?
+
+포인터의 값(가리키는 주소 자체)은 lvalue이지만, 
+포인터를 사용하여 생성한 rvalue는 그에 해당하는 객체나 임시 객체입니다. 예를 들어:
+
+int* getPointer() {
+    int x = 5;
+    return &x;  // 이 주소는 rvalue입니다 (함수가 반환하는 임시 주소).
+}
