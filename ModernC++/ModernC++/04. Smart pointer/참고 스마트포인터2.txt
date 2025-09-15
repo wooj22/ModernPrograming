@@ -1,0 +1,121 @@
+STL 컨테이너에서의 객체 슬라이싱
+문제 상황) 다형적 객체를 std::vector<Animal>에 저장하면 슬라이싱 발생
+
+#include <vector>
+
+class Animal {
+public:
+    virtual void speak() const {
+        std::cout << "Animal" << std::endl;
+    }
+    virtual ~Animal() {}
+};
+
+class Dog : public Animal {
+public:
+    void speak() const override {
+        std::cout << "Dog" << std::endl;
+    }
+};
+
+int main() {
+    std::vector<Animal> animals;
+    Dog d;
+    animals.push_back(d); 	//슬라이싱 발생!
+
+    for (const auto& a : animals)
+        a.speak();  // "Animal" 출력
+}
+
+//------------------------------------------------------------------------------------------
+//해결 방법: 포인터 or 스마트 포인터 사용
+
+#include <memory>
+
+int main() {
+    std::vector<std::unique_ptr<Animal>> animals;
+
+    animals.push_back(std::make_unique<Dog>()); // 다형성 OK
+
+    for (const auto& a : animals)
+        a->speak();  // "Dog" 출력
+}
+
+//다형성 유지
+//메모리 관리 자동 (unique_ptr)
+//virtual ~Animal() 덕분에 안전한 소멸
+
+
+//대안: std::variant로 정적 다형성
+C++17부터는 std::variant로도 다형적 유사 구조를 만들 수 있습니다.
+"런타임 다형성"이 아니라 "컴파일 타임 분기"입니다.
+
+#include <variant>
+#include <vector>
+
+class Dog {
+public:
+    void speak() const {
+        std::cout << "Dog" << std::endl;
+    }
+};
+
+class Cat {
+public:
+    void speak() const {
+        std::cout << "Cat" << std::endl;
+    }
+};
+
+using Animal = std::variant<Dog, Cat>;
+
+void speakAnimal(const Animal& a) {
+    std::visit([](auto&& animal) {
+        animal.speak();
+    }, a);
+}
+
+int main() {
+    std::vector<Animal> animals = { Dog{}, Cat{} };
+
+    for (const auto& a : animals)
+        speakAnimal(a);
+}
+
+//슬라이싱 발생하지 않음
+//타입 안전 + 비가상 함수 기반 → 성능 이점
+//단,새로운 타입이 추가되면 std::visit에 모든 경우 추가해야 함 (OCP 위반 가능성)
+//Animal* 같은 공통 인터페이스 포인터를 사용할 수 없음
+
+
+// 보너스: clone()을 이용한 복제 지원
+
+값 복사를 하고 싶지만 슬라이싱을 피하고 싶다면, 가상 복제 함수를 사용하는 방법도 있습니다:
+
+class Animal {
+public:
+    virtual void speak() const = 0;
+    virtual std::unique_ptr<Animal> clone() const = 0;
+    virtual ~Animal() {}
+};
+
+class Dog : public Animal {
+public:
+    void speak() const override {
+        std::cout << "Dog" << std::endl;
+    }
+
+    std::unique_ptr<Animal> clone() const override {
+        return std::make_unique<Dog>(*this);
+    }
+};
+
+std::vector<std::unique_ptr<Animal>> copyAnimals(const std::vector<std::unique_ptr<Animal>>& animals) {
+    std::vector<std::unique_ptr<Animal>> result;
+    for (const auto& a : animals)
+        result.push_back(a->clone());
+    return result;
+}
+
+//복사 가능하면서도 다형성을 유지
+//코드 증가 (추상 clone 필요)

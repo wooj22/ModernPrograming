@@ -28,6 +28,15 @@
     <Filter Include="100. Lab">
       <UniqueIdentifier>{dae4e20a-f302-403c-889e-5240c78c5cf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. LRValue">
+      <UniqueIdentifier>{caedaee5-18da-4f19-adcf-1ad045575cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Copy,Move,Forward">
+      <UniqueIdentifier>{897f764b-a6cd-4114-9e24-fe4f23675659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. SmartPointer">
+      <UniqueIdentifier>{2b597e21-5213-46bf-bafc-11368d88f785}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -157,6 +166,141 @@
     </ClCompile>
     <ClCompile Include="과제\테스트4_ranged for.cpp">
       <Filter>100. Lab</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\0 anonymous.cpp">
+      <Filter>03. LRValue</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\0 lvalue_rvalue.cpp">
+      <Filter>03. LRValue</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\0 rvalue reference.cpp">
+      <Filter>03. LRValue</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\0 rvalue reference2.cpp">
+      <Filter>03. LRValue</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\0 rvalue reference3.cpp">
+      <Filter>03. LRValue</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\1.copy.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\2.copy_deepcopy.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\3.move constructor.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\4 move.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\4 move2.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\5 forward.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\5 forward_2.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\5 forward_move.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\6 copy_elision.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="03. lvalue, rvalur, move, forward\7 copy_elision2.cpp">
+      <Filter>04. Copy,Move,Forward</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\000_new.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\000_smart_pointer.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\000_smart_pointer2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\000_smart_pointer3.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\001_unique_ptr.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\002_unique_ptr1.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\002_unique_ptr2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\002_unique_ptr3.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\003_share_ptr.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\003_share_ptr2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\003_share_ptr3.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\003_share_ptr4.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\003_share_ptr5.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004 circular reference.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr1.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr3.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\100 pimple1.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\100 pimple2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\201_share_ptr.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\202_enable_shared_from_this.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\203 unique_ptr를 shared_ptr로 변환.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\204_weak_ptr.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\204_weak_ptr2 ex.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\205 dynamic_pointer_cast .cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\205 dynamic_pointer_cast 2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\210_template_smpartpointer.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\참고 RAII.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\참고 팩토리 패턴, 동적할당.cpp">
+      <Filter>05. SmartPointer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
