@@ -49,15 +49,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="01_auto.cpp">
-      <Filter>00. auto</Filter>
-    </ClCompile>
-    <ClCompile Include="02_auto.cpp">
-      <Filter>00. auto</Filter>
-    </ClCompile>
-    <ClCompile Include="03_auto.cpp">
-      <Filter>00. auto</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="C++ 클래스 quiz 01.cpp">
       <Filter>99. Test</Filter>
@@ -106,54 +97,6 @@
     </ClCompile>
     <ClCompile Include="연습문제 STL 문제.cpp">
       <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="01_Ranged-based for.cpp">
-      <Filter>01. for</Filter>
-    </ClCompile>
-    <ClCompile Include="02_Ranged-based for.cpp">
-      <Filter>01. for</Filter>
-    </ClCompile>
-    <ClCompile Include="03_Ranged-based for.cpp">
-      <Filter>01. for</Filter>
-    </ClCompile>
-    <ClCompile Include="07_auto templete.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="0auto_type.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="01_typeid_1.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="01_typeid_2.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="01_typeid_3.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="02_decltype_1.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="02_decltype_2.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="03_decltype_3.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="03_decltype3%28auto%29.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="04_template_type.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="05_auto_type_1.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="05_auto_type_2.cpp">
-      <Filter>02. type</Filter>
-    </ClCompile>
-    <ClCompile Include="06_auto_type_3.cpp">
-      <Filter>02. type</Filter>
     </ClCompile>
     <ClCompile Include="과제\테스트1_auto.cpp">
       <Filter>100. Lab</Filter>
@@ -301,6 +244,63 @@
     </ClCompile>
     <ClCompile Include="04. Smart pointer\참고 팩토리 패턴, 동적할당.cpp">
       <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="00. auto\01_auto.cpp">
+      <Filter>00. auto</Filter>
+    </ClCompile>
+    <ClCompile Include="00. auto\02_auto.cpp">
+      <Filter>00. auto</Filter>
+    </ClCompile>
+    <ClCompile Include="00. auto\03_auto.cpp">
+      <Filter>00. auto</Filter>
+    </ClCompile>
+    <ClCompile Include="01. for\01_Ranged-based for.cpp">
+      <Filter>01. for</Filter>
+    </ClCompile>
+    <ClCompile Include="01. for\02_Ranged-based for.cpp">
+      <Filter>01. for</Filter>
+    </ClCompile>
+    <ClCompile Include="01. for\03_Ranged-based for.cpp">
+      <Filter>01. for</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\0_auto_type.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\01_typeid_1.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\01_typeid_2.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\01_typeid_3.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\02_decltype_1.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\02_decltype_2.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\03_decltype_3.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\03_decltype3(auto).cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\04_template_type.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\05_auto_type_1.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\05_auto_type_2.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\06_auto_type_3.cpp">
+      <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="02. Type\07_auto templete.cpp">
+      <Filter>02. type</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
