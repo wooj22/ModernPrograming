@@ -37,6 +37,12 @@
     <Filter Include="05. SmartPointer">
       <UniqueIdentifier>{2b597e21-5213-46bf-bafc-11368d88f785}</UniqueIdentifier>
     </Filter>
+    <Filter Include="100. Lab\Lab1">
+      <UniqueIdentifier>{e9330051-b224-41c3-ac01-1cf0ee55004b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="100. Lab\Lab2">
+      <UniqueIdentifier>{bf9e9c5d-d46b-48f9-a7ba-3b0147badb18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -97,18 +103,6 @@
     </ClCompile>
     <ClCompile Include="연습문제 STL 문제.cpp">
       <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="과제\테스트1_auto.cpp">
-      <Filter>100. Lab</Filter>
-    </ClCompile>
-    <ClCompile Include="과제\테스트2_decltype.cpp">
-      <Filter>100. Lab</Filter>
-    </ClCompile>
-    <ClCompile Include="과제\테스트3_template 타입추론.cpp">
-      <Filter>100. Lab</Filter>
-    </ClCompile>
-    <ClCompile Include="과제\테스트4_ranged for.cpp">
-      <Filter>100. Lab</Filter>
     </ClCompile>
     <ClCompile Include="03. lvalue, rvalur, move, forward\0 anonymous.cpp">
       <Filter>03. LRValue</Filter>
@@ -301,6 +295,48 @@
     </ClCompile>
     <ClCompile Include="02. Type\07_auto templete.cpp">
       <Filter>02. type</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr4.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\004_weak_ptr5 ex.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\205 static_pointer_cast.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\206 dynamic_pointer_cast .cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="04. Smart pointer\206 dynamic_pointer_cast 2.cpp">
+      <Filter>05. SmartPointer</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab1\테스트1_auto.cpp">
+      <Filter>100. Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab1\테스트2_decltype.cpp">
+      <Filter>100. Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab1\테스트3_template 타입추론.cpp">
+      <Filter>100. Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab1\테스트4_ranged for.cpp">
+      <Filter>100. Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab2\과제 smart pointer 문제.cpp">
+      <Filter>100. Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab2\테스트 smartptr 1.cpp">
+      <Filter>100. Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab2\테스트 smartptr 2.cpp">
+      <Filter>100. Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab2\테스트 smartptr 3.cpp">
+      <Filter>100. Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="100. Lab\Lab2\테스트 smartptr 4.cpp">
+      <Filter>100. Lab\Lab2</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

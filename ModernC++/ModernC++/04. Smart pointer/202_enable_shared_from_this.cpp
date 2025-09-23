@@ -11,12 +11,14 @@ class A {
     int* data;
 
 public:
-    A() {
+    A() 
+    {
         data = new int[100];
         std::cout << "자원을 획득함!" << std::endl;
     }
 
-    ~A() {
+    ~A() 
+    {
         std::cout << "소멸자 호출!" << std::endl;
         delete[] data;
     }

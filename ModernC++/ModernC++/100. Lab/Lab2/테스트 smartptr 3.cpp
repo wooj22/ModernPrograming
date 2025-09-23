@@ -1,4 +1,4 @@
-//Circular references - ¼øÈ¯ ÂüÁ¶ ¹®Á¦ ÇØ°áÇÏ¼¼¿ä.
+//Circular references - ìˆœí™˜ ì°¸ì¡° ë¬¸ì œ í•´ê²°í•˜ì„¸ìš”.
 
 #include <iostream>
 #include <memory>
@@ -31,7 +31,7 @@ public:
     Player() {}
     ~Player() { std::cout << "~Player()" << "\n"; }
 
-    void SetParty(const shared_ptr<Party>& party) 
+    void SetParty(const shared_ptr<Party>& party)
     {
         m_Party = party;
     }
@@ -45,8 +45,8 @@ int main() {
     {
         shared_ptr<Player> player(new Player);
 
-        party->AddMember(player);     // ¼øÈ¯ ÂüÁ¶°¡ ¹ß»ıÇÑ´Ù.
-        player->SetParty(party);      // ¼øÈ¯ ÂüÁ¶°¡ ¹ß»ıÇÑ´Ù.
+        party->AddMember(player);     // ìˆœí™˜ ì°¸ì¡°ê°€ ë°œìƒí•œë‹¤.
+        player->SetParty(party);      // ìˆœí™˜ ì°¸ì¡°ê°€ ë°œìƒí•œë‹¤.
     }
 
     party.reset();
