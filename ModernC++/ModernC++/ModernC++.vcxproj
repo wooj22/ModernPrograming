@@ -409,6 +409,28 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\001_enum.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class2.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class3.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\002_reference qualifier1.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\002_reference qualifier2.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\005_const.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr1.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr2.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr3.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr4.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\007 volatile.cpp" />
+    <ClCompile Include="06_enum class, override, constexpr\008_override.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept1.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept2.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept3.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept4.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\011_default.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\012_delete_function.cpp" />
+    <ClCompile Include="06_noexcept,default,delete\020_special member.cpp" />
     <ClCompile Include="100. Lab\Lab1\테스트1_auto.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

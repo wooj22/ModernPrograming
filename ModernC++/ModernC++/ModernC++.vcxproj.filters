@@ -43,6 +43,12 @@
     <Filter Include="100. Lab\Lab2">
       <UniqueIdentifier>{bf9e9c5d-d46b-48f9-a7ba-3b0147badb18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="07. enum class, override, constexpr">
+      <UniqueIdentifier>{7d357e48-4b6e-451b-b0a5-e8e646f3db59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. noexcept, default, delete">
+      <UniqueIdentifier>{eac21c3a-b5e5-42d8-b5ec-8578ec6acdd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -337,6 +343,72 @@
     </ClCompile>
     <ClCompile Include="100. Lab\Lab2\테스트 smartptr 4.cpp">
       <Filter>100. Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\001_enum.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class2.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\001_enum_class3.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\002_reference qualifier1.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\002_reference qualifier2.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\005_const.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr1.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr2.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr3.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\006_constexpr4.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\007 volatile.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_enum class, override, constexpr\008_override.cpp">
+      <Filter>07. enum class, override, constexpr</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept1.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept2.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept3.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\008_noexcept4.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\011_default.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\012_delete_function.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\020_special member.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
