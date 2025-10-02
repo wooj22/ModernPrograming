@@ -49,6 +49,9 @@
     <Filter Include="08. noexcept, default, delete">
       <UniqueIdentifier>{eac21c3a-b5e5-42d8-b5ec-8578ec6acdd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="06. initializer, nullptr, using">
+      <UniqueIdentifier>{877dd6b3-c83c-4a4e-8683-056f09b91044}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -409,6 +412,30 @@
     </ClCompile>
     <ClCompile Include="06_noexcept,default,delete\020_special member.cpp">
       <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\001_uniform_initializer.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\001_uniform_initializer2.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\001_uniform_initializer3.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\002_initialize.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\010_nullptr.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\010_nullptr2.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\020_using.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="05_initializer, nullptr, using\020_using2.cpp">
+      <Filter>06. initializer, nullptr, using</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

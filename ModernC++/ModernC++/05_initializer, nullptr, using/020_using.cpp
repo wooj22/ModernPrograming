@@ -44,7 +44,7 @@ using FP = void (*)(int, const std::string&);	// 별칭 선언 (alias declaratio
 
 	int main()
 	{
-		MyAllocList1<Widget>::type lw;              // 클라이언트 코드
+		MyAllocList1<Widget>::type lw;              // 클라이언트 코드	
 	}
 
 //별칭 템플릿(alias templates) ***	// 더 간단하고, 직접적으로 표현 
