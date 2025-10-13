@@ -1,4 +1,4 @@
-//상속과 스마트 포인터
+// 상속과 스마트 포인터
 
 #include <iostream>
 #include <memory>
@@ -9,18 +9,18 @@ using namespace std;
 class Item {
 public:
     string name;
-    Item(string s) : name(s) { }
+    Item(string s) : name(s) {}
     virtual ~Item() {}
 };
 
 class Weapon : public Item {
 public:
-    Weapon(string s) : Item(s) { }
+    Weapon(string s) : Item(s) {}
 };
 
 class Armor : public Item {
 public:
-    Armor(string s) : Item(s) { }
+    Armor(string s) : Item(s) {}
 };
 
 int main()
@@ -31,7 +31,8 @@ int main()
     assets.push_back(new Weapon{ "Weapon2" });
     assets.push_back(new Armor{ "Armor1" });
 
-    //delete assets[i]
+    Item* a0 = assets[0];
+    delete a0;
 
 
     //-------------------------------------------------------------------------------
@@ -48,7 +49,6 @@ int main()
 
     vector< shared_ptr<Item> > weapons;
 
-/*
     copy_if(items.begin(), items.end(), back_inserter(weapons), [](shared_ptr<Item> p) -> bool
         {
             shared_ptr<Weapon> temp = dynamic_pointer_cast<Weapon>(p);
@@ -57,8 +57,6 @@ int main()
 
     for (const auto& p : weapons)
     {
-        //cout << p << endl;
         cout << (static_pointer_cast<Weapon>(p))->name << endl;
     }
-*/
 }

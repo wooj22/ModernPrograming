@@ -1,29 +1,24 @@
-﻿//-------------------------------------------------------------------------
-//아래 코드를 스마트 포인터로 변경하세요. unique_ptr
+﻿// -------------------------------------------------------------------------
+// 아래 코드를 스마트 포인터로 변경하세요. unique_ptr
 
 #include <iostream>
 using namespace std;
 
 int main(void)
 {
+    // int*
     int* ptr(new int(5));
     cout << *ptr << endl;
     delete ptr;
-}
 
-#include <iostream>
-using namespace std;
-
-int main()
-{
+    // unique_ptr<int>
     auto ptr = make_unique<int>(5);
     cout << *ptr << endl;
 }
 
 
-
-//-------------------------------------------------------------------------
-//소멸할 때 자동으로 삭제되도록 스마트 포인터 class 를 작성하세요.
+// -------------------------------------------------------------------------
+// 소멸할 때 자동으로 삭제되도록 스마트 포인터 class 를 작성하세요.
 
 #include <iostream>
 #include <memory>
@@ -31,7 +26,9 @@ using namespace std;
 
 class A
 {
+private:
     int* data;
+
 public:
     A() { data = new int[100]; }
     ~A() { delete[] data; }
@@ -50,6 +47,11 @@ public:
         ptr = data;
     }
 
+    ~smart_ptr()
+    {
+        delete ptr;
+    }
+
     T* operator->()
     {
         return ptr;
@@ -58,6 +60,6 @@ public:
 
 void main()
 {
-    smart_ptr<A> sp(new A());      //smart_ptr<T> 
+    smart_ptr<A> sp(new A());      // smart_ptr<T> 
     sp->func();
 }

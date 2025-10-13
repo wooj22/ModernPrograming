@@ -1,4 +1,4 @@
-//Circular references - 순환 참조 문제 해결하세요.
+// Circular references - 순환 참조 문제 해결하세요.
 
 #include <iostream>
 #include <memory>
@@ -25,29 +25,31 @@ public:
 class Player
 {
 private:
-    shared_ptr<Party> m_Party;
+    //shared_ptr<Party> m_Party;
+    weak_ptr<Party> m_Party;    // weak_ptr 로 변경
 
 public:
     Player() {}
     ~Player() { std::cout << "~Player()" << "\n"; }
 
-    void SetParty(const shared_ptr<Party>& party)
+    void SetParty(const weak_ptr<Party>& party)
     {
         m_Party = party;
     }
 };
 
 int main() {
-    shared_ptr<Party> party(new Party);
+    shared_ptr<Party> party = std::make_shared<Party>();
     cout << party.use_count() << endl;
 
     for (int i = 0; i < 3; i++)
     {
-        shared_ptr<Player> player(new Player);
+        shared_ptr<Player> player = std::make_shared<Player>();
 
-        party->AddMember(player);     // 순환 참조가 발생한다.
-        player->SetParty(party);      // 순환 참조가 발생한다.
+        party->AddMember(player);     // 둘다 shared_ptr일 경우 순환 참조 발생
+        player->SetParty(party);      // 둘다 shared_ptr일 경우 순환 참조 발생
     }
 
     party.reset();
+    cout << party.use_count() << endl;
 }
