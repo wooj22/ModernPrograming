@@ -25,27 +25,27 @@ int main()
 	const int cx = x;
 	const int& rx = x;
 
-	f1(x);							// T와 param의 타입은	
-	f1(cx);							// T와 param의 타입은	
-	f1(rx);							// T와 param의 타입은	
+	f1(x);							// T와 param의 타입은	int, int
+	f1(cx);							// T와 param의 타입은	int, int
+	f1(rx);							// T와 param의 타입은	int, int
 
-	f2(x);							// T와 param의 타입은
-	f2(cx);							// T와 param의 타입은
-	f2(rx);							// T와 param의 타입은
+	f2(x);							// T와 param의 타입은	int, int&
+	f2(cx);							// T와 param의 타입은    const int, const int&
+	f2(rx);							// T와 param의 타입은	const int, const int&
 
-	f3(x);							// T와 param의 타입은
-	f3(cx);							// T와 param의 타입은
-	f3(rx);							// T와 param의 타입은
+	f3(x);							// T와 param의 타입은	int, const int&
+	f3(cx);							// T와 param의 타입은	int, const int&
+	f3(rx);							// T와 param의 타입은	int, const int&
 
-	//int x = 27;					// T와 param의 타입은
-	const int* px = &x;				// T와 param의 타입은
-	f4(&x);							// T와 param의 타입은
-	f4(px);							// T와 param의 타입은
+	int x = 27;
+	const int* px = &x;
+	f4(&x);							// T와 param의 타입은	int, int*
+	f4(px);							// T와 param의 타입은	const int, const int*
 
-	f5(x);							// T와 param의 타입은
-	f5(cx);							// T와 param의 타입은
-	f5(rx);							// T와 param의 타입은
-	f5(27);							// T와 param의 타입은
+	f5(x);							// T와 param의 타입은	int&, int&
+	f5(cx);							// T와 param의 타입은	const int&, const int&
+	f5(rx);							// T와 param의 타입은	const int&, const int&
+	f5(27);							// T와 param의 타입은	int, int&&
 }
 
 //-----------------------------------------------------------------------------

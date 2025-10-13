@@ -6,30 +6,30 @@ using namespace std;
 int main()
 {
 	const int a = 3;
-	decltype(a) b = 2;				//(		) 
+	decltype(a) b = 2;				//( const int ) 
 
 	const int& ra = a;
-	decltype(ra) rb = b;			//(		) 
+	decltype(ra) rb = b;			//(	const int& ) 
 
 	int&& x = 3;
-	decltype(x) y = 2;				//(		) 
+	decltype(x) y = 2;				//(	int&& ) 
 
 	struct A { double* d; };
 	A* aa;
-	decltype(aa->d) dd = 0.1;		//(		) 
+	decltype(aa->d) dd = 0.1;		//(	double* ) 
 
 	int c = 3;
-	decltype(c) c1 = 2;				//타입은 int
-	decltype((c)) c2 = c;			//타입은 int&
+	decltype(c) c1 = 2;				// 타입은 int
+	decltype((c)) c2 = c;			// 타입은 int&
 
 	int x, y;
-	decltype(x + y) z;				//타입은? 
+	decltype(x + y) z;				//타입은? int
 
 	int x1, y1;
-	decltype(x1 = y1) z1;			//타입은? 
+	decltype(x1 = y1) z1;			//타입은? int& (rvalue 표현식)
 
 	int x2;
-	decltype(std::move(x2)) z2;		//타입은? 
+	decltype(std::move(x2)) z2;		//타입은? int&& (xvalue 표현식)
 
 }
 
@@ -44,11 +44,12 @@ struct A { double x; };
 int main()
 {
 	const A* a = new A();
+	A b;
 
-	decltype(fx);			// 형식은 ???
-	decltype(fx());			// 형식은 ???
-	decltype(a->x);			// 형식은 ???
-	decltype((a->x));		// 형식은 ???
+	decltype(fx);			// const int &&()
+	decltype(fx());			// const int &&
+	decltype(a->x);			// const double
+	decltype((a->x));		// const double&
 }
 
 
@@ -71,17 +72,17 @@ int main() {
 
 	std::vector<int> vec = { 10, 20 };
 
-	auto a = foo();									//(		) 
-	typedef decltype(foo()) foo_type;				//(		) 
+	auto a = foo();									//(	S ) 
+	typedef decltype(foo()) foo_type;				//(	const S ) 
 
-	auto b = foobar();								//(		) 
-	typedef decltype(foobar()) foobar_type;			//(		) 
+	auto b = foobar();								//(	int ) 
+	typedef decltype(foobar()) foobar_type;			//(	cont int& ) 
 
-	auto itr = vec.begin();							//(		) 
-	typedef decltype(vec.begin()) itr_type;			//(		) 
+	auto itr = vec.begin();							//(	std::vector<int>::iterator ) 
+	typedef decltype(vec.begin()) itr_type;			//(	std::vector<int>::iterator ) 
 
-	auto			 v1 = vec[0];					//(		) 
-	decltype(vec[0]) v2 = vec[0];					//(		) 
+	auto			 v1 = vec[0];					//(	int ) 
+	decltype(vec[0]) v2 = vec[0];					//(	int& ) 
 }
 
 //---------------------------------------------------------------------
@@ -90,11 +91,12 @@ int main() {
 
 #include <utility>
 
-struct A { int f() { return 10; }  };
+struct A { int f() { return 10; } };
 struct B { char f() { return 'A'; } };
 
 template <typename T>
-_______ call_function(T& t) { return t.f(); }
+auto call_function(T& t) { return t.f(); }
+//auto call_function(T& t) -> decltype(t.f()){ return t.f(); }
 
 
 int main() {
@@ -102,7 +104,6 @@ int main() {
 	auto val1 = call_function(a);	// int
 	B b;
 	auto val2 = call_function(b);	// char
-
 }
 
 

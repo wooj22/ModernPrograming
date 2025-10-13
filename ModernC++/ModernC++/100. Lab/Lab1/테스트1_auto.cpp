@@ -24,7 +24,7 @@ void main()
 	auto f1 = { 1 };		  		//(	std::initializer_list<int>	)	
 	auto f2{ 1 };			  		//(	int	)	
 
-	std::string g = { "abc" };		
+	std::string g = { "abc" };
 	auto h = g.begin();		  		//(	std::string::iterator	)	
 
 	class Base {};
@@ -88,7 +88,7 @@ int main()
 	auto r2 = x;				// ( Widget	)			
 	r1.Fn();
 
-	const Widget y;				
+	const Widget y;
 	auto  obj1 = y;				// ( Widget )			
 	auto  obj2 = &y;			// ( const Widget* )			
 	auto& obj3 = y;				// ( const Widget& )			
@@ -99,7 +99,6 @@ int main()
 
 
 // 변수 a와 b의 차이를 설명하고, 자료형 혼선을 없애기 위한 방안을 제시하라
-
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -108,8 +107,18 @@ int main()
 {
 	std::vector<bool> v = { true,true,true,true };
 
-	bool a = v[3];
-	auto b = v[3];
+	bool a = v[3];		// bool
+	auto b = v[3];		// std::vector<bool>::reference
 
+	// v[3]의 자료형은?
+	// std::vector<bool>::reference
+	std::vector<bool>::reference v3 = v[3];
 
+	// std::vector<bool>은 템플릿이 특수화(specialization)되어있음.
+	// 각 요소를 1bit로 저장하기 때문에 bool을 그대로 저장하는 것이 아니라
+	// 비트 단위 접근용 프록시 객체를 제공하고있다.
+
+	// 자료형 혼선을 없애기 위한 해결 방안
+	// 1. auto 대신 명시적 타입 선언(bool)
+	// 2. std::vector<char> v = { 1, 1, 1, 1 }; 사용
 }
