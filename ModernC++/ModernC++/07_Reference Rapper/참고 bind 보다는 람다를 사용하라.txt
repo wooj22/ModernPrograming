@@ -1,0 +1,230 @@
+https://pppgod.tistory.com/55
+
+std::bind 는 C++98 부터 이어져 내려온 라이브러리의 일부였다. 
+
+그러나 C++14 에 들어서며 std::bind 는 필요성이 사라졌다. 그 이유를 살펴보도록 하자.
+
+-----------------------------------------------------------------------------------------
+알람 함수를 만들어보자.
+
+using Time = std::chrono::steady_clock::time_point;
+enum class Sound { Beep, Siren, Whistle };
+using Duration = std::chrono::steady_clock::duration;
+void setAlarm(Time t, Sound s, Duration d);
+
+ 위 함수를 이용해서 한 시간 후부터 30초간 소리를 내는 알람 함수를 람다를 이용해서 만들면 다음과 같이 만들 수 있다.
+
+auto setSoundL =
+  [](Sound s)
+  {
+    using namesapce std::chrono;
+    using namespace std::literals;
+    
+    setAlarm(steady_clock::now() + 1h,
+             s,
+             30s);
+  };
+
+이 람다를 바인드를 이용해서 만들면 다음과 같이 만들어진다.
+
+
+using namespace std::chrono;
+using namespace std::literals;
+
+using namespace std::placeholders;
+
+auto setSoundB =
+  std::bind(setAlaram,
+            steady_clock::now() + 1h,
+            _1,
+            30s);
+ 
+-----------------------------------------------------------------------------------------
+호출 시점의 문제
+
+ 람다와 똑같이 동작할것이라 생각하겠지만 사실은 문제가 있다. 
+문제가 있는 코드는 steady_clock::now() 부분이다. 
+ 람다의 경우에는 setAlram 이 호출되는 시점의 시간이지만 바인드의 경우에는 바인드 객체가 생성되는 시점의 시간이 되버린다.   
+ 위 코드를 람다와 같이 동작되도록 수정하려면 바인드 함수를 한번 더 써야한다.
+
+auto setsoundB =
+  std::bind(setAlarm,
+            std::bind(std::plus<>(),
+                      std::bind(steady_clock::now),
+                      1h),
+            _1,
+            30s);
+
+ -----------------------------------------------------------------------------------------
+오버로딩 문제
+
+ 만약 setAlarm 함수를 오버로딩하게 되면 문제가 없는 람다와 달리 
+ 바인드에서는 컴파일 오류가 발생한다.
+ 타입을 지정해주어 해결할 수 있다.
+
+using SetAlram3ParamType = void(*)(Time t, Sound s, Duration d);
+
+auto setSoundB =
+  std::bind(static_cast<SetAlram3ParamType>(setAlarm),
+            std::bind(std::plus<>(),
+                      std::bind(steady_clock::now),
+                      1h),
+            _1,
+            30s);
+ 
+위와 같은 방법으로 컴파일 문제는 해결하였다. 성능의 문제가 있다는 점을 빼면 말이다. 
+람다의 경우에는 setAlarm 호출을 인라인화 시키는데 반해 
+바인드의 경우에는 함수 포인터를 사용하기 때문에 인라인화할 가능성이 매우 낮다.
+
+ 
+-----------------------------------------------------------------------------------------
+구현과 유지보수의 문제
+
+  위에서도 문제를 느꼈겠지만 코드가 복잡해질수록 바인드로의 구현이 어렵다. 
+
+  어떤 인수가 범위 안에 있는지 확인하는 코드를 작성해보자.
+
+auto betweenL =
+	[lowVal, highVal] (const auto& val)
+	{ return lowVal <= val && val <= highVal; };
+  
+auto betweenB =
+  std::bind(std::logical_and<>(),
+              std::bind(std::less_equal<>(), lowVal, _1),
+              std::bind(std::less_equal<>(), _1, highVal));
+
+ 코드를 이해하는데 람다가 보다 수월함을 느낄 수 있다.
+
+ 
+-----------------------------------------------------------------------------------------
+참조와 복사의 문제
+
+ Widget 객체를 압축 복사본을 만드는 함수를 통해 어떤 문제가 있는지 알아보자.
+
+enum class CompLevel { Low, Normal, High };
+
+Widget compress(const Widget& w,
+                CompLevel lev);
+                
+Widget w;
+auto compressRateB = std::bind(compress, w, _1);
+
+위 함수에서 바인드 객체에 전달되는 w 는 어떻게 전달될까? 
+compressRateB 를 호출하기 전에 w 가 수정된다면 어떻게 되는지 알 수 있을까? 
+참조로 전달될 때와 값으로 전달될 때의 결과가 달라진다는 점은 숙지해야하는 문제이다.
+
+바인드 객체에 전달하는 방법은 "값"으로 전달된다. 
+만약 바인드의 작동 방식을 모른다면 추론은 불가능하다. 
+그러나 람다의 경우에는 의도가 명백하게 드러난다.
+
+auto compressRateL =
+  [w](CompLevel lev)
+  { return compress(w, lev); };
+ 
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+// std::bind
+//      멤버 변수 객체를 묶어 숨겨서 호출하는 쪽에서 모르게 할 수 있다.
+
+-----------------------------------------------------------------------------------------------------------------------------
+void addAndPrint(int a, int b)
+{
+	int sum = a + b;
+	std::cout << sum << "\n";
+}
+
+auto func2 = std::bind(addAndPrint, 10, std::placeholders::_1);
+func2(100); 	// addAndPrint(10, 100); 과 동일한 결과를 보장함
+
+위 코드부턴 auto 를 사용했는데, 여기선 std::function<void(int)> 와 동일하다.
+std::bind(addAndPrint, 10, std::placeholders::_1) 의 의미는 
+addAndPrint(int, int) 함수의 첫 번째 파라메터는 10, 두 번째 파라메터는 func2 를 호출할 때 들어오는 첫번째 인자를 넣어준다는 의미다.
+
+-----------------------------------------------------------------------------------------------------------------------------
+클래스 멤버함수를 클래스 내부에서 bind 시켜주는 예제를 한번 작성해보자
+
+class A
+{
+    public:
+    void addAndPrint(int a, int b)
+    {
+        int sum = a + b;
+        std::cout << "sum: " << sum << "\n";
+    }
+
+    void bindFunction(std::function<void(int, int)>& dest)
+    {
+        dest = std::bind(&A::addAndPrint, this, std::placeholders::_1, std::placeholders::_2);
+    }
+};
+
+A test;
+std::function<void(int, int)> func4;
+test.bindFunction(func4);
+func4(100, 200);
+
+func4는 객체 바깥에서 선언되고, A::bindFunction 에 의해서 test.addAndPrint 와 동일한 동작을 하는 함수로 bind 되었다.
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+#include <random>
+#include <iostream>
+#include <memory>
+#include <functional>
+
+void f(int n1, int n2, int n3, const int& n4, int n5)
+{
+    std::cout << n1 << ' ' << n2 << ' ' << n3 << ' ' << n4 << ' ' << n5 << '\n';
+}
+
+int g(int n1)
+{
+    return n1;
+}
+
+struct Foo {
+    void print_sum(int n1, int n2) { std::cout << n1 + n2 << '\n'; }
+    int data = 10;
+};
+
+
+int main()
+{
+    using namespace std::placeholders;  // for _1, _2, _3...
+
+    // demonstrates argument reordering and pass-by-reference
+    int n = 7;
+    // (_1 and _2 are from std::placeholders, and represent future arguments that will be passed to f1)
+
+    auto f1 = std::bind(f, _2, 42, _1, std::cref(n), n);
+    n = 10;
+    f1(1, 2, 1001); // 1 is bound by _1, 2 is bound by _2, 1001 is unused makes a call to f(2, 42, 1, n, 7)
+
+    // nested bind subexpressions share the placeholders
+    auto f2 = std::bind(f, _3, std::bind(g, _3), _3, 4, 5);
+    f2(10, 11, 12); // makes a call to f(12, g(12), 12, 4, 5);
+
+    // common use case: binding a RNG with a distribution
+    std::default_random_engine e;
+    std::uniform_int_distribution<> d(0, 10);
+    auto rnd = std::bind(d, e); // a copy of e is stored in rnd
+    for (int n = 0; n < 10; ++n)
+        std::cout << rnd() << ' ';
+    std::cout << '\n';
+
+    // bind to a pointer to member function
+    Foo foo;
+    auto f3 = std::bind(&Foo::print_sum, &foo, 95, _1);
+    f3(5);
+
+    // bind to a pointer to data member
+    auto f4 = std::bind(&Foo::data, _1);
+    std::cout << f4(foo) << '\n';
+
+    // smart pointers can be used to call members of the referenced objects, too
+    std::cout << f4(std::make_shared<Foo>(foo)) << '\n'
+        << f4(std::make_unique<Foo>(foo)) << '\n';
+}

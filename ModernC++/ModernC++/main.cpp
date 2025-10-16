@@ -1,30 +1,24 @@
 #include <iostream>
-#include <array>
 using namespace std;
 
-class Point
+struct Good
 {
-private:
-	double x, y;
-
-public:
-	constexpr Point(double xVal = 0, double yVal = 0) noexcept
-		: x(xVal), y(yVal) {}
-
-	constexpr double getX() const noexcept { return x; }
-	constexpr double getY() const noexcept { return y; }
-	constexpr void setX(double newX) noexcept { x = newX; }
-	constexpr void setY(double newY) noexcept { y = newY; }
+	Good() {}
+	Good(Good&&) noexcept { std::cout << "move noexcept\n"; }
+	Good(const Good&) noexcept { std::cout << "copy noexcept\n"; }
 };
 
-constexpr Point midpoint(const Point& p1, const Point& p2) noexcept
+struct Bad
 {
-	return { (p1.getX() + p2.getX()) / 2, (p1.getY() + p2.getY()) / 2 };
-}
+	Bad() {}
+	Bad(Bad&&) { std::cout << "move\n"; }
+	Bad(const Bad&) { std::cout << "copy\n"; }
+};
 
 int main()
 {
-	Point p1(0.4, 27.7);
-	Point p2(9.4, 7.7);
-	constexpr Point mid = midpoint(Point(9.4, 27.7), Point(0.4, 7.7));
+	Good g; Bad b;
+
+	Good g2 = std::move_if_noexcept(g);  // 인수가 noexcept라면 move(g)
+	Bad b2 = std::move_if_noexcept(b);   // 인수가 noexcept가 아니면 b
 }

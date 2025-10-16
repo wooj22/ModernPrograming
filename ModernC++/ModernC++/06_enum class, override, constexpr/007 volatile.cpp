@@ -1,5 +1,8 @@
 ﻿// volatile			
-//		휘발성, 값을 항상 메모리에만 보관하라는 의미
+//		휘발성, 값을 항상 메모리에만 보관하게 하는 키워드
+//      volatile 선언의 의미 : “컴파일러, 이 변수 값을 마음대로 최적화하지 마라”
+//							  즉, 변수 값이 언제든 외부 요인에 의해 바뀔 수 있다는 걸 알려줌
+//		C++ 컴파일러는 성능 최적화를 위해 사용하지 않는 변수 접근을 제거하거나, 반복문 안에서 변수를 캐싱할 수 있음.
 //		volatile 선언하면 항상 메모리에 접근해야 하므로 컴파일러는 최적화하지 않음.
 
 #include <iostream>
@@ -30,7 +33,7 @@ void main()
 	//volatile const int c = 5;
 
 	printf("%d\n", c);
-	*const_cast<int*>(&c) = 8;
+	*const_cast<int*>(&c) = 8;			// const_cast로 const 속성 제거
 	printf("%d\n", c);
 }
 

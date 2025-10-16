@@ -60,6 +60,5 @@ int main()
 	constexpr int number = 3;
 	enum B { x = number, y, z };			// Good!
 	std::cout << B::x << std::endl;
-
 }
 

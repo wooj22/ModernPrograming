@@ -52,6 +52,9 @@
     <Filter Include="06. initializer, nullptr, using">
       <UniqueIdentifier>{877dd6b3-c83c-4a4e-8683-056f09b91044}</UniqueIdentifier>
     </Filter>
+    <Filter Include="09_Reference Rapper">
+      <UniqueIdentifier>{4f7eb848-8b92-4c80-aee4-cb83180a9905}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -436,6 +439,39 @@
     </ClCompile>
     <ClCompile Include="05_initializer, nullptr, using\020_using2.cpp">
       <Filter>06. initializer, nullptr, using</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\Trival.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="06_noexcept,default,delete\Trival2.cpp">
+      <Filter>08. noexcept, default, delete</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\900_reference_wrapper.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\900_reference_wrapper2.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\900_reference_wrapper3.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\901_ref.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\901_ref2.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\902_std bind.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\902_std bind2.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\903_std mem_fn.cpp">
+      <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="07_Reference Rapper\참고 vector 다형성 구현.cpp">
+      <Filter>09_Reference Rapper</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
