@@ -55,6 +55,9 @@
     <Filter Include="09_Reference Rapper">
       <UniqueIdentifier>{4f7eb848-8b92-4c80-aee4-cb83180a9905}</UniqueIdentifier>
     </Filter>
+    <Filter Include="10_Lamda">
+      <UniqueIdentifier>{a035e179-d76a-40c1-b5ef-64f4cd653497}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -68,54 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="C++ 클래스 quiz 01.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 02.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 03.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 04.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 05.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 06.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 07.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 08.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 09.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 10.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 11.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 12.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 13.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 14.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="C++ 클래스 quiz 15.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="연습문제 STL 문제.cpp">
-      <Filter>99. Test</Filter>
-    </ClCompile>
     <ClCompile Include="03. lvalue, rvalur, move, forward\0 anonymous.cpp">
       <Filter>03. LRValue</Filter>
     </ClCompile>
@@ -472,6 +427,150 @@
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\참고 vector 다형성 구현.cpp">
       <Filter>09_Reference Rapper</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 01.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 02.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 03.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 04.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 05.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 06.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 07.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 08.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 09.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 10.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 11.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 12.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 13.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 14.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\C++ 클래스 quiz 15.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="99. Test\연습문제 STL 문제.cpp">
+      <Filter>99. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda1.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda2.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda3.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda4.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\21_lambda_speed.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\23 lambda return.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture2.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture3.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\연습문제 람다 풀이.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\3_06 lambda\연습문제 람다.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\25 lambda capture.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\25_lambda In class.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\25_lambda recursive.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\25_lambda this capture1.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\25_lambda this capture2.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\26_lambda generic.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\27 lambda_inline.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\30_functional_programming.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\31_functional_callable.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\31_functional_callback.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\31_functional_vector.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\32 functional_closure.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\33 lambda init capture 1.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\33 lambda init capture 2.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\33 lambda init capture 3.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\105_lambda ex.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\106_lambda constexpr.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\function empty.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\function vector .cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\lambda ex1.cpp">
+      <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="08_Lambda Expression\lambda ex2.cpp">
+      <Filter>10_Lamda</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

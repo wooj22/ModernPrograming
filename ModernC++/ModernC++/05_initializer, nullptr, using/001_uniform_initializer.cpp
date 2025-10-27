@@ -149,12 +149,13 @@ int main()
 
 //사용자 정의 클래스에서 std::vector 처럼 { , , } 초기화를 하려면 ??? 
 // 
-//      initializer_list<> 사용해서 생성자를 만든다.
+//      1. initializer_list<>를 매개변수로 받는 생성자를 만든다.
+//      2. {} 유니폼 초기화(Uniform Initialization)로 생성자를 호출한다.
 
-//      {} 를 이용해서 생성자를 호출할 때, 
-//              클래스의 생성자들 중에 initializer_list 를 인자로 받는 생성자가 있다면, 전달
+//      {} 를 이용해서 생성자를 호출한다면,
+//              클래스에 initializer_list 생성자가 있으면 이것을 우선 호출
 //      () 를 사용해서 생성자를 호출한다면,
-//              intializer_list 가 생성되지 않습니다.
+//              initializer_list 생성자는 호출되지 않고 일반 생성자를 찾음
 
 class A 
 {
@@ -167,7 +168,7 @@ public:
 };
 
 int main() { 
-    A a = {1, 2, 3, 4, 5}; 
+    A a = {1, 2, 3, 4, 5};  // initializer_list 초기화
 }
 
 // 만약 T가 std::initializer_list에 특수화 돼 있는 경우, T는 std::initializer_list에 의해 직접초기화 됩니다.
