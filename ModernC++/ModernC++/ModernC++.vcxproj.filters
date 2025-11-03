@@ -58,6 +58,9 @@
     <Filter Include="10_Lamda">
       <UniqueIdentifier>{a035e179-d76a-40c1-b5ef-64f4cd653497}</UniqueIdentifier>
     </Filter>
+    <Filter Include="11_Thread">
+      <UniqueIdentifier>{534ccb81-df9a-4b53-bcf5-0379aca0b5e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -571,6 +574,108 @@
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\lambda ex2.cpp">
       <Filter>10_Lamda</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\1 thread\930_thread.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\1 thread\930_thread1.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\1 thread\930_thread2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\1 thread\930_thread3 exam.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\1 thread\930_thread3 exam2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\931_thread_lock.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\931_thread_lock2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\932_thread_deadlock.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable1.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\2 mutex\테스트 쓰레드.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\3 atomic\001_atomic.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\3 atomic\002_atomic.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\3 atomic\003_atomic..cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\3 atomic\005_volatile.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\934_thread_promise.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\935_thread_future.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\936_thread_async.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\937 this_thread_.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\998_thread time.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\999_thread_pool1.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\4 future\999_thread_pool2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_1.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_2.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_3.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_4.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_5.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\931_async_download.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\932_async_class.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\933_async_dot.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\ex1.cpp">
+      <Filter>11_Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="09_thread async atomic\5 async\ex2.cpp">
+      <Filter>11_Thread</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
