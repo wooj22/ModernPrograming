@@ -1,4 +1,4 @@
-﻿//future
+﻿// future
 //
 //  wait() / get() 은 
 //      thread에서 return 또는 set_value() 함수가 호출될 때까지 무한정 대기

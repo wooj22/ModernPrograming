@@ -1,44 +1,31 @@
+#include <future>
 #include <iostream>
 #include <vector>
 #include <thread>
-#include <Windows.h>
-using namespace std;
 
-void worker(vector<int>::iterator start, vector<int>::iterator end, int* result)
+int sum(const std::vector<int>& v, int start, int end)
 {
-	int sum = 0;
-	
-	for (auto itr = start; itr < end; ++itr)
-	{
-		sum += *itr;
+	int total = 0;
+	for (int i = start; i < end; ++i) {
+		total += 1;
 	}
 
-	*result = sum;
+	return total;
+}
+
+int parallel_sum(const std::vector<int>& v)
+{
+	std::future<int> f1 = std::async([&v]() {return sum(v, 0, 500); });
+	std::future<int> f2 = std::async([&v]() {return sum(v, 500, 1000); });
+
+	return f1.get() + f2.get();
 }
 
 int main()
 {
-	// 합계를 구할 데이터
-	vector<int> data(10000);
-	for (int i = 0; i < 10000; i++) data[i] = i + 1;
+	std::vector<int> v;
+	v.reserve(1000);
+	for (int i = 0; i < 1000; i++) v.push_back(i);
 
-	// 구간합을 저장할 벡터
-	vector<int> resultPart(4);
-	int sums = 0;
-
-	// thread
-	vector<thread> workers;
-
-	for (int i = 0; i < 4; i++)
-		workers.push_back(thread(worker, data.begin() + i * 2500, data.begin() + i * 2500 + 2500, &resultPart[i]));
-
-	// works
-	for (int i = 0; i < 4; i++)
-		workers[i].join();
-
-	// result
-	for (int i = 0; i < 4; i++)
-		sums += resultPart[i];
-
-	cout << sums;
+	std::cout << "1부터 1000까지의 합 : " << parallel_sum(v) << std::endl;
 }
