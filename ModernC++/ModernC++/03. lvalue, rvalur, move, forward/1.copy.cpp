@@ -14,7 +14,6 @@ using namespace std;
     1. 객체의 선언 및 초기화 : Foo a(b);
     2. 객체의 값에 의한 전달 : void foo(Foo a) { … }
     3. 객체의 값에 의한 반환 : Foo foo() { return Foo(); }
-
 */
 
 class Foo {

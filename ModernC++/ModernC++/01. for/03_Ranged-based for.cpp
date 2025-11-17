@@ -141,7 +141,10 @@ void main()
 		Node* end() { return tail; }
 
 		Mylist& operator++() { now = now->next; return *this; };	// 전위증가
-		Mylist operator++(int) { now = now->next; return *this; };  // 후위증가 (이 코드내용은 전위와 동일)
+		Mylist operator++(int) {								    // 후위증가
+			Mylist tmp = *this;
+			now = now->next; 
+			return tmp; };  
 	};
 
 	int main()

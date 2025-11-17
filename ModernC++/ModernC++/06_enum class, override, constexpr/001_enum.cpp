@@ -22,11 +22,13 @@ int main()
 
 		auto white = false;			//error //재정의
 
+		if (black < 2.5) {}
+
 	}
 
 	// 범위 있는 enum //enum class -------------------------------------
 	{
-		enum class Color { black, white, red };
+		enum class Color : int { black, white, red };
 
 		// 범위 있는 enum의 열거자들은 그 안에서만 보인다. 
 		// 이 열거자들은 오직 캐스팅을 통해서만 다른 타입으로 변환된다.
@@ -35,6 +37,7 @@ int main()
 		auto color2 = Color::white;
 
 		auto white = false;			//변수 선언
+	
 	}
 	return 0;
 }

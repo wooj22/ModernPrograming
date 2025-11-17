@@ -58,10 +58,9 @@ void main()
 	auto base1 = new Base();				// Base*
 	auto* base2 = new Base();				// Base*
 
+	int ff;
 	int& r = ff;
 	auto rr = r;							// int
-
-	int ff;
 	const auto& cc = ff;					// const int&
 }
 

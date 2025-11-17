@@ -52,17 +52,20 @@
     <Filter Include="06. initializer, nullptr, using">
       <UniqueIdentifier>{877dd6b3-c83c-4a4e-8683-056f09b91044}</UniqueIdentifier>
     </Filter>
-    <Filter Include="09_Reference Rapper">
-      <UniqueIdentifier>{4f7eb848-8b92-4c80-aee4-cb83180a9905}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="10_Lamda">
-      <UniqueIdentifier>{a035e179-d76a-40c1-b5ef-64f4cd653497}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="11_Thread">
-      <UniqueIdentifier>{534ccb81-df9a-4b53-bcf5-0379aca0b5e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="100. Lab\Lab3">
       <UniqueIdentifier>{19d0fab2-2486-485c-aff7-0df592735274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="12. Datatype string">
+      <UniqueIdentifier>{8f92e260-d7c7-40cf-8f73-a82a5faf4583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="11. Thread">
+      <UniqueIdentifier>{534ccb81-df9a-4b53-bcf5-0379aca0b5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. Lamda">
+      <UniqueIdentifier>{a035e179-d76a-40c1-b5ef-64f4cd653497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Reference Rapper">
+      <UniqueIdentifier>{4f7eb848-8b92-4c80-aee4-cb83180a9905}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -408,31 +411,31 @@
       <Filter>08. noexcept, default, delete</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\900_reference_wrapper.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\900_reference_wrapper2.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\900_reference_wrapper3.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\901_ref.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\901_ref2.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\902_std bind.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\902_std bind2.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\903_std mem_fn.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="07_Reference Rapper\참고 vector 다형성 구현.cpp">
-      <Filter>09_Reference Rapper</Filter>
+      <Filter>09. Reference Rapper</Filter>
     </ClCompile>
     <ClCompile Include="99. Test\C++ 클래스 quiz 01.cpp">
       <Filter>99. Test</Filter>
@@ -483,208 +486,310 @@
       <Filter>99. Test</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda1.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda2.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda3.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\20_lambda4.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\21_lambda_speed.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\23 lambda return.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture2.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\24_lambda capture3.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\연습문제 람다 풀이.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\3_06 lambda\연습문제 람다.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\25 lambda capture.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\25_lambda In class.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\25_lambda recursive.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\25_lambda this capture1.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\25_lambda this capture2.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\26_lambda generic.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\27 lambda_inline.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\30_functional_programming.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\31_functional_callable.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\31_functional_callback.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\31_functional_vector.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\32 functional_closure.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\33 lambda init capture 1.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\33 lambda init capture 2.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\33 lambda init capture 3.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\105_lambda ex.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\106_lambda constexpr.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\function empty.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\function vector .cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\lambda ex1.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="08_Lambda Expression\lambda ex2.cpp">
-      <Filter>10_Lamda</Filter>
+      <Filter>10. Lamda</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\1 thread\930_thread.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\1 thread\930_thread1.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\1 thread\930_thread2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\1 thread\930_thread3 exam.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\1 thread\930_thread3 exam2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\931_thread_lock.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\931_thread_lock2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\932_thread_deadlock.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable1.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\933_thread_condition_variable2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\2 mutex\테스트 쓰레드.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\3 atomic\001_atomic.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\3 atomic\002_atomic.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\3 atomic\003_atomic..cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\3 atomic\005_volatile.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\934_thread_promise.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\935_thread_future.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\936_thread_async.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\937 this_thread_.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\998_thread time.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\999_thread_pool1.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\4 future\999_thread_pool2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_1.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_3.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_4.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_5.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\931_async_download.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\932_async_class.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\933_async_dot.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\ex1.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="09_thread async atomic\5 async\ex2.cpp">
-      <Filter>11_Thread</Filter>
+      <Filter>11. Thread</Filter>
     </ClCompile>
     <ClCompile Include="100. Lab\Lab3\테스트 문제 thread 02.cpp">
       <Filter>100. Lab\Lab3</Filter>
     </ClCompile>
     <ClCompile Include="100. Lab\Lab3\테스트 문제 thread 03.cpp">
       <Filter>100. Lab\Lab3</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\880_string.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\880_string2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\880_string3_new.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\880_string4_split.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\880_string4_stroke.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\881_atoi.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\882_to_string.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\884 toupper tolower.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\885_string_word.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\2_18 string\format.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex0.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex1.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex3.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\3_19 regex\regex4.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\001 Binary Literal.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\002 Digit seperator.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\003 basic_string.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\003_unicode.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\004 Raw String Literal 1.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\004 Raw String Literal 2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\005 User defined Literal1.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\005 User defined Literal2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\005 User_defined Literal3.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\006 string_view.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\006 string_view2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\007 stringstream.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\008 format.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\008 format2.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\008 format3.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\008 format4.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\008 format5.cpp">
+      <Filter>12. Datatype string</Filter>
+    </ClCompile>
+    <ClCompile Include="10_Datatype String\010 span.cpp">
+      <Filter>12. Datatype string</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

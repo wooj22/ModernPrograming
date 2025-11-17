@@ -1,0 +1,88 @@
+#include <iostream>
+#include <stdexcept>
+#include <cstddef>
+
+class StringView {
+private:
+    const char* data_; // 문자열 데이터 포인터
+    std::size_t size_; // 문자열 길이
+
+public:
+    // 기본 생성자
+    constexpr StringView() noexcept : data_(nullptr), size_(0) {}
+
+    // 문자열 포인터와 길이를 받는 생성자
+    constexpr StringView(const char* str, std::size_t length) 
+        : data_(str), size_(length) {}
+
+    // 문자열 포인터로부터 생성 (null-terminated)
+    StringView(const char* str) 
+        : data_(str), size_(str ? std::char_traits<char>::length(str) : 0) {}
+
+    // 길이 반환
+    constexpr std::size_t size() const noexcept {
+        return size_;
+    }
+
+    // 비어 있는지 확인
+    constexpr bool empty() const noexcept {
+        return size_ == 0;
+    }
+
+    // 인덱스를 통해 문자열 요소 접근
+    constexpr char operator[](std::size_t index) const {
+        return data_[index];
+    }
+
+    // 범위 검사 포함한 접근
+    constexpr char at(std::size_t index) const {
+        if (index >= size_) {
+            throw std::out_of_range("StringView: Index out of range");
+        }
+        return data_[index];
+    }
+
+    // 데이터 포인터 반환
+    constexpr const char* data() const noexcept {
+        return data_;
+    }
+
+    // 뷰의 부분 문자열 반환
+    constexpr StringView substr(std::size_t pos, std::size_t length = std::string::npos) const {
+        if (pos > size_) {
+            throw std::out_of_range("StringView: Position out of range");
+        }
+        std::size_t new_length = (length == std::string::npos || pos + length > size_) 
+                                 ? size_ - pos 
+                                 : length;
+        return StringView(data_ + pos, new_length);
+    }
+
+    // 문자열 출력 연산자 오버로드
+    friend std::ostream& operator<<(std::ostream& os, const StringView& sv) {
+        return os.write(sv.data_, sv.size_);
+    }
+};
+
+int main() {
+    const char* text = "Hello, StringView!";
+    StringView sv(text);
+
+    // 기본 출력
+    std::cout << "StringView: " << sv << "\n";
+    std::cout << "Size: " << sv.size() << "\n";
+    std::cout << "First character: " << sv[0] << "\n";
+
+    // 부분 문자열
+    auto sub = sv.substr(7, 10);
+    std::cout << "Substring: " << sub << "\n";
+
+    // 범위 검사를 포함한 접근
+    try {
+        std::cout << "Out of bounds: " << sv.at(100) << "\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+
+    return 0;
+}
