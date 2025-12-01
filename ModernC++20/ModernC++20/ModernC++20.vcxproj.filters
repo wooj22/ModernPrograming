@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="01 Modern C++">
+      <UniqueIdentifier>{39a9398b-d3e3-418d-b0e7-1b0b8b8707c0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="01 Modern C++\001_file.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\002 filesystem.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\003_static_assert.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\004 if init 1.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\004 if init 2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\005 if constexpr.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\006 structured binding.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\007 using enum.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\011 attributes1.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\011 attributes2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\011 attributes3.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\012 spaceship operator.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\012 spaceship operator2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\013 math.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\014 optional.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\014 optional1.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\014 optional2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\014 optional3.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\015 variant.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\017 trivial.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\018 common_type.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\019 invoke.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\019 invoke2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\020 Designated initalizers.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\021 __VA_OPT.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\021 char8_t.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\참고 carry_dependency.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 common_type.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 Init Statement.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 invoke.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 invoke2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 optional.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 optional2.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 spaceship operator.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="01 Modern C++\테스트 static_assert.cpp">
+      <Filter>01 Modern C++</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

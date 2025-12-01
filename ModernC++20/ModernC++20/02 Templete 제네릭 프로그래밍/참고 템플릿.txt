@@ -1,0 +1,4541 @@
+함수 또는 클래스의 틀(template)을 제공하는 방법
+ 
+
+매크로(macro) 사용
+
+전처리기(pre-processor)가 코드를 생성
+전처리기는 함수 인자를 통해서 타입을 추론 할 수 없음
+
+
+
+// 함수를 만드는 틀
+#define MAKE_SQUARE( T )    \
+T square(T a)               \
+{                           \
+    return a * a;           \
+}
+// 틀에 타입을 전달해서 함수를 생성한다.
+MAKE_SQUARE(int)
+MAKE_SQUARE(double)
+
+int main()
+{
+    square(3);
+    square(3.3);
+}
+
+템플릿(template) 사용
+
+컴파일러가 코드를 생성
+컴파일러는 함수 인자를 통해서 타입을 추론할 수 있음
+
+
+
+template<typename T> // typename 대신 class로 사용해도 됨
+T square(T a)
+{
+    return a * a;
+}
+
+int main()
+{
+    square<int>(3); // int square(int) 생성
+    square<double>(3.3); // double square(double) 생성
+
+    square(3); // 인자 타입 추론으로 
+    square(3.3); // 
+}
+출처: https://www.devoops.kr/64?category=691976 [데브웁스:티스토리]
+
+
+아래의 Complex 멤버의 data type의 예
+
+int로 할 경우 : 실수를 담을 수 없음
+double로 할 경우 : 실수와 정수를 모두 담을 수 있지만 double은 int보다 overhead가 있음
+라이브러리 설계자는 Complex의 틀(template)만 제공하고 내부 타입은 사용자가 결정할 수 있도록 제공
+
+template<typename T>
+class Complex
+{
+    T re, im;
+public:
+    Complex(T r, T i) : re(r), im(i) {}
+};
+
+int main()
+{
+    Complex<int> c1(1, 2);
+    Complex<double> c2(1.1, 2.2);
+}
+출처: https://www.devoops.kr/65?category=691976 [데브웁스:티스토리]
+
+
+Template Instantiation
+
+컴파일러가 함수(클래스) 틀(Template)로 부터 실제 C++ 함수(클래스)를 만들어 내는 과정
+
+template<typename T>
+T square(T a) // template 기준 int squre(int a), double square(double a) 실제 함수를 만드는 과정
+{
+    return a * a;
+}
+
+int main()
+{
+    square(3);
+}
+ 
+
+명시적 인스턴스화(Explicit Instantiation)
+
+템플릿을 사용해서 특정 타입의 함수(클래스)를 생성해 달라고 명시적으로 지시하는 것
+함수/클래스 선언과 유사한 모양으로 작성
+
+
+
+template<typename T> class Test
+{
+public:
+    void foo() {}
+    void goo() {}
+};
+template class Test<int>; // 명시적 인스턴스화(클래스 템플릿), foo, goo 모두 인스턴스화
+template void Test<int>::foo(); // 명시적 인스턴스화(클래스 템플릿), foo 부분 인스턴스화
+
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+template int square<int>(int); // 명시적 인스턴스화(함수 템플릿)
+template int square<>(int); // 명시적 인스턴스화(템플릿) 축약 표현
+template int square(int); // 명시적 인스턴스화(템플릿) 축약 표현
+
+int main()
+{
+}
+ 
+
+암시적 인스턴스화(Implicit Instantiation)
+
+명시적 인스턴스화를 하지 않고 템플릿을 사용하는 경우, 암시적으로 인스턴스화가 발생함
+사용 방법
+
+사용자가 타입을 직접 전달하는 방법
+함수 인자를 통해서 컴파일러가 타입을 추론하는 방법(template argument type deduction)
+클래스 생성자를 통한 컴파일러 타입 추론하는 방법(class template type deduction, C++17이상)
+
+
+클래스 템플릿의 경우 사용하지 않는 멤버 함수는 인스턴스화 되지 않음(lazy instantiation)
+
+
+
+template<typename T> class Test
+{
+public:
+    void foo() {}
+    void goo() {}
+};
+//template class Test<int>; // 명시적 인스턴스화(클래스 템플릿), foo, goo 모두 인스턴스화
+
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+//template int square<int>(int); // 명시적 인스턴스화(함수 템플릿)
+
+int main()
+{
+    int n1 = square(3); // 암시적 인스턴스화(인자를 통한 컴파일러 타입 추론)
+    int n2 = square<int>(3); //암시적 인스턴스화
+
+    Test<int> t1; // 암시적 인스턴스화(클래스)
+    t1.foo(); // Test 클래스의 foo 멤버함수만 사용하므로 foo 멤버함수만 인스턴스화됨(goo x)
+}
+ 
+
+어셈블리 코드 확인
+
+cl file.cpp /FAs -> file.asm 파일 생성
+g++ file.cpp -S -> file.s 파일 생성
+
+
+컴파일러 옵션 사용 g++, clang++(중간 언어로 확인 가능)
+
+g++ -fdump-tree-original file.cpp -> file.cpp.003t.original
+clang++ -Xclang -ast-print -fsyntax-only file.cpp
+출처: https://www.devoops.kr/66?category=691976 [데브웁스:티스토리]
+
+템플릿 인자 타입 추론(Template Argument Type Deduction)
+
+사용자가 템플릿 인자를 명시적으로 지정하지 않은 경우 컴파일러가 인자를 보고 추론(deduction)하는 것
+타입을 결정하는 방식(type deduction rule  참고)
+
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+
+int main()
+{
+    square<int>(3);
+    square(3); // 인자 타입 추론(int)
+    square(3.3); // 인자 타입 추론(double)
+}
+
+
+ 
+클래스 템플릿 인자 타입 추론(Class Template Argument Type Deduction)
+
+C++ 17부터 지원
+생성자를 통한 타입 결정
+사용자가 "user define deduction guide" 제공
+
+#include <list>
+using namespace std;
+
+template<typename T> class Vector
+{
+    T* buff;
+public:
+    Vector() {} // #1 타입 추론이 불가능 할경우 유저 정의 추론 가이드 필요
+    Vector(int sz, T initValue) {}
+
+    template<typename C> Vector(C& c) {} // #2 타입 추론이 불가능 할경우 유저 정의 추론 가이드 필요
+};
+
+//유저 정의 추론 가이드 제공 필요(user define deduction guide)
+Vector()->Vector<int>; // #1 Vector 기본 생성자 호출 시 int로 타입 추론 가이드
+template<typename C> Vector(C& c)->Vector<typename C::valuetype >; // #2 int
+
+int main()
+{
+    Vector<int> v1(10, 3);
+
+    list<int> s = { 1,2,3 }; // list s = { 1,2,3 }; C++17 Style
+
+    Vector v4(s);
+}
+출처: https://www.devoops.kr/67?category=691976 [데브웁스:티스토리]
+
+
+C++17 이전까지는 클래스 템플릿은 함수 인자를 통해 타입을 추론 할 수 없기 때문에, 클래스 템플릿 사용이 복잡하고 불편함
+"클래스 템플릿의 객체를 생성하는 함수 템플릿"을 사용
+
+함수 템플릿은 함수 인자를 통해서 컴파일러가 추론(Argument Type Deduction)할 수 있는 특징 활용 기법
+
+
+make_pair(), make_tuple()등의 make 계열 함수, STL 삽입반복자등
+
+#include <iostream>
+
+template<typename T> void foo(T a) {}
+template<typename T, typename U> struct pair
+{
+    T first;
+    U second;
+    pair(const T& a, const U& b) : first(a), second(b) {}
+};
+
+template<typename T, typename U>
+pair<T, U> make_pair(const T& a, const U& b)
+{
+    return pair<T, U>(a, b);
+}
+
+int main()
+{
+    pair<int, double> p(1, 3.4);
+    foo(p);
+    foo(pair<int, double>(1, 3.4)); // 클래스 템플릿은 꼭 타입 전달 필요
+    foo(make_pair(1, 3.4)); // 함수 템플릿으로 타입 추론하여 클래스 객체 생성
+}
+출처: https://www.devoops.kr/70?category=691976 [데브웁스:티스토리]
+
+
+함수 템플릿 사용시 컴파일러에 의한 타입 추론을 막는 테크닉
+
+함수 템플릿 사용시 사용자가 반드시 타입을 전달하도록 하고 싶을때 사용하는 기법
+
+C++17 이하에서 클래스 템플릿이 타입 추론을 지원하지 않는 성격을 활용
+함수 템플릿 파라미터로 클래스 템플릿을 사용
+컴파일러에 의한 타입 추론이 원하지 않는 타입으로 추론되는 경우 방지
+
+
+
+template<typename T> struct identity
+{
+    typedef T type;
+};
+
+template<typename T> void foo(T a) {}
+template<typename T> void goo(typename identity<T>::type a) {}
+
+int main()
+{
+    identity<int>::type n; // int
+
+    foo(3); // ok
+    foo<int>(3); // ok
+
+    goo(3); // error, 클래스 템플릿의 인자는 추론이 불가하므로 C++17 이하
+    goo<int>(3); // ok
+}
+출처: https://www.devoops.kr/71?category=691976 [데브웁스:티스토리]
+
+함수와 템플릿
+
+square는 함수가 아닌 함수 템플릿, square<int>가 함수
+
+
+
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+
+int main()
+{
+    printf("%p\n", &square); // 함수 템플릿의 주소 출력 error
+    printf("%p\n", &square<int>); // int 버전 함수 주소 출력 ok
+    printf("%p\n", static_cast<int(*)(int)>(&square)); // int 버전 함수로 캐스팅후 주소 출력 ok
+
+    auto p = &square; // 함수 템플릿 주소는 담을 수 없으므로 error
+    auto p = &square<int>; // int 버전 함수 주소 담기 ok
+    auto p = static_cast<int(*)(int)>(&square); // int 버전 함수 주소 담기 ok
+}
+ 
+
+템플릿의 구현부는 항상 헤더파일에 함께 제공하여야 함
+
+아래와 같이 함수 템플릿을 헤더와 소스파일로 분리하면 main에서 square 호출 시 실제 Lib.h 헤더파일만 참고하므로 템플릿을 기반으로 실제 int형 함수 생성이 필요한데 생성할 구현부 확인이 불가능하여 에러 발생
+
+
+
+// 함수 템플릿을 선언과 구현부를 헤더와 소스파일로 분리한 잘못 구현한 예
+////////////////////////////////////////
+// Lib.h
+int add(int a, int b);
+template<typename T> T square(T a);
+////////////////////////////////////////
+
+////////////////////////////////////////
+// Lib.cpp
+int add(int a, int b) 
+{
+    return a + b;
+}
+
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+////////////////////////////////////////
+
+////////////////////////////////////////
+// main.cpp
+#include "Lib.h"
+int main()
+{
+    add(1, 2);
+    square(3);
+}
+////////////////////////////////////////
+// 함수 템플릿을 헤더 파일로 모두 제공한 예
+////////////////////////////////////////
+// Lib.h
+int add(int a, int b);
+template<typename T> T square(T a)
+{
+    return a * a;
+}
+////////////////////////////////////////
+
+////////////////////////////////////////
+// Lib.cpp
+int add(int a, int b) 
+{
+    return a + b;
+}
+////////////////////////////////////////
+
+////////////////////////////////////////
+// main.cpp
+#include "Lib.h"
+int main()
+{
+    add(1, 2);
+    square(3);
+}
+////////////////////////////////////////
+출처: https://www.devoops.kr/72?category=691976 [데브웁스:티스토리]
+
+
+Lazy Instantiation
+
+사용되지 않은 템플릿 클래스는 인스턴스화 되지 않음
+사용되지 않은 템플릿 클래스의 멤버 함수도 인스턴스화 되지 않음
+사용되지 않은 템플릿 클래스의 static 함수도 인스턴스화 되지 않음
+사용되지 않은 전역 템플릿 변수도 인스턴스화 되지 않음
+
+
+
+template<typename T> class A
+{
+    T data;
+public:
+    void foo(T n) { *n = 10; } // 참조 오류 코드
+};
+
+int main()
+{
+    A<int> a;
+    // a.foo(1); 템플릿의 멤버 함수가 호출되지 않는다면 인스턴스화 되지 않으므로 컴파일 성공
+}
+struct Resource1
+{
+    Resource1() { cout << "Resource1()" << endl; }
+    ~Resource1() { cout << "~Resource1()" << endl; }
+};
+
+struct Resource2
+{
+    Resource2() { cout << "Resource2()" << endl; }
+    ~Resource2() { cout << "Resource2()" << endl; }
+};
+
+template<typename T> struct Test
+{
+    Resource1 res1; // 클래스내 메모리 할당이 필요하므로 인스턴스화됨
+    static Resource2 res2; // static 멤버는 별도 메모리 할당으로 인스턴스화 되지 않음
+};
+template<typename T> Resource2 Test<T>::res2; // 사용되지 않아서 인스턴스화 되지 않음
+
+int main()
+{
+    cout << "main" << endl; // 1. 메인 출력
+    Test<int> t; // 2. Resource1 생성자 출력
+}
+ 
+
+if 문과 Lazy Instantiation
+
+if 문은 "실행시간 조건문"으로 컴파일 시간에 조건이 false로 결정되어도 if 문에 있는 코드는 항상 사용되는 것으로 간주함
+C++17 if constexpr는 "컴파일 시간 조건문"으로 조건이 false로 결정되면 if 문에 포함된 코드는 사용되지 않는 것으로 간주됨
+동일한 이름의 함수가 여러개 있을 때 어떤 함수를 호출할 지 결정하는 것은 컴파일 시간에 결정되므로 선택되지 않은 함수가 템플릿이라면 인스턴스화 되지 않음
+
+
+
+template<typename T> void foo(T n)
+{
+    *n = 10; // 참조 오류 코드
+}
+
+int main()
+{
+    if(false) // 런타임 조건식이므로 foo는 인스턴스화 됨
+        foo(0);
+
+    if constexpr ( false ) // C++17의 컴파일타임 조건식이므로 foo는 인스턴스화 되지 않음
+        foo(0);
+}
+출처: https://www.devoops.kr/74?category=691976 [데브웁스:티스토리]
+
+std::typeid 활용
+
+C++ 표준의 typeid() 연산자 사용
+
+const, volatile, reference 구분하여 조사할 수 없음
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void foo(const T a)
+{
+    cout << "T : " << typeid(T).name() << endl;
+    cout << "a : " << typeid(a).name() << endl;
+}
+
+int main()
+{
+    foo(3);
+    foo(3.3);
+}
+결과
+int
+int
+double
+double
+ 
+boost:type_index 활용
+
+boost::type_id_with_scv<T>().pretty_name() 사용
+const, volatile, reference 구분하여 조사할 수 있음
+<boost/type_index.hpp>
+namespace boost::typeindex 안에 포함
+변수의 타입을 조사 할때는 decltype()을 이용
+
+type_id_with_cvr<decltype(a)>().pretty_name()
+
+
+boost 사용법 참고 : https://www.devoops.kr/77
+
+#include <iostream>
+#include <boost/type_index.hpp>
+using namespace std;
+using namespace boost::typeindex;
+
+template<typename T> void foo(const T a) // 실제 템플릿 타입 T와 변수타입은 다를 수 있음
+{
+    //cout << "T : " << typeid(T).name() << endl; // int, double
+    //cout << "a : " << typeid(a).name() << endl; // int, double : std의 typeid로는 구분 불가
+    cout << type_id_with_cvr<T>().pretty_name() << endl;
+    cout << type_id_with_cvr<decltype(a)>().pretty_name() << endl;
+}
+
+int main()
+{
+    foo(3);
+    foo(3.3);
+}
+출처: https://www.devoops.kr/78?category=691976 [데브웁스:티스토리]
+
+
+Template Argument Type Deduction
+
+컴파일러가 함수 인자를 보고 템플릿의 타입을 결정하는 것을 말한다.
+함수 인자의 타입과 완전히 동일한 타입으로 결정되지는 않는다.
+
+#include <iostream>
+using namespace std;
+
+// 함수 템플릿 인자가 값 타입(T a) 일때
+template<typename T> void foo(T a)
+{
+    ++a;
+}
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+    const int& cr = c;
+
+    foo(n);  // T : int
+    foo(c);  // T : const int ?
+    foo(r);  // T : int& ?
+    foo(cr); // T : const int& ?
+}
+Template Argument Type Deduction 원리 1
+
+템플릿 인자가 값 타입일때 (T a)
+
+함수 인자가 가진 const, volatile, reference 속성을 제거하고 T의 타입을 결정한다.
+주의 - 인자가 가진 const 속성만 제거 된다.
+
+
+
+#include <iostream>
+using namespace std;
+
+// 함수 템플릿 인자가 값 타입(T a) 일때
+template<typename T> void foo(T a)
+{
+}
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+    const int& cr = c;
+
+    foo(n);  // T : int
+    foo(c);  // T : int
+    foo(r);  // T : int
+    foo(cr); // T : int
+    
+    const char* s1 = "hello";
+    foo(s1); // T : char const* // s1이 아닌 char*가 const 이므로 제거 되지 않음
+    
+    const char* const s2 = "hello";
+    foo(s2); // T : char const*  // s2가 const 이므로 인자에 대한 const만 제거됨
+}
+Template Argument Type Deduction 원리 2
+
+템플릿 인자가 참조 타입일때 (T& a)
+
+함수 인자가 가진 reference 속성을 제거하고 T의 타입을 결정한다.
+const, volatile 속성은 유지한다.
+
+
+
+#include <iostream>
+using namespace std;
+
+// 함수 템플릿 인자가 참조 타입(T& a) 일때
+template<typename T> void foo(T& a)
+{
+    ++a;
+}
+
+
+int main()
+{
+    int n = 0;
+    int& r = n;
+    const int c = n;
+    const int& cr = c;
+
+    foo(n);  // T : int
+    foo(c);  // T : const int
+    foo(r);  // T : int
+    foo(cr); // T : const int
+}
+ 
+Template Argument Type Deduction 정리
+
+템플릿 인자가 값 타입(T a)
+
+함수 인자가 가진 const, volatile, reference 속성 제거 후 T 타입 결정
+인자의 const 속성만 제거됨
+
+
+템플릿 인자가 참조 타입(T& a)
+
+함수 인자가 가진 reference 속성만 제거 후 T 타입 결정
+const, volatile 속성 유지
+인자가 (const T& a)경우 const를 제거하고 T 타입 결정
+
+
+템플릿 인자가 forwarding 레퍼런스 타입(T&& a)
+
+lvalue, rvalue 모두 전달 받음
+
+
+템플릿 인자가 배열
+
+argument decay 발생
+출처: https://www.devoops.kr/80?category=691976 [데브웁스:티스토리]
+
+
+배열의 이름과 주소
+일반적으로 데이터 타입을 뺀 나머지는 변수명이라 할 수 있다.
+int i에서 int를 빼면 i가 변수명이다. 그리고 데이터 타입에 *붙여서 선언하면 주소를 담을 수 있는 포인터 변수를 선언 할 수 있다. 그러면 배열을 어떨까?
+ 
+int x[3] 에서 int[3] 뺀 나머지인 x가 동일하게 변수명이다. 그러면 포인터 변수는 마찬가지로 x 변수에 *만 붙이면 배열의 포인터 주소가 되는 것일까?
+ 
+대부분 배열의 주소는 첫번째 요소의 주소로 많이 알고 있다. 하지만 배열의 주소와 첫번째 요소의 주소는 같으면서도
+다르므로 명확히 구분해서 사용할 필요가 있다.
+#include <iostream>
+
+int main()
+{
+    int i = 1;
+    int *px = &i;
+
+    int x[3] = { 1, 2, 3 };
+    int *p1 = x; // 일반적으로 생각하는 배열의 주소(묵시적으로 첫번째 요소의 주소로 형변환 됨)
+    int(*p2)[3] = &x; // 정확한 배열의 주소(요소가 모두 포함된 전체 컨테이너의 주소)
+
+    // + 1 연산을 하면 기본적으로 데이터 타입 사이즈 만큼 증가된 메모리 주소를 가르침
+    printf("%p, %p\n", p1, p1 + 1); // 배열의 첫번째 요소의 주소에서 데이터 사이즈인 4바이트 증가
+    printf("%p, %p\n", p2, p2 + 1); // 요소가 3개인 배열의 주소에서 데이터 사이즈인 12바이트 증가
+}
+출처: https://www.devoops.kr/81?category=691976 [데브웁스:티스토리]
+
+
+배열의 특징
+
+자신과 동일한 타입으로 초기화 될 수 없다.
+배열의 이름은 배열의 첫번째 요소의 주소로 암시적 형 변환 된다.
+배열을 가리키는 참조를 만들 수 있다.
+
+함수 템플릿을 만들때
+
+배열을 값으로 받으면 T는 요소 타입의 포인터로 결정된다.
+배열을 참조로 받으면 T는 배열 타입으로 결정된다.
+
+#include <iostream>
+
+template<typename T>
+void foo(T a)
+{
+
+}
+
+template<typename T>
+void goo(T& a)
+{
+
+}
+
+int main()
+{
+    int x[3] = { 1,2,3 };
+
+    foo(x); 
+    goo(x);
+}
+ 
+관련 예제
+
+문자열의 타입 : char 배열
+문자열을 값으로 받으면 T는 const char* 결정되고, 참조로 받으면  const char[]로 결정된다.
+크기가 다른 배열은 다른 타입이다.
+
+#include <iostream>
+
+template<typename T>
+void foo(T a, T b)
+{
+
+}
+
+template<typename T>
+void goo(T& a, T& b)
+{
+
+}
+
+int main()
+{
+    foo("orange", "apple"); // ok
+    goo("orange", "apple"); // error
+}
+출처: https://www.devoops.kr/82?category=691976 [데브웁스:티스토리]
+
+템플릿과 타입의 차이
+
+
+Complex: 템플릿 틀 자체
+
+
+Complex<T>: 실제 타입
+
+
+멤버 함수안에서는 
+
+
+멤버 함수안에서는 Complex<T> 대신 Complex를 사용할 수 있다.
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    void foo(Complex c) // 멤버 함수에서는 OK(Complex<T> 동급으로 취급)
+    {
+
+    }
+};
+
+void foo(Complex c) // 일반 함수에서는 Error
+{
+
+}
+
+void foo(Complex c)
+{
+    Complex c1; // Error
+    Complex<int> c2; // OK
+}
+ 
+템플릿 관련 표기법
+
+
+디폴트 값 표기
+
+
+int a = 0;
+
+
+T a = T(); // C++ 98/03
+
+
+T a = {};  // C++11
+
+
+
+
+멤버 함수를 외부에 표기
+
+
+static memeber data 외부 표기
+
+
+클래스 템플릿의 멤버 함수 템플릿 표기
+
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+	// 디폴트 값 표기
+    Complex(T a = {}, T b = {}) : re(a), im(b) {}
+    T getReal() const;
+    static int cnt;
+
+    template<typename U> T func(const U& c);
+};
+
+// 클래스 템플릿의 멤버 함수 템플릿 구현
+template<typename T> template<typename U>
+T Complex<T>::func(const U& c)
+{
+
+}
+
+// static 멤버 데이터 외부 구현
+template<typename T>
+int Complex<T>::cnt = 0;
+
+// 멤버 함수 외부 구현
+template<typename T> 
+T Complex<T>::getReal() const
+{
+    return re;
+}
+
+int main()
+{
+    Complex<int> c2;
+}
+출처: https://www.devoops.kr/124?category=691976 [데브웁스:티스토리]
+
+일반화된 복사 생성자
+
+
+클래스 템플릿의 멤버 함수 템플릿으로 구현하는 복사 생성자.
+
+
+U(int)가 T(double)로 복사(대입) 가능하다면 Complex<U>도 Complex<T>에 복사(대입) 가능해야 한다.
+
+
+friend class로 선언되어야 한다.
+
+
+template<typename T> class Complex
+{
+    T re, im;
+public:
+    Complex(T a = {}, T b = {}) : re(a), im(b) {}
+    T getReal() const;
+    static int cnt;
+    template<typename U> T func(const U& c);
+
+    // 일반화된 복사 생성자 선언
+    template<typename U>
+    Complex(const Complex<U>& c);
+
+    template<typename> friend class Complex;
+};
+
+// 일반화된 복사 생성자 구현부
+template<typename T> template<typename U>
+Complex<T>::Complex(const Complex<U>& c)
+    : re(c.re), im(c.im)
+{
+
+}
+
+int main()
+{
+    Complex<int> c1(1, 1);
+    Complex<int> c2 = c1;
+    Complex<double> c3 = c1;
+}
+출처: https://www.devoops.kr/125?category=691976 [데브웁스:티스토리]
+
+
+클래스 템플릿안에 friend 함수를 선언하는 방법
+
+
+friend 함수 선언시에 함수 자체를 템플릿 모양으로 선언
+
+
+friend 관계: N:N
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Point
+{
+    T x, y;
+public:
+    Point(T a = { 0 }, T b = { 0 }) : x(a), y(b) {}
+    template<typename U>
+    friend ostream& operator<<(ostream& os, const Point<U>& p);
+};
+
+template<typename T>
+ostream& operator<<(ostream& os, const Point<T>& p)
+{
+    return os << p.x << ", " << p.y;
+}
+
+
+int main()
+{
+    Point<int> p(1, 2);
+    cout << p << endl;
+
+    Point<double> p2(1.2, 2.3);
+    cout << p2 << endl;
+}
+ 
+
+
+friend 함수를 일반 함수로 구현하고 구현부를 클래스 템플릿 내부에 포함
+
+
+friend 관계: 1:1
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Point
+{
+    T x, y;
+public:
+    Point(T a = { 0 }, T b = { 0 }) : x(a), y(b) {}
+    friend ostream& operator<<(ostream& os, const Point<T>& p)
+    {
+        return os << p.x << ", " << p.y;
+    }
+};
+
+
+int main()
+{
+    Point<int> p(1, 2);
+    cout << p << endl;
+
+    Point<double> p2(1.2, 2.3);
+    cout << p2 << endl;
+}
+출처: https://www.devoops.kr/126?category=691976 [데브웁스:티스토리]
+
+클래스 이름::xx 접근 가능한 요소들
+
+
+값: enum 상수, static 멤버 변수
+
+
+타입: typedef, using
+
+
+템플릿 의존적으로 타입의 이름에 접근할때는 typename 키워드를 붙여야한다.
+
+
+T::DWORD -> 컴파일러가 DWORD를 값으로 해석
+
+
+typename T:DWORD -> 컴파일러가 DWORD를 타입으로 해석
+
+
+템플릿이 아닌 경우에는 typename을 사용할 수 없다.
+
+
+typename T::DWORD* p; // OK
+
+
+typename Test::DWORD* p; // Error
+
+
+#include <iostream>
+using namespace std;
+
+class Test
+{
+public:
+    enum { value1 = 1 };
+    static int value2;
+    typedef int INT;
+    using SHORT = short;
+    class innerClass {};
+    using DWORD = int;
+};
+int Test::value2;
+
+template<typename T>
+int foo(T t)
+{
+    // 타입으로 해석
+    //typename T::DWORD* p;
+    
+    // 값으로 해석
+    //T::DWORD* p;
+
+    return 0;
+}
+
+int main()
+{
+    Test t;
+    foo(t);
+}
+ 
+출처: https://www.devoops.kr/127?category=691976 [데브웁스:티스토리]
+
+함수 템플릿을 구현하였을때  함수 내부에서 값의 타입이 필요할 경우
+
+::value_type 이용
+대신 auto 사용 가능
+
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+//컨테이너의 데이터 타입
+template<typename T>
+void print_first_element(T& v)
+{
+    // 1.값의 데이터 타입이 필요한 경우
+    typename T::value_type n = v.front();
+    
+    // 2.값의 데이터 타입 대신 auto사용 가능
+    auto n = v.front();
+    
+    cout << n << endl;
+}
+
+int main()
+{
+    list<double> v = { 1,2,3 };
+    print_first_element(v);
+}
+ 
+C++ 17에서 클래스 템플릿 타입 추론(Class Template Type Deduction)에서 value_type 사용 예
+ 
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+template<typename T> 
+class Vector
+{
+    T* buff;
+    int size;
+public:
+    Vector(int sz, T value) {}
+
+    template<typename C> Vector(C c) {}
+};
+
+// C++ 17의 클래스 사용자 정의 타입 추론을 정의할때 아래와 같이 값의 타입이 필요한 경우 auto 사용이 불가
+template<typename C>
+Vector(C c)->Vector<typename C::value_type>;
+
+int main()
+{
+    Vector v(10, 3);
+    
+    // Vector에 list Container 인자로 넣을 경우, Container 내부 값의 타입 추론이 필요하다.
+    list s = { 1,2,3 };
+    Vector v2(s); 
+}
+출처: https://www.devoops.kr/128?category=691976 [데브웁스:티스토리]
+
+
+종속적인 템플릿 이름은 template 키워드를 함께 사용해야 합니다.
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+class Test
+{
+public:
+    template<typename T> static void f() {}
+    template<typename T> class Complex {};
+};
+
+template<typename T> void foo(T a) // T: Test
+{
+    // OK
+    Test::f<int>();
+
+    // Error(임의 타입 T에서 < 연산자의 정의를 알 수 없음)
+    //T::f<int>(); 
+
+    // OK(임의 타입 T로 사용할 경우 ::template 키워드를 사용해야한다.)
+    T::template f<int>();
+
+    // OK
+    Test::Complex<int> c1; 
+
+    // Error(::Complex가 값인지 타입인지 알수 없음)
+    //T::Complex<int> c2; 
+
+    // Error(임의 타입 T에서 < 연산자 정의를 알 수 없음)
+    //typename T::Complex<int> c3; 
+
+    // OK(임의 타입 T로 사용할 경우 ::template 키워드를 사용해야한다.)
+    typename T::template Complex<int> c4; 
+}
+
+int main()
+{
+    Test t;
+    foo<Test>(t);
+}
+출처: https://www.devoops.kr/129?category=691976 [데브웁스:티스토리]
+
+
+템플릿 파라미터의 지원 종류
+타입(Type)
+// 타입 파라미터
+template<typename T>
+class List
+{
+
+};
+
+int main()
+{
+    List<int> l1; // OK
+}
+ 
+ 
+값(Non-type)
+
+정수형 상수
+열거형 상수(Enum)
+포인터
+함수 포인터
+Auto(C++17)
+
+#include <iostream>
+using namespace std;
+
+// 1. 정수형 상수(실수 안됨)
+template<int N>
+class Test1 {};
+
+// 2. enum 상수
+enum Color { red = 1, green = 2};
+template<Color> class Test2 {};
+
+// 3. 포인터 : 지역변수 주소안됨.. 전역변수주소는 가능..
+// no linakge를 가지는 변수 주소는 안됨.
+template<int*> class Test3 {};
+
+// 4. 함수 포인터 : 
+template<int(*)(void)> class Test4 {};
+
+// C++17에서는 auto 타입 사용가능
+template<auto N> struct Test
+{
+    Test()
+    {
+        cout << typeid(N).name() << endl;
+    }
+};
+
+int x = 0;
+
+int main()
+{
+    int n = 10;
+
+    // Non-type 파라미터    
+    Test1<10> t1; // OK
+    //st1<n> t2; // Error(변수 안됨);
+    
+    Test2<red> t3; // OK(enum)
+    
+    //Test3<&n> t4; // Error(지역변수 주소 안됨)
+    Test3<&x> t5; // OK(전역 변수, Static 변수 주소 가능)
+
+    Test4<&main> t6; // OK(함수 포인터 가능)
+
+    // C++17 auto 지원
+    Test<10> a1;
+    Test<&x> a2;
+    Test<&main> a3;
+}
+ 
+템플릿(Template)
+#include <iostream>
+using namespace std;
+
+template<typename T> class List{};
+
+// 템플릿 파라미터(template parameter)
+template<typename T, template<typename> class C> class Stack
+{
+    //C c; // Error(C는 템플릿)
+    C<T> c; // OK(C<T> == list<int>)
+};
+
+int main()
+{
+    //List s1; // Error(list는 타입이 아니고 템플릿)
+    List<int> s2; // OK(list<int>는 타입)
+    Stack<int, list> s3; // OK
+}
+
+ 
+파라미터 기본값 사용
+
+함수 파라미터와 동일하게 기본값 지원
+
+#include <iostream>
+using namespace std;
+
+// 기본값 파라미터(default parameter)
+template<typename T = int, int N = 10> class Stack
+{
+
+};
+
+int main()
+{
+    Stack<int, 10> s1;
+    Stack<int> s2;
+    Stack<> s3; // 그냥 stack은 템플릿이므로 꼭 stack<>을 사용해야함
+}
+출처: https://www.devoops.kr/130?category=691976 [데브웁스:티스토리]
+
+템플릿 특수화(Template specialization), 부분 특수화(Partial specialization) 개념
+
+템플릿의 특정 패턴에 대해서 별도의 처리가 하고 싶을 경우 부분 특수화 또는 특수화를 이용할 수 있음
+메인 템플릿의 인자가 2개라면, 사용자는 반드시 템플릿 인자를 2개 전달해야 한다.(기본값이 없다면)
+부분 특수화(Partial specialization) 템플릿에서는 인자의 수는 메인 템플릿 인자수와 다를 수 있다.
+특수화를 많이 할 경우 소스코드가 늘어날 수는 있지만 결국 목적코드로 생성되는 기계어 코드의 양은 같음
+
+#include <iostream>
+using namespace std;
+
+// 메인 템플릿(Primary template)
+// 기본적으로 모든 패턴은 메인 템플릿이 처리함
+template<typename T> class stack
+{
+public:
+    void push(T a) { cout << "T" << endl; }
+};
+
+// 부분 특수화(Partial specialization)
+// 모든 포인터 타입에 대해서 별도로 처리하고 싶을 경우 부분 특수화를 적용할 수 있음
+template<typename T> class stack<T*>
+{
+public:
+    void push(T* a) { cout << "T*" << endl; }
+};
+
+// 특수화(Speicalization)
+// char포인터에 대해서만 별도로 처리하고 싶을 경우 특수화를 적용할 수 있음
+template<> class stack<char*>
+{
+public:
+    void push(char* a) { cout << "char*" << endl; }
+};
+
+
+int main()
+{
+    stack<int> s1; s1.push(0); // 메인 템플릿 사용
+    stack<int*> s2; s2.push(0); // 부분 특수화 템플릿 사용
+    stack<char*> s3; s3.push(0); // 특수화 템플릿 사용
+}
+ 
+템플릿 특수화(specialization)/부분 특수화(Partial specialization) 예제
+#include <iostream>
+using namespace std;
+
+// 1. <T, U> 메인 템플릿
+template<typename T, typename U> class test
+{
+public:
+    static void foo() { cout << "T, U" << endl; }
+};
+
+// 2. <T*, U> 부분 특수화
+template<typename T, typename U> class test<T*, U>
+{
+public:
+    static void foo() { cout << "T*, U" << endl; }
+};
+
+// 3. <T*, U*> 부분 특수화
+template<typename T, typename U> class test<T*, U*>
+{
+public:
+    static void foo() { cout << "T*, U*" << endl; }
+};
+
+// 4. <T, T> 부분 특수화
+template<typename T> class test<T, T>
+{
+public:
+    static void foo() { cout << "T, T" << endl; }
+};
+
+// 5. int, T
+template<typename T> class test<int, T>
+{
+public:
+    static void foo() { cout << "int, T" << endl; }
+};
+
+// 5. <int, T> 부분 특수화
+template<> class test<int, int>
+{
+public:
+    static void foo() { cout << "int, int" << endl; }
+};
+
+// 6. <int, short> 특수화
+template<> class test<int, short>
+{
+public:
+    static void foo() { cout << "int, short" << endl; }
+};
+
+// 7. T, test<U, V> 부분 특수화
+template<typename T, typename U, typename V> 
+class test<T, test<U, V>>
+{
+public:
+    static void foo() { cout << "T, test<U, V>" << endl; }
+};
+
+int main()
+{
+    // 1. <T, U> 메인 템플릿
+    test<int, double>::foo();
+
+    // 2. <T*, U> 부분 특수화
+    test<int*, double>::foo();
+
+    // 3. <T*, U*> 부분 특수화
+    test<int*, double*>::foo(); 
+
+    // 4. <T, T> 부분 특수화
+    test<int, int>::foo();
+
+    // 5. <int, T> 부분 특수화
+    // 인자가 <int, int>일 경우 4.<T, T> 5.<int, T> 패턴이 2개이상 일치하므로 5-1 특수화 추가 구현 필요
+    test<int, char>::foo(); 
+
+    // 6. <int, short> 특수화
+    test<int, short>::foo(); 
+
+    // 7. T, test<U, V> 부분 특수화
+    test<double, test<char, short>>::foo();
+}
+ 
+템플릿 특수화(specialization)/부분 특수화(Partial specialization) 주의사항
+
+부분 특수화에서 T의 타입이 결정되는 방식을 주의해야 함
+부분 특수화에서 기본 파라미터는 표시하지 않음(메인 템플릿에 정의 값을 그대로 승계함)
+클래스의 특정 멤버 함수만 특수화 할 수 있으나 부분 특수화는 불가능
+
+// 부분 특수화 시 T 타입의 주의
+// 메인 템플릿에 포인터값이 넘어 왔을 경우 T는 포인터 타입임
+template<typename T> class Test
+{
+public:
+    static void foo() { cout << typeid(T).name() << endl; }
+};
+
+// 아래와 같이 포인터 타입으로 부분 특수화를 했을 경우 T는 포인터 타입이 아님
+template<typename T> class Test<T*>
+{
+public:
+    static void foo() { cout << typeid(T).name() << endl; }
+};
+// 메인 템플릿에 정의된 파라미터 기본 파라미터
+template<typename T, int N = 10> class Test
+{
+public:
+    static void foo() { cout << typeid(T).name() << endl; }
+};
+
+// 부분 특수화에서는 기본 파라미터를 표시하지 않음(메인 템플릿의 기본 파라미터 값 승계)
+template<typename T, int N> class Test<T*, N>
+{
+public:
+    static void foo() { cout << typeid(T).name() << endl; }
+};
+// 클래스 템플릿
+template<typename T>
+class Stack
+{
+public:
+    T pop() {}
+    void push(T a);
+};
+
+// 특정 멤버 함수의 특수화가 필요할 경우 구현부를 분리
+template<typename T>
+void Stack<T>::push(T a)
+{
+    cout << "T" << endl;
+}
+
+// 특정 멤버 함수의 특수화 구현(부분 특수화는 불가능함)
+template<>
+void Stack<char*>::push(char* a)
+{
+    cout << "char*" << endl;
+}
+
+int main()
+{
+    Stack<int> s1; s1.push(0);
+    Stack<char*> s2; s2.push(0);
+}
+출처: https://www.devoops.kr/131?category=691976 [데브웁스:티스토리]
+
+
+IfThenElse 예제
+
+컴파일 시간 bool값에 따라 type을 선택하는 도구
+일반적으로 IfThenElse, IF, Select 등 이름으로 구현함
+C++ 표준에는 conditional 이름으로 제공<type_traits> 헤더
+
+#include <iostream>
+using namespace std;
+
+// IfThenElse 메인 템플릿
+template<bool b, typename T, typename F> struct IfThenElse
+{
+    typedef T type;
+};
+
+// 부분 특수화
+template<typename T, typename F> 
+struct IfThenElse<false, T, F>
+{
+    typedef F type;
+};
+
+int main()
+{
+    // 첫번째 파라미터를 true로 할 경우 T 반환
+    IfThenElse<true, int, double>::type t0; // int
+    
+    // 첫번째 파라미터를 false로 셋팅할 경우 F 반환
+    IfThenElse<false, int, double>::type t1; // double
+
+    cout << typeid(t0).name() << endl;
+    cout << typeid(t1).name() << endl;
+}
+ 
+conditional 활용
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<size_t N> struct Bit
+{
+    // bit 단위로 데이터 관리가 필요할 경우 조건별 타입을 사용할 수 있음
+    // 8이하 : char, 16이하 : short, 32이하 : int...
+    using type = typename conditional<(N <= 8), char, 
+        typename conditional<(N <= 16), short, int>::type>::type;
+
+    type bitmap;
+};
+
+int main()
+{
+    Bit<32> b1;
+    Bit<8> b2;
+    Bit<16> b3;
+
+    cout << sizeof(b1) << endl;
+    cout << sizeof(b2) << endl;
+    cout << sizeof(b3) << endl;
+}
+출처: https://www.devoops.kr/132?category=691976 [데브웁스:티스토리]
+
+Couple 
+
+
+2개의 인자로 받은 데이터를 보관하는 컨테이너
+
+
+인자로 Couple 타입도 전달 가능
+
+
+부분 특수화(Partial specialization)를 할때 파라미터 수를 잘 선택해야함
+
+
+파라미터로 자기 자신을 재귀로 입력 시 N 표현 방법 고려
+
+
+1번째 인자, 2번째 인자, 모든 인자가 Couple 일 경우 특수화 방법 고려
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 보관 데이터 수를 출력하는 함수
+template<typename T> void printN(const T& cp)
+{
+    cout << T::N << endl;
+}
+
+// 2개의 인자를 보관하는 데이터(메인 템플릿)
+template<typename T, typename U> struct Couple
+{
+    T v1;
+    U v2;
+
+    enum { N = 2 };
+};
+
+// 2번째 인자가 Couple일 경우
+template<typename A, typename B, typename C>
+struct Couple<A, Couple<B, C>>
+{
+    A v1;
+    Couple<B, C> v2;
+    enum { N = Couple<B, C>::N + 1 };
+};
+
+// 1번째 인자가 Couple일 경우
+template<typename A, typename B, typename C>
+struct Couple<Couple<A, B>, C>
+{
+    Couple<A, B> v1;
+    C v2;
+    enum { N = Couple<A, B>::N + 1 };
+};
+
+// 1번째, 2번째 모든 인자가 Couple일 경우
+template<typename A, typename B, typename C, typename D>
+struct Couple<Couple<A, B>, Couple<C, D>>
+{
+    Couple<A, B> v1;
+    Couple<C, D> v2; 
+    enum { N = Couple<A, B>::N + Couple<C, D>::N };
+};
+
+int main()
+{
+    // 2개의 인자 데이터
+    Couple<int, double> c2;
+    
+    // 2번째 인자에 Couple 데이터를 입력 할 경우(총 3개 보관)
+    // 가변 영역의 데이터는 int, int, char 총 3개
+    Couple<int, Couple<int, char>> c3;
+    
+    // 2번째 인자의 Couple 데이터의 2번째 인자에 다시 Couple 데이터를 입력 할 경우(총 4개 보관)
+    // Couple 데이터를 중첩하여 사용하였으나 가변 영역은 동일하게 int, int, T로 총 3개
+    Couple<int, Couple<int, Couple<int, char>>> c4;
+    
+    // 1번째, 2번째 인자 모두 Couple 데이터를 입력 할 경우(총 4개 보관)
+    Couple<Couple<int, int>, Couple<int, int>> c5;
+
+    // 보관 데이터 수 출력
+    printN(c2);
+    printN(c3);
+    printN(c4);
+    printN(c5);
+}
+출처: https://www.devoops.kr/133?category=691976 [데브웁스:티스토리]
+
+XTuple(Couple 선형화 구현)
+
+Couple 재귀 호출 대신 선형 호출 할 수 있는 패턴 지원
+
+Couple<int, Couple<int, double>...> -> XTuple<int, int, double...> 형태로 개선
+
+
+
+Null 클래스 활용(Empty class)
+
+
+멤버 없는 클래스
+
+
+크기는 항상 1(sizeof(Null))
+
+
+멤버는 없지만 타입이므로 함수 오버로딩이나 템플릿 인자로 활용
+
+
+
+
+상속 활용 기술
+
+
+개수의 제한을 없앨 수 없을까? C+++ Variadic template
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T, typename U> struct Couple
+{
+    T v1;
+    U v2;
+
+    enum { N = 2 };
+};
+
+// 빈 파라미터로 활용하기 위한 empty class
+struct Null {};
+
+// 2개이상 5개 미만의 타입전달
+template<typename P1,
+typename P2,
+typename P3 = Null,
+typename P4 = Null,
+typename P5 = Null> 
+class XTuple 
+    : public Couple<P1, XTuple<P2, P3, P4, P5, Null>>
+{
+
+};
+
+// XTuple 상속을 종료하기 위한 특수화
+template<typename P1, typename P2>
+class XTuple<P1, P2, Null, Null, Null>
+    : public Couple<P1, P2>
+{
+
+};
+
+int main()
+{
+    // Couple을 선형화하여 XTuple 형태로 사용
+    XTuple<int, char, long, short, double> t5;
+}
+출처: https://www.devoops.kr/134?category=691976 [데브웁스:티스토리]
+
+
+템플릿 메타 프로그래밍
+
+컴파일 시간에 연산을 수행하는 개념
+템플릿 파라미터 5를 받았을때 5 * 4 * 3 * 2 * 1 값을 반환하는 Factorial 구현
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+//  템플릿 메타 프로그래밍(template meta programming)
+template<int N> struct Factorial
+{
+    enum { value = N * Factorial<N-1>::value };
+};
+
+// 재귀의 종료를 위해 특수화(Specialization)
+template<> struct Factorial<1>
+{
+    enum { value = 1 };
+};
+
+int main()
+{
+
+    int n = Factorial<5>::value; // 5 * 4 * 3 * 2 * 1 => 120
+    // 5 * Factorial<4>::value
+    // 4 * Factorial<3>::value
+    // 3 * Factorial<2>::value
+    // 2 * Factorial<1>::value
+    // 1
+
+    cout << n << endl;
+}
+ 
+C++11 이후 부터는 enum대신 constexpr을 사용할 수 있다.
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+//  템플릿 메타 프로그래밍(template meta programming)
+template<int N> struct Factorial
+{
+    //enum { value = N * Factorial<N-1>::value };
+    static constexpr int value = N * Factorial<N - 1>::value;
+};
+
+// 재귀의 종료를 위해 특수화(Specialization)
+template<> struct Factorial<1>
+{
+    //enum { value = 1 };
+    static constexpr int value = 1;
+};
+
+int main()
+{
+
+    int n = Factorial<5>::value; // 5 * 4 * 3 * 2 * 1 => 120
+    // 5 * Factorial<4>::value
+    // 4 * Factorial<3>::value
+    // 3 * Factorial<2>::value
+    // 2 * Factorial<1>::value
+    // 1
+
+    cout << n << endl;
+}
+출처: https://www.devoops.kr/135?category=691976 [데브웁스:티스토리]
+
+constexpr 함수
+
+
+함수앞에 constexpr 붙이면 파라미터가 컴파일 타임 상수 일 경우 함수를 컴파일 시간에 연산(성능 이점)
+
+
+일반 변수 파라미터 입력시 일반 함수처럼 동작
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<int N> struct Check
+{
+
+};
+
+// constexpr 함수(c++11)
+constexpr int add(int a, int b)
+{
+    return a + b;
+}
+
+int main()
+{
+    int n1 = 1, n2 = 2;
+
+    int n = add(n1, n2);   // OK(일반 변수 파라미터 입력 시 일반 함수처럼 동작)
+    int m = add(1, 2);     // OK(컴파일 타임 상수 파라미터 입력 시 컴파일 타임에 연산)
+    Check<add(1, 2)> c;    // OK(컴파일 타임에 연산됨으로 템플릿 파라미터로 사용 가능)
+    Check<add(n1, n2)> c2; // Error(일반 함수처럼 동작하므로 템플릿 파라미터로 사용 불가)
+}
+출처: https://www.devoops.kr/136?category=691976 [데브웁스:티스토리]
+
+
+type traits 개념
+
+
+컴파일 타임에 타입에 대한 정보를 얻거나 변형된 타입을 얻을때 사용하는 도구(메타 함수)
+
+
+<type_traits> 헤더로 제공됨(c++11)
+
+
+type query를 위한 type traits 만드는 방법
+
+
+메인 템플릿(Primary template)에서 false 반환( value = false )
+
+
+부분 특수화(Partial specialization)에서 true 반환( value = true )
+
+
+ 
+is_pointer 예제
+
+
+간단히 템플릿 파라미터 T가 포인터 타입 여부 확인 도구
+
+메인 템플릿(Primary template)에서 false 반환( value = false )
+포인터 타입용 부분 특수화(Partial specialization)에서 true 반환( value = true )
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> struct is_pointer_custom
+{
+    enum { value = false }; 
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T*>
+{
+    enum { value = true };
+};
+
+template<typename T> void foo(T v)
+{
+    if (is_pointer_custom<T>::value)
+        cout << "pointer" << endl;
+    else
+        cout << "not pointer" << endl;
+}
+
+int main()
+{
+    int n = 3;
+    foo(n);
+    foo(&n);
+}
+ 
+is_pointer 개선 예제
+
+c++11 기준 코드 개선
+좀더 다양한 포인터 타입 지원(const, volatile, const volatile)
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> struct is_pointer_custom
+{
+    //enum { value = false }; 
+    static constexpr bool value = false; // c++11
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T*>
+{
+    //enum { value = true };
+    static constexpr bool value = true; // c++
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T* const>
+{
+    //enum { value = true };
+    static constexpr bool value = true; // c++
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T* volatile>
+{
+    //enum { value = true };
+    static constexpr bool value = true; // c++
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T* const volatile>
+{
+    //enum { value = true };
+    static constexpr bool value = true; // c++
+};
+
+int main()
+{
+    cout << is_pointer_custom<int>::value << endl;
+    cout << is_pointer_custom<int*>::value << endl;
+    cout << is_pointer_custom<int* const>::value << endl;
+    cout << is_pointer_custom<int* volatile>::value << endl;
+    cout << is_pointer_custom<int* const volatile>::value << endl;
+    cout << is_pointer_custom<int* volatile const>::value << endl;
+}
+출처: https://www.devoops.kr/137?category=691976 [데브웁스:티스토리]
+
+
+
+is_array 예제
+
+
+간단히 템플릿 파라미터 T가 배열 타입 여부 확인 도구
+
+
+메인 템플릿(Main template)에서 false 반환( value = false )
+
+
+배열 타입 부분 특수화(Partial specialization)에서 true 반환( value = true )
+
+
+타입을 정확히 알아야 함
+
+
+int x[3]; 에서 x는 변수 이름, 변수 이름을 제외한 나머지 요소(int[3])이 타입임
+
+
+
+
+unknown size array type(T[])에 대해서도 부분 특수화가 필요함
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> struct is_array_custom
+{
+    static constexpr bool value = false;
+};
+
+// 크기를 알 수 있는 배열의 부분 특수화
+template<typename T, size_t N>
+struct is_array_custom<T[N]>
+{
+    static constexpr bool value = true;
+};
+
+// 크기를 알 수 없는 배열의 부분 특수화
+template<typename T, size_t N>
+struct is_array_custom<T[N]>
+{
+    static constexpr bool value = true;
+};
+
+template<typename T> void foo(T& a)
+{
+    // 크기를 알 수 있는 배열 확인
+    if (is_array_custom<T>::value)
+        cout << "array" << endl;
+    else
+        cout << "not array" << endl;
+      
+    // 크기를 알 수 없는 배열을 사용하는 패턴도 존재함
+    //if (is_array_custom<int[]>::value)
+}
+
+int main()
+{
+    int x[3] = { 1, 2, 3 };
+    foo(x);
+}
+ 
+is_array 배열 크기 구하기
+
+
+부분 특수화로 배열의 크기도 구할 수 있음
+
+
+c++11 extent<T, 0>::value 존재
+
+
+
+
+
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> struct is_array_custom
+{
+    static constexpr bool value = false;
+    static constexpr size_t size = -1;
+};
+
+//사이즈를 알 수 있는 배열에 대한 부분 특수화에서 N이 배열의 크기
+template<typename T, size_t N>
+struct is_array_custom<T[N]>
+{
+    static constexpr bool value = true;
+    static constexpr size_t size = N;
+};
+
+template<typename T> void foo(T& a)
+{
+    if (is_array_custom<T>::value)
+        cout << "size of array : " << is_array_custom<T>::size << endl;
+}
+
+int main()
+{
+    int x[3] = { 1, 2, 3 };
+    foo(x);
+}
+출처: https://www.devoops.kr/138?category=691976 [데브웁스:티스토리]
+
+
+integral_constant
+
+컴파일 타임에 결정된 상수 값을 별도 타입화 하여 함수 오버로딩을 할 수 있도록 만드는 int2type 기술
+int2type 기술을 C++11에서 표준화한 integral_constant
+
+기본 함수 오버로딩(Function overloading)
+
+
+이자의 개수가 다르거나 인자 타입이 다르면 아래와 같이 인수에 따라 서로 다른 함수가 호출 되게 할 수 있음
+
+
+인자가 개수가 같고 인자의 타입도 같을때 다른 함수가 되게 하려면?
+
+
+#include <iostream>
+using namespace std;
+
+void foo(int n) {}
+void foo(double d) {}
+
+int main()
+{
+    foo(1); // foo(int)
+    foo(1.2); // foo(double)
+}
+int2type
+
+컴파일 타임 정수형 상수를 각각의 독립된 타입으로 만드는 기술
+int2type을 사용하면 컴파일 타임에 결정된 정수형 상수를 모두 다른 타입으로 만들 수 있음
+
+1, 2는 같은 타입이지만, int2type<1>, int2type<2>는 다른 타입
+
+
+int2type을 함수 오버로딩에 사용하거나 템플릿 인자, 상속등에 사용할 수 있음
+
+#include <iostream>
+using namespace std;
+
+// 같은 정수형 타입이지만 값에 따라 별도의 타입으로 생성
+template<int N> struct int2type
+{
+    static constexpr int value = N;
+};
+
+int main()
+{
+    int2type<1> t0; // int2type<1> 타입
+    int2type<2> t1; // int2type<2> 타입
+}
+int2type 예제
+
+
+printv 함수에서 받은 값의 포인터 타입 여부에 따라 분기처리 코드가 작성되어 값과 포인터 참조값을 출력하도록 되어 있음
+
+
+포인터 여부는 컴파일 타임에 체크되지만 if 구문이 런타임 조건문으로 하위 코드들은 모두 컴파일 대상
+
+
+포인터가 아닌 값에 대해서는 사용할 수 없는 구분이 포함되어 간접 참조 에러가 발생함
+
+
+간접 참조 에러가 발생하는 구문을 별도의 함수 템플릿으로 분리함
+
+
+각 함수 템플릿은 int2type을 활용하여 인자 타입으로 구분하여 사용
+
+
+동일 이름을 가지는 함수가 여러개 있을때, 어느 함수를 호출할지는 컴파일 타임에 결정됨
+
+
+호출이 결정되지 않은 템플릿은 instantiation 되지 않음
+
+
+#include <iostream>
+using namespace std;
+
+// 포인터 타입 체크용 메인 템플릿
+template<typename T> struct is_pointer_custom
+{
+    //enum { value = false }; 
+    static constexpr bool value = false; // c++11
+};
+
+// 포인터 타입에 대해서 부분 특수화 필요
+template<typename T> struct is_pointer_custom<T*>
+{
+    //enum { value = true };
+    static constexpr bool value = true; // c++
+};
+...
+
+// 같은 정수형 타입이지만 값에 따라 별도의 타입으로 생성되는 타입 도구
+template<int N> struct int2type
+{
+    static constexpr int value = N;
+};
+
+// 컴파일 타임 상수 값 구분용 함수 템플릿
+template<typename T>
+void printv_imp(T v, int2type<1>)
+{
+    cout << v << " : " << *v << endl;
+}
+
+// 컴파일 타임 상수 값 구분용 함수 템플릿
+template<typename T>
+void printv_imp(T v, int2type<0>)
+{
+    cout << v << endl;
+}
+
+// 값을 받아서 출력하고, 포인터일 경우 포인터의 값까지 출력
+template<typename T> void printv(T v)
+{
+    // 아래의 조건으로 분기 코드 작성시 if 구문이 런타임 조건문으로
+    // 포인터가 아닌 값에 대해서 컴파일 에러 발생
+    //if(is_pointer_custom<T>::value)
+    //    cout << v << " : " << *v << endl;
+    //else
+    //    cout << v << endl;
+
+    // 출력 구현부를 별도로 분리하여 함수 템플릿으로 타입을 구분하여 문제 해결 가능
+    printv_imp(v, int2type<is_pointer_custom<T>::value>());
+    // is_pointer_custom 반환 값에 의해(포인터: int2type<1>, 포인터 아님: int2type<0> 타입)
+}
+
+int main()
+{
+    int n = 3;
+    printv(n);
+    printv(&n);
+}
+ 
+integral_constant 예제
+
+
+int뿐 아니라 모든 정수 계열 상수 값을 타입으로 만들 수 있게 하는 템플릿(실수는 템플릿 인자 사용X)
+
+bool, char, short, int, long, long long
+
+
+
+true_type, false_type
+
+
+true/false: 참 거짓을 나타내는 값, 서로 같은 타입
+
+
+true_type/false_type: 참 거짓을 나타내는 값, 서로 다른 타입
+
+
+
+is_pointer등의 type_traits를 만들때 intergral_constant를 기반 클래스로 사용하여 간소화 및 가독성을 높일 수 있음
+
+T가 포인터가 아니라면, value = false, 기반 클래스는 false_type
+T가 포인터라면, value = true, 기반 클래스는 true_type
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T, T N> 
+struct integral_constant
+{
+    static constexpr T value = N;
+};
+
+// int 타입 0, 1 서로 다른 타입
+integral_constant<int, 0> t0;
+integral_constant<int, 1> t1;
+
+// short 타입, 0, 1 서로 다른 타입
+integral_constant<short, 0> s0;
+integral_constant<short, 1> s1;
+
+// bool 타입, true, false 서로 다른 타입
+integral_constant<bool, true> tb1;
+integral_constant<bool, false> tb0;
+
+// bool 타입은 활용 빈도가 높으므로 true_type, false_type 별칭 만들어서 사용
+typedef integral_constant<bool, true> true_type;
+typedef integral_constant<bool, false> false_type;
+
+template<typename T>
+struct is_pointer : false_type
+{
+    // false_type 상속으로 아래 코드 생략
+    //static constexpr bool value = false;
+};
+
+template<typename T>
+struct is_pointer<T*> : true_type
+{
+    // true_type 상속으로 아래 코드 생략
+    //static constexpr bool value = true;
+};
+ 
+C++11 type_traits 활용하여 int2type 예제 간소화
+
+
+C++11 <type_traits>헤더 포함
+
+
+int2type<0>, int2type<1> -> integral_constant<0>, integral_constant<1>
+
+
+integral_constant<0>, integral_constant<1> -> false_type, true_type
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 컴파일 타임 상수 값 구분용 함수 템플릿
+template<typename T>
+void printv_imp(T v, true_type)
+{
+    cout << v << " : " << *v << endl;
+}
+
+// 컴파일 타임 상수 값 구분용 함수 템플릿
+template<typename T>
+void printv_imp(T v, false_type)
+{
+    cout << v << endl;
+}
+
+// 값을 받아서 출력하고, 포인터일 경우 포인터의 값까지 출력
+template<typename T> void printv(T v)
+{
+    printv_imp(v, is_pointer<T>());
+}
+
+int main()
+{
+    int n = 3;
+    printv(n);
+    printv(&n);
+}
+ 
+C++17 if constexpr를 사용하여 컴파일 타임에 분기처리 가능
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 값을 받아서 출력하고, 포인터일 경우 포인터의 값까지 출력
+template<typename T> void printv(T v)
+{
+    if constexpr(is_pointer<T>::value)
+        cout << v << " : " << *v << endl;
+    else
+        cout << v << endl;
+}
+
+int main()
+{
+    int n = 3;
+    printv(n);
+    printv(&n);
+}
+출처: https://www.devoops.kr/139?category=691976 [데브웁스:티스토리]
+
+
+type traits 기능(C++11)
+
+
+type에 대한 query : is_pointer<>, is_array<>, extent<>
+
+
+type에 대한 변형 타입 : remove_pointer<>, add_pointer<>
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+template<typename T> void foo(T a)
+{
+    bool b = is_pointer<T>::value;
+    typename remove_pointer<T>::type t;
+    
+    cout << typeid(t).name() << endl;
+}
+
+int main()
+{
+    int n = 10;
+    foo(n);
+    foo(&n);
+}
+ 
+remove_pointer 구현 예제
+
+
+remove_pointer_custom 메인 템플릿 생성
+
+
+int -> int 반환
+
+
+
+
+remove_pointer_custom 부분 특수화(Partial specialization) 생성
+
+
+int* -> int 반환
+
+
+
+
+#include <iostream>
+using namespace std;
+
+// Main template
+template<typename T> 
+struct remove_pointer_custom
+{
+    typedef T type;
+};
+
+// Partial specialization
+template<typename T> 
+struct remove_pointer_custom<T*>
+{
+    typedef T type;
+};
+
+template<typename T> void foo(T a)
+{
+    // 값이 아닌 타입을 꺼낼때는 typename을 꼭 사용 필요
+    typename remove_pointer_custom<T>::type t;
+
+    cout << typeid(t).name() << endl;
+}
+
+int main()
+{
+    int n = 10;
+    foo(&n);
+}
+ 
+remove_all_pointer 구현 예제
+
+중첩 포인터까지 모두 제거 되는 remove_pointer 구하는 방법
+
+#include <iostream>
+using namespace std;
+
+template<typename T> 
+struct remove_all_pointer_custom
+{
+    typedef T type;
+};
+
+template<typename T> 
+struct remove_all_pointer_custom<T*>
+{
+    // 포인터 타입일때까지 포인터를 제거하며 자기 자신을 호출하고 최종 메인 템플릿이 호출됨
+    typedef typename remove_all_pointer_custom<T>::type type;
+};
+
+int main()
+{
+    typename remove_all_pointer_custom<int**>::type n;
+    cout << typeid(n).name() << endl;
+}
+출처: https://www.devoops.kr/140?category=691976 [데브웁스:티스토리]
+
+
+함수의 리턴타입, 인자타입 정보를 구하는 traits 만들기
+
+
+메인 템플릿(Main template)을 만들고 typedef T type 제공(C++11 using 동일)
+
+
+부분 특수화(Partial specialization)를 통한 원하는 타입을 얻을 수 있도록 T 타입 분할
+
+
+함수 타입 T(double(short, int))를 리턴타입 double과 인자타입(short, int)로 분리
+
+
+T(double(short, int)) -> R(A1, A2)
+
+
+
+
+메인 템플릿의 활용도가 없을 경우 내부 type은 제거 해도 됨
+
+
+#include <iostream>
+using namespace std;
+
+double hoo(short a, int b) { return 0; }
+
+// 반환 타입에 대한 메인 템플릿
+template<typename T> 
+struct result_type
+{
+    typedef T type;
+};
+
+// 함수타입에 대한 부분 특수화
+template<typename T, typename A1, typename A2> 
+struct result_type<T(A1, A2)>
+{
+    typedef T type;
+};
+
+// 인자는 복수개이므로 N 파라미터 추가로 필요
+template<typename T, size_t N>
+struct argument_type
+{
+    typedef T type;
+};
+
+// 첫번째 인자에 대한 부분 특수화
+template<typename R, typename A1, typename A2>
+struct argument_type<R(A1, A2), 0>
+{
+    typedef A1 type;
+};
+
+// 두번째 인자에 대한 부분 특수화
+template<typename R, typename A1, typename A2>
+struct argument_type<R(A1, A2), 1>
+{
+    typedef A2 type;
+};
+
+template<typename T> void foo(T& t)
+{
+    // T : double(short, int)
+    typename result_type<T>::type ret_type;
+    typename argument_type<T, 0>::type arg_type0;
+    typename argument_type<T, 1>::type arg_type1;
+
+    cout << typeid(ret_type).name() << endl; // double
+    cout << typeid(arg_type0).name() << endl; // short
+    cout << typeid(arg_type1).name() << endl; // int
+}
+int main()
+{
+    foo(hoo);
+}
+C++11 표준의 함수 리턴 타입 구하기
+
+result_of(C++17 미만)
+invoke_result(C++17 이상)
+decltype 사용해서 구현(일반함수, 함수 객체, 람다표현식등의 모든 callable object 고려)
+출처: https://www.devoops.kr/141?category=691976 [데브웁스:티스토리]
+
+
+C++11 표준 type traits
+
+
+변형된 타입을 얻는 traits
+
+
+typename remove_pointer<T>::type;
+
+
+remove_pointer_t<T> n; // C++14
+
+
+
+
+타입의 정보를 조사하는 traits
+
+
+bool b = is_pointer<T>::value;
+
+
+bool b = is_pointer_v<T>;  // C++17
+
+
+함수 오버로딩 사용(true_type, false_type) 활용
+
+
+
+
+간소화된 버전
+
+
+C++14 기본 제공
+
+
+remove_pointer_t<T> n;
+
+
+
+
+C++17 기본 제공
+
+
+bool b = is_pointer_v<T>;
+
+
+
+
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+//using을 사용해서 간소화 가능
+template<typename T>
+using remove_pointer_type = typename remove_pointer<T>::type;
+
+// C++17에서는 variable template을 사용해서 간소화 가능
+//template<typename T>
+//inline constexpr bool is_pointer_v = is_pointer<T>::value;
+
+template<typename T> void foo(T a)
+{
+    // 포인터를 제거한 타입 반환
+    typename remove_pointer<T>::type rawType;
+    remove_pointer_type<T> rawType2;
+
+    // 포인터 타입 여부 확인
+    bool isPointer = is_pointer<T>::value;
+}
+int main()
+{
+    int n = 0;
+    foo(&n);
+}
+ 
+C++11 표준 type_traits 예제
+
+
+is_array<T>::value : 배열 확인
+
+
+extent<T, 0>::value : 배열 각 차원의 요소 수 
+
+
+is_same<T, U>::value : 타입 같음 비교
+
+
+remove_cv<T, U>::type : const, volatile 속성 제거(타입 비교시 이용)
+
+
+decay<T, U>::type : 배열을 포인터화 사용 필요 시
+
+
+#include <iostream>
+#include <type_traits>
+using namespace std;
+
+// 배열 정보 조사하기
+// array => pointer : decay
+template<typename T> void foo(T& a)
+{
+    if (is_array<T>::value)
+    {
+        cout << "array" << endl;
+
+        cout << extent<T, 0>::value << endl;
+        cout << extent<T, 1>::value << endl;
+    }
+}
+
+template<typename T, typename U> void hoo(T a, U b)
+{
+    // 두 타입 비교
+    bool ret1 = is_same<T, U>::value;
+
+    // 배열일 경우 포인터화 비교
+    bool ret2 = is_same<typename decay<T>::type, typename decay<U>::type>::value;
+
+    // const, volatile 제거 후 비교
+    bool ret3 = is_same<typename remove_cv<T>::type, typename remove_cv<U>::type>::value;
+
+    cout << ret1 << endl;
+    cout << ret2 << endl;
+    cout << ret3 << endl;
+}
+
+int main()
+{
+    int x = 1;
+    const int cx = 1;
+    int* xp = &x;
+    int a[3][2] = { 1,2,3,4,5,6 };
+    foo(a);
+    hoo(x, cx);
+}
+출처: https://www.devoops.kr/142?category=691976 [데브웁스:티스토리]
+
+
+가변인자 템플릿(Variadic template)
+
+
+C++11부터 지원되는 문법
+
+
+가변인자 템플릿(클래스 템플릿, 함수 템플릿)의 기본 모양
+
+
+가변인자 템플릿의 인자 "Types"는 여러개의 타입을 나타냄
+
+
+가변인자 함수 템플릿의 인자인 "args"안에는 여러개의 값이 들어있고 "Parameter Pack"이라고 함
+
+
+#include <iostream>
+using namespace std;
+
+// 가변인자 클래스 템플릿.
+template<typename ... Types> class tuplex
+{
+
+};
+
+// 가변인자 함수 템플릿
+template<typename ... Types>
+void foo(Types ... args)
+{
+
+}
+
+int main()
+{
+    // 가변인자 클래스 템플릿(타입 생략, 복수의 타입까지...)
+    tuplex<> t0p;
+    tuplex<int> t1;
+    tuplex<int, char> t2;
+    
+    // 가변인자 함수 템플릿(인자 생략, 복수의 인자까지...)
+    foo();
+    foo(1);
+    foo(1, 3.4, "A");
+}
+Parameter Pack
+
+
+가변인자 템플릿으로 전달받은 파라미터 집합을 Parameter Pack이라 함
+
+
+sizeof...(args), sizeof...(Types) 함수를 이용해서 Parameter Pack 요소의 갯수를 얻어 올 수 있음
+
+
+goo(args...); 받은 Parameter Pack을 다시 전달할때 요소 전체를 풀어쓰는 방법을 Pack Expansion이라 함
+
+
+#include <iostream>
+using namespace std;
+
+// Pack expansion을 통해 Parameter Pack을 전달 받을 함수
+void goo(int n, double d, const char* s)
+{
+    cout << "goo : " << n << ", " << d << ", " << s << endl;
+    // 1, 3.4, "AAA"
+}
+
+// 가변인자 함수 템플릿
+template<typename ... Types>
+void foo(Types ... args)
+{
+    // args : Parameter Pack
+    
+    cout << sizeof...(args) << endl; // 3
+    cout << sizeof...(Types) << endl; // 3
+
+    //goo(args); // Error
+    goo(args...); // Pack expansion
+                  // goo( 1, 3.4, "AAA")
+}
+
+int main()
+{
+    //foo();
+    //foo(1);
+    foo(1, 3.4, "AAA"); 
+        // Types : int, double, const char*
+        // args : 1, 3.4, "AAA"
+
+}
+Pack Expansion
+
+
+Parameter Pack을 사용하는 패턴에 "..." 붙이면 해당 패턴이 ',' 구분자로 확장되는 형태임
+
+
+args이 1, 2, 3을 가지고 있을때
+
+
+args... -> 1, 2, 3 
+
+
+(--args)... -> 0, 1, 2
+
+
+func(args)... -> func(1), func(2), func(3)
+
+
+func(args...) -> func(1, 2, 3)
+
+
+func2(func(args...)) -> func2(func(1, 2, 3))
+
+
+func2(func(args)...)) -> func2(func(1), func(2), func(3))
+
+
+
+
+Pack Expansion은 함수 호출 인자 또는 list 초기화를 사용한 표현식에서만 사용할 수 있음
+
+
+배열 이용
+
+
+컴파일러에 따라 빈값이 허용 안될 수 있으므로 첫번째 요소를 더미로 0으로 지정
+
+
+함수가 반환 타입이 void 경우 대비해서 대체 반환값 (x, 0) 패턴 사용
+
+
+int x[] = { 0, (print(args), 0)... };
+
+
+
+
+
+
+초기화 리스트 이용
+
+
+빈값이 허용 됨으로 배열에 비해서 첫번째 요소 더미 0을 생략 할 수 있음
+
+
+initializer_list<int> e = { (print(args), 0)... };
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+void goo(int n, double d, const char* s)
+{
+    cout << "goo : " << n << " " << d << " " << s << endl;
+}
+
+int hoo(int a) { return -a; }
+
+int print(int a)
+{
+    cout << a << ", ";
+    return 0;
+}
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+    int x[] = { args... }; // Pack expansion
+    for (auto n : x)
+        cout << n << endl;
+
+    //print(args); // Error(함수 호출 인자 or list 초기화가 아님)
+    //print(args...); // Error(함수 호출 인자 or list 초기화가 아님)
+    //print(args)...; // Error(함수 호출 인자 or list 초기화가 아님)
+
+    // 배열 이용
+    int ea[] = { 0, (print(args), 0)... };
+
+    // 초기화 리스트 이용
+    initializer_list<int> ei = { (print(args), 0)... };
+
+}
+
+int main()
+{
+    foo(1, 2, 3);
+     // Types : int, int, int
+     // args : 1, 2, 3
+}
+ 
+Expansion 예제
+#include <iostream>
+using namespace std;
+
+template<typename ... Types> void foo(Types ... args)
+{
+    // Types : int, double
+
+    int x[] = { args... };
+    pair<Types...> p1; // pair<int, double> // OK
+    tuple<Types...> t1; // tuple<int, double> // OK
+
+    tuple<pair<Types...>> t2; // tuple<pair<int, double>> // OK
+    tuple<pair<Types>...> t3; // tuple<pair<int>, pair<double>> // Error
+
+    tuple<pair<int, Types>...> t4; // tuple<pair<int, int>, pair<int, double>> // OK
+
+    pair<tuple<Types...>> p2; // pair<tuple<int, double>> // Error
+    pair<tuple<Types>...> p3; // pair<tuple<int>, tuple<double>> // OK
+
+}
+
+int main()
+{
+    foo(1, 3.4); 
+      // args : 1, 3.4
+      // Types : int, double
+}
+출처: https://www.devoops.kr/143?category=691976 [데브웁스:티스토리]
+
+
+Parameter Pack 각 요소 꺼내기
+
+Pack Expansion -> array or tuple에 담기
+
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+template<typename ... Types> 
+void foo(Types ... args)
+{
+    // 각각의 타입별 값을 tuple 개별 요소로 추가
+    tuple<Types...> tp(args...);
+
+    cout << get<0>(tp) << endl;
+    cout << get<1>(tp) << endl;
+    cout << get<2>(tp) << endl;
+}
+
+
+int main()
+{
+    foo(1, 3.4, "AA");
+}
+ 
+
+재귀 호출과 유사한 호출식을 사용하기
+
+1번째 인자는 이름 있는 변수 2번째 인자는 가변 인자로 구현
+
+
+
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+void foo() {} // 재귀 호출 종료용
+
+template<typename T, typename ... Types>
+void foo(T value, Types ... args)
+{
+    cout << value << endl;
+    foo(args...); 
+    // 아래처럼 반복 호출 됨
+    // foo(3.4, "AA");
+    // foo("AA");
+    // foo();
+}
+
+
+int main()
+{
+    foo(1, 3.4, "AA"); // value : 1, args : 3.4, "AA"
+}
+ 
+ 
+fold expression(C++17)
+
+이항 연산자를 사용해서 parameter pack안에 있는 요소에 연산을 수행하는 문법
+parameter pack의 이름에서 ... 붙이지 않고 사용
+
+pack expansion : args...
+fold expression : args + ...
+
+
+4가지 형태(args:1,2,3,4)
+
+unary right fold: ( args op ... )
+
+(args + ... ) // 1+(2+(3+4))
+
+
+unary left fold : (... op args)
+
+(... + args) // ((1+2)+3)+4
+
+
+binary right fold : ( args op ... op init)
+
+( args + ... + 10) // 1+(2+3(4+10)))
+
+
+binary left fold : ( init op ... op args)
+
+(10 + ... + args) // (((10+1)+2)+3)+4
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+
+    // args 값을 모두 호출할 수 있음
+    //binary left fold : ( init op ... op args)
+    (cout << ... << args);
+}
+
+int main()
+{
+    foo(1, 2, 3);
+    (((cout << 1) << 2) << 3);
+}
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> v;
+
+template<typename ... Types>
+void foo(Types ... args)
+{
+    (v.push_back(args), ...);
+    for (auto n : v)
+        cout << n << endl;
+}
+
+int main()
+{
+    foo(1, 2, 3);
+    (((cout << 1) << 2) << 3);
+}
+출처: https://www.devoops.kr/144?category=691976 [데브웁스:티스토리]
+
+함수 정보를 구하는 traits 만들기
+
+
+메인 템플릿(Primary template)을 만들고 typedef T type 제공
+
+
+함수 타입의 T안에 있는 리턴 타입을 얻을 수 있도록 부분 특수화 구현
+
+
+부분 특수화를 할땡 가변인자 템플릿을 활용
+
+
+#include <iostream>
+#include <vector>
+#include <type_traits>
+using namespace std;
+
+double hoo(short a, int b) { return 0; }
+
+// 메인 템플릿
+template<typename T>
+struct result_type
+{
+    typedef T type;
+};
+
+// 함수 타입에 대한 부분 특수화, 가변인자 활용
+template<typename T, typename ... Types>
+struct result_type<T(Types ... args)>
+{
+    typedef T type;
+};
+
+template<typename T> void foo(const T& t)
+{
+    // T : double(short, int) 함수 모양
+    typename result_type<T>::type ret;
+    cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+    foo(hoo);
+}
+ 
+traits 잘못 사용할때 처리 방법
+
+
+메인 템플릿에서 typedef T type을 제공하지 않는 방법
+
+
+메인 템플릿에서 static_assert()를 사용해서 명시적 에러 메시지 출력
+
+
+메인 템플릿의 선언만 구현
+
+
+#include <iostream>
+#include <vector>
+#include <type_traits>
+using namespace std;
+
+double hoo(short a, int b) { return 0; }
+
+// 1. typedef T type 미제공
+template<typename T>
+struct result_type
+{
+};
+
+// 2. static_assert()를 사용해서 에러 메시지 출력
+template<typename T>
+struct result_type
+{
+    static_assert(is_function<T>::value, "Not supported type");
+};
+
+// 3. 선언부만 제공
+template<typename T>
+struct result_type;
+
+
+// 함수 타입에 대한 부분 특수화
+template<typename T, typename ... Types>
+struct result_type<T(Types ... args)>
+{
+    typedef T type;
+};
+
+template<typename T> void foo(const T& t)
+{
+    // T : double(short, int) 함수 모양
+    typename result_type<T>::type ret;
+    cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+    foo(hoo);
+}
+출처: https://www.devoops.kr/145?category=691976 [데브웁스:티스토리]
+
+함수의 인자 타입을 구하는 traits 만들기
+
+
+메인 템플릿(Main template)만들고 typedef T type 제공
+
+
+함수 타입인 T 안에 있는 함수 인자 타입을 얻을 수 있도록 부분 특수화 
+
+
+T -> R(A1, A2), T -> R(A1, Types...)
+
+
+
+
+N번째 인자 타입 구하는 방법
+
+
+0번째 인자의 타입을 구하는 부분 특수화 작성
+
+
+N번째 인자의 타입을 구하는 부분 특수화 작성
+
+
+N == 0이 될때까지 Recursive 사용
+
+
+Recuresive 사용시, 함수의 0번째 인자를 제거하고 N-1 사용
+
+
+argument_type<3, R(A1, A2, A3, A4))::type
+
+
+argument_type<2, R(A1, A2, A3, A4))::type
+
+
+argument_type<1, R(A1, A2, A3, A4))::type
+
+
+argument_type<0, R(A1, A2, A3, A4))::type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <vector>
+#include <type_traits>
+using namespace std;
+
+double hoo(short a, int b, double c) { return 0; }
+
+// 메인 템플릿
+template<size_t N, typename T> struct argument_type
+{
+    typedef T type;
+};
+
+// 0번째 인자의 타입을 구하는 부분 특수화 작성
+template<typename T, typename A1, typename ... Types> 
+struct argument_type<0, T(A1, Types ...)>
+{
+    typedef A1 type;
+};
+
+// N번째 인자의 타입을 구하는 부분 특수화 작성
+template<size_t N, typename R, typename A1, typename ... Types> 
+struct argument_type<N, R(A1, Types ...)>
+{
+    typedef
+        typename argument_type<N - 1, R(Types...)>::type type;
+};
+
+template<typename T> void foo(const T& t)
+{
+    // T : double(short, int, double)
+    typename argument_type<0, T>::type ret;
+    cout << typeid(ret).name() << endl;
+}
+
+int main()
+{
+    foo(hoo);
+}
+출처: https://www.devoops.kr/146?category=691976 [데브웁스:티스토리]
+
+
+tuple C++11 표준
+
+서로 다른 타입의 객체를 N개 보관하는 템플릿
+
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+int main()
+{
+    tuple<> t0;
+    tuple<int> t1(1);
+    tuple<int, double, int, char> t4(1, 3.4, 2, 'A');
+
+    get<2>(t4) = 15; // 참조 리턴으로 값 변경 가능
+
+    cout << get<2>(t4) << endl; // 2
+}
+tuple 만들기
+
+
+가변인자 템플릿을 사용해서 메인 템플릿(Main template)을 만듬
+
+
+1개의 요소를 보관할 수 있도록 부분 특수화 구현
+
+
+상속을 사용해서 N개를 보관할 수 있게 구현
+
+
+생성자등 필요한 멤버 추가
+
+
+#include <iostream>
+using namespace std;
+
+// tuple 메인 템플릿
+template<typename ... Types> struct xtuple
+{
+    static constexpr int N = 0;
+};
+
+// tuple 부분 특수화
+template<typename T, typename ... Types> 
+struct xtuple<T, Types...> : public xtuple<Types...> // 타입을 상속을 통해 재귀 저장 효과
+{
+    T value;
+    xtuple() = default; // 기본 생성자
+    xtuple(const T& v, const Types& ... args) 
+        : value(v), xtuple<Types...>(args...) {} // Pack expansion으로 가변인자 전달
+
+    static constexpr int N = xtuple<Types...>::N + 1;
+};
+
+int main()
+{
+    xtuple<> t0;
+    xtuple<int> t1(3);
+    xtuple<int, double, char> t4(1, 3.4, 'A');
+}
+출처: https://www.devoops.kr/147?category=691976 [데브웁스:티스토리]
+
+기반 클래스의 멤버에 접근하는 방법(기반 지식)
+
+
+기반 클래스의 멤버와 파생클래스의 멤버의 이름이 동일할때는 자신(파생 클래스)의 멤버가 우선
+
+
+기반 클래스의 멤버에 접근하는 방법
+
+
+d.Base::value
+
+
+static_cast<Base&>(d).value;
+
+
+
+
+값 캐스팅과 참조 캐스팅
+
+
+static_cast<Base>(d): 임시객체 생성. lvalue가 될 수 없음
+
+
+static_cast<Base&>(d): 임시객체를 생성 안함. lvalue가 될 수 있음
+
+
+
+
+#include <iostream>
+using namespace std;
+
+struct Base
+{
+    int value = 10;
+};
+
+struct Derived : public Base
+{
+    int value = 20;
+};
+
+int main()
+{
+    Derived d;
+
+    cout << d.value << endl; // 20
+    cout << d.Base::value << endl; // 10
+
+    cout << static_cast<Base>(d).value << endl; // 10 임시객체 생성
+    cout << static_cast<Base&>(d).value << endl; // 10 참조
+
+    //static_cast<Base>(d).value = 30; // Error
+    static_cast<Base&>(d).value = 30; // OK
+
+}
+ 
+Tuple_element
+
+
+ tuple이 가진 N번째 요소의 타입을 구하는 템플릿
+
+
+메인 템플릿(Main template) 생성, 구현은 불필요함으로 생략
+
+
+0번째 요소를 구하는 부분 특수화 구현
+
+
+N번째 요소를 구하는 부분 특수화 구현(Recursive)
+
+
+#include <iostream>
+using namespace std;
+
+// tuple 메인 템플릿
+template<typename ... Types> struct xtuple
+{
+    static constexpr int N = 0;
+};
+
+// tuple 부분 특수화
+template<typename T, typename ... Types> 
+struct xtuple<T, Types...> : public xtuple<Types...> // 타입을 상속을 통해 재귀 저장 효과
+{
+    T value;
+    xtuple() = default; // 기본 생성자
+    xtuple(const T& v, const Types& ... args) 
+        : value(v), xtuple<Types...>(args...) {} // Pack expansion으로 가변인자 전달
+
+    static constexpr int N = xtuple<Types...>::N + 1;
+};
+
+// 메인 템플릿
+template<size_t N, typename TP> struct xtuple_element;
+
+// 요소의 타입을 구할 수 있도록 부분 특수화
+template<typename T, typename... Types> struct xtuple_element<0, xtuple<T, Types...>>
+{
+    typedef T type;
+    typedef xtuple<T, Types...> tupleType;
+};
+
+// 요소의 타입을 구할 수 있도록 부분 특수화
+template<size_t N, typename T, typename... Types> 
+struct xtuple_element<N, xtuple<T, Types...>>
+{
+    typedef typename xtuple_element<N-1, xtuple<Types...>>::type type;
+    typedef typename xtuple_element<N-1, xtuple<Types...>>::tupleType tupleType;
+};
+
+// xtuple 요소를 꺼내는 함수
+template<size_t N, typename TP>
+typename xtuple_element<N, TP>::type& xget(TP& tp)
+{
+    return static_cast<typename xtuple_element<N, TP>::tupleType&>(tp).value;
+}
+
+int main()
+{
+    xtuple<int, double, char> t3(1, 3.4, 'A'); // 1
+    
+    cout << xget<1>(t3) << endl; // 3.4
+    xget<1>(t3) = 1.1;
+    cout << xget<1>(t3) << endl; // 1.1
+}
+출처: https://www.devoops.kr/148?category=691976 [데브웁스:티스토리]
+
+가변인자 템플릿(Variadic template)를 활용하여 tuple 전체 요소를 출력
+ 
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+//튜플과 index_sequence를 받아서 튜플 전체 요소를 출력
+template<typename TP, size_t ... I> 
+void print_tuple_imp(const TP& tp, const index_sequence<I...>&)
+{
+    int x[] = { get<I>(tp)... };
+
+    for (auto& n : x)
+        cout << n << ", ";
+}
+
+template<typename TP>
+void print_tuple(const TP& tp)
+{
+    // 튜플 사이즈를 구해서 index_sequence를 생성하여 print_tuple_imp에 전달
+    print_tuple_imp(tp, make_index_sequence<tuple_size<TP>::value>());
+}
+
+int main()
+{
+    tuple<int, int, int> tp(1, 2, 3);
+
+    print_tuple(tp);
+}
+출처: https://www.devoops.kr/149?category=691976 [데브웁스:티스토리]
+
+
+thin template
+
+템플릿의 단점 중 한가지는 코드 메모리의 증가
+모바일등 메모리가 부족한 환경에서 사용할 수 있는 기법
+
+기준 코드
+
+
+4개의 함수 구성 * 3개의 타입 사용 = 총 12개의 함수 생성
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T> class Vector
+{
+    T* buff;
+    int sz;
+public:
+    int size() const {}
+    bool empty() const {}
+    void push_front(const T& a) {}
+    T& front() {}
+};
+
+int main()
+{
+    Vector<int> v1;
+    Vector<short> v2;
+    Vector<double> v3;
+}
+T를 사용하지 않는 모든 멤버를 기반클래스에 정의하고 상속받아서 구현
+
+
+2개의 함수 구성 * 3개의 타입 사용 + 기반 클래스 함수 2개 = 총 8개의 함수 생성
+
+
+#include <iostream>
+using namespace std;
+
+class VectorBase
+{
+protected:
+    int sz;
+public:
+    int size() const {}
+    bool empty() const {}
+};
+
+template<typename T> class Vector : public VectorBase
+{
+    T* buff;
+public:
+    void push_front(const T& a) {}
+    T& front() {}
+};
+
+int main()
+{
+    Vector<int> v1;
+    Vector<short> v2;
+    Vector<double> v3;
+}
+모든 멤버를 기반 클래스로 구현
+
+
+모든 T는 void*로 변경
+
+
+void*를 바로 사용하면 캐스팅이 불편함으로 캐스팅을 책임지는 파생 클래스를 템플릿으로 제공
+
+
+#include <iostream>
+using namespace std;
+
+class VectorBase
+{
+protected:
+    void* buff;
+    int sz;
+public:
+    int size() const {}
+    bool empty() const {}
+    void push_front(const void* a) {}
+    void* front() {}
+};
+
+// void*를 바로 사용하면 캐스팅의 불편함이 있음
+// 캐스팅을 책임지는 파생 클래스를 템플릿으로 제공
+// 캐스팅만 책임지는 함수는 inline로 치환하면 함수화 되지 않음
+template<typename T> class Vector : public VectorBase
+{
+public:
+    inline void push_front(const T& a) { VectorBase::push_front(static_cast<void*>(a)) }
+    inline T& front() { return static_cast<T&>(VectorBase::front()); }
+};
+
+int main()
+{
+    Vector<int> v1;
+    Vector<short> v2;
+    Vector<double> v3;
+}
+
+
+기반 클래스 멤버를 직접 호출 방지를 위해 private 상속으로 변경
+
+
+#include <iostream>
+using namespace std;
+
+class VectorBase
+{
+protected:
+    void* buff;
+    int sz;
+public:
+    int size() const {}
+    bool empty() const {}
+    void push_front(const void* a) {}
+    void* front() {}
+};
+
+// void*를 바로 사용하면 캐스팅의 불편함이 있음
+// 캐스팅을 책임지는 파생 클래스를 템플릿으로 제공
+template<typename T> class Vector : private VectorBase
+{
+public:
+    int size() const { return VectorBase::size(); }
+    bool empty() const { return VectorBase::empty(); }
+    inline void push_front(const T& a) { VectorBase::push_front(static_cast<void*>(a)); }
+    inline T& front() { return static_cast<T&>(VectorBase::front()); }
+};
+
+int main()
+{
+    Vector<int> v1;
+    Vector<short> v2;
+    Vector<double> v3;
+}
+출처: https://www.devoops.kr/150?category=691976 [데브웁스:티스토리]
+
+
+CRTP(Cruiously Recurring Template Pattern) 활용
+
+
+기반 클래스에서 파생 클래스의 이름을 사용할 수 있게 하는 기법
+
+
+파생 클래스를 만들때 기반 클래스의 템플릿 인자로 파생 클래스 이름을 전달
+
+
+기준 코드
+
+메인 함수 호출 시 기반 클래스의 OnClick 함수가 호출됨
+파생 클래스의 OnClick 함수를 호출하기 위해서는?
+
+#include <iostream>
+using namespace std;
+
+class Window
+{
+public:
+    void msgLoop()
+    {
+        OnClick();
+    }
+    void OnClick() { cout << "Window OnClick" << endl; }
+};
+
+class FrameWindow : public Window
+{
+public:
+    void OnClick() { cout << "FrameWindow OnClick" << endl; }
+};
+
+int main()
+{
+    FrameWindow fw;
+    fw.msgLoop(); // OUTPUT : Window OnClick
+}
+ 
+구현 코드
+
+비 가상 함수(Non virtual function)를 가상 함수 처럼 동작하게 함
+파생 클래스를 만들때 기반 클래스의 템플릿 인자로 파생 클래스 이름을 전달
+
+this 포인터를 파생 클래스 타입으로 캐스팅 후 함 수 호출
+
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Window
+{
+public:
+    void msgLoop()
+    {
+        // this 포인터를 파생 클래스인 T 타입으로 캐스팅 후 호출    
+        static_cast<T*>(this)->OnClick();
+    }
+    //가상함수로 만들면 가상함수 테이블이 관리됨
+    void OnClick() { cout << "Window OnClick" << endl; }
+};
+
+class FrameWindow : public Window<FrameWindow>
+{
+public:
+    void OnClick() { cout << "FrameWindow OnClick" << endl; }
+};
+
+int main()
+{
+    FrameWindow fw;
+    fw.msgLoop(); // OUTPUT : FrameWindow OnClick
+}
+출처: https://www.devoops.kr/151?category=691976 [데브웁스:티스토리]
+
+
+CRTP 활용한 싱글톤(Singleton) 만들기
+
+싱글톤: 하나의 객체만 생성 할 수 있게 만드는 디자인 패턴
+
+private 생성자
+복사와 대입 금지
+하나의 객체를 만들어서 리턴하는 static 멤버 함수
+
+
+
+단일 Singletone 패턴 클래스
+#include <iostream>
+using namespace std;
+
+class Cursor
+{
+private:
+    Cursor() {}
+public:
+    Cursor(const Cursor& c) = delete;
+    void operator=(const Cursor& c) = delete;
+
+    static Cursor& getInstance()
+    {
+        static Cursor instance;
+        return instance;
+    }
+
+};
+
+int main()
+{
+    Cursor& c1 = Cursor::getInstance();
+    Cursor& c2 = Cursor::getInstance();
+}
+CRTP 패턴 Singleton 패턴 클래스
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Singleton
+{
+protected:
+    Singleton() {}
+public:
+    Singleton(const Singleton& c) = delete;
+    void operator=(const Singleton& c) = delete;
+
+    static T& getInstance()
+    {
+        static T instance;
+        return instance;
+    }
+};
+
+class Mouse : public Singleton<Mouse>
+{
+};
+
+int main()
+{
+    Mouse& m1 = Mouse::getInstance();
+    Mouse& m2 = Mouse::getInstance();
+}
+ 
+CRTP 활용한 Unique한 기반 클래스 만들기
+
+
+기반 클래스의 static memeber data는 모든 파생 클래스에 의해 공유됨
+
+
+파생 클래스 별로 다른 static member data가 필요한 경우, 서로 다른 기반 클래스를 사용해야 함
+
+
+CRTP를 사용하면 모든 파생 클래스 별로 다른 타입의 기반 클래스를 만들 수 있음
+
+
+static 멤버 데이터를 관리하는 단일 클래스
+#include <iostream>
+using namespace std;
+
+class Object
+{
+public:
+    static int cnt;
+
+    Object() { ++cnt; }
+    ~Object() { --cnt; }
+
+    static int getCount() { return cnt; }
+};
+int Object::cnt = 0;
+
+int main()
+{
+    Object c1, c2;
+    cout << c1.getCount() << endl;
+}
+static 멤버 데이터를 관리하는 유일한 기반 클래스
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Object
+{
+public:
+    static int cnt;
+
+    Object() { ++cnt; }
+    ~Object() { --cnt; }
+
+    static int getCount() { return cnt; }
+};
+template<typename T> int Object<T>::cnt = 0;
+
+class Mouse : public Object<Mouse>
+{
+
+};
+
+class Keyboard : public Object<Keyboard>
+{
+
+};
+
+int main()
+{
+    Mouse m1, m2;
+    Keyboard k1, k2;
+    cout << m1.getCount() << endl;
+    cout << k1.getCount() << endl;
+}
+출처: https://www.devoops.kr/152?category=691976 [데브웁스:티스토리]
+
+
+Policy Based Design
+
+
+클래스가 사용하는 정책을 템플릿 인자를 통해서 교체 할 수 있게 만드는 디자인
+
+
+성능 저하 없이 정책을 교체 할 수 있음
+
+
+대부분의 정책은 담은 "단위 전략 클래스"는 지켜야 하는 규칙이 있음
+
+
+규칙을 표현하는 코딩 방식은 없음(인터페이스 사용시 가상 함수이므로 약간의 오버헤드 발생), C++20 concept 문법
+
+
+우리가 만든 동기화 정책클래스는 "lock/unlock" 함수가 필요함
+
+
+템플릿 기반 라이브러리, 특히 STL에서 널리 사용되는 디자인 기법
+
+
+
+
+#include <iostream>
+using namespace std;
+
+// 1개의 클래스로 정책 템플릿 인자를 통해서 다르게 구현 할 수 있도록 디자인
+template<typename T, typename ThreadModel> class List
+{
+    ThreadModel tm;
+public:
+    void push_front(const T& a)
+    {
+        tm.lock();
+        // 구현부 코드
+        tm.unlock();
+    }
+};
+
+// 싱글 쓰레드 기반 환경용
+class NoLock
+{
+public:
+    inline void Lock() {};
+    inline void Unlock() {}
+};
+
+// 멀티 쓰레드 기반 환경용
+class MutexLock
+{
+public:
+    inline void Lock() {};
+    inline void Unlock() {}
+};
+
+// 환경에 따라서 클래스 생성 시 전략을 선택 할 수 있음
+// 싱글 쓰레드용 생성
+//List<int, NoLock> s;
+// 멀티 쓰레드용 생성
+List<int, MutexLock> s;
+
+int main()
+{
+    s.push_front(10);
+}
+ 
+STL allocator
+
+
+C++에서 메모리 할당 방법은 다양함
+
+
+new, malloc, calloc, win32 api, linux system call
+
+
+
+
+STL에서는 각 데이터 컨테이너의 템플릿 인자로 메모리 할당 방식에 대한 전략을 선택할 수 있도록 지원함
+
+
+#include <iostream>
+using namespace std;
+
+// STL의 Vector 생각
+// 메모리 할당기
+template<typename T> class allocator
+{
+public:
+    T* allocate() {}
+    void deallocate() {}
+};
+
+template<typename T, typename Ax = allocator<T>> class vector
+{
+    T* buff;
+    Ax ax;
+public:
+    void resize(int n)
+    {
+        // 버퍼 재할당이 필요하다면 어떻게 할까요?
+        // new, malloc, calloc, win32 api, linux system call
+        T* p = ax.allocate(n);
+        ax.deallocate(p);
+    }
+};
+
+int main()
+{
+    vector<int, MyAlloc<int>> v(10);
+    v.resize(20);
+}
+ 
+rebind
+#include <iostream>
+using namespace std;
+
+template<typename T> class allocator
+{
+public:
+    T* allocate(int sz) { return new T[sz]; }
+    void deallocate(T* p) { delete[] p; }
+
+    template<typename U> struct rebind
+    {
+        typename allocator<U> other;
+    };
+};
+
+template<typename T, typename Ax = allocator<T> > class list
+{
+    struct NODE
+    {
+        T data;
+        NODE* next, * prev;
+    };
+    //Ax ax; // allocator<int>
+    //allocator<int>::rebind<NODE>::other ax; // allocator<NODE> ax;
+    typename Ax::template rebind<NODE>::other ax; // allocator<NODE> ax;
+public:
+    void push_front(const T& a)
+    {
+        ax.allocate(1);
+    }
+};
+
+int main()
+{
+    list<int> s;
+    s.push_front(10);
+}
+출처: https://www.devoops.kr/153?category=691976 [데브웁스:티스토리]
+
+
+함수 찾는 순서
+
+1순위 정확한 매칭(exactly matching) 
+2순위 템플릿(template)
+3순위 가변 인자(variable argument)
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+// 2순위 템플릿(template)
+void foo(T t) { cout << "T" << endl; }
+// 1순위 정확한 매칭(exactly matching)
+void foo(int n) { cout << "int" << endl; }
+// 3순위 가변 인자(variable argument)
+void foo(...) { cout << "..." << endl; }
+
+int main()
+{
+    foo(3);
+}
+ 
+SFINAE
+
+
+Substitution Failure Is Not An Error
+
+
+함수 템플릿을 사용시 T의 타입이 결정되고 함수를 생성(Instantiation)하려고 할때 리턴 타입이나 함수 인자등에서 치환에 실패하면 컴파일 에러가 아니라, 함수 후보군에서 제외함
+
+
+동일한 이름의 다른 함수가 있다면 다른 함수를 사용하게 됨
+
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+typename T::type foo(T t) 
+{ 
+    cout << "T" << endl; return 0; 
+}
+
+void foo(...) 
+{ 
+    cout << "..." << endl; 
+}
+
+int main()
+{
+    // 가변인자 함수보다 템플릿 함수가 우선순위가 높아서 먼저 참조하게 되지만 리턴 타입에서 
+    // int 타입::type은 존재하지 않으므로 만족할 수 없으므로 후보군에서 제외되고 가변인자 버전의 함수가 사용됨
+    foo(3); // T
+}
+ 
+enable_if
+
+
+c++표준에서 지원하는 도구
+
+
+1번째 인자가 true일 경우만 type이 정의됨
+
+
+enable_if<true, int>::type  -> int
+
+
+enable_if<true>::type -> void
+
+
+enable_if<false, int>::type -> error
+
+
+enable_if<false>::type -> error
+
+
+
+
+#include <iostream>
+using namespace std;
+
+template<bool b, typename T = void> struct enable_if
+{
+};
+
+template<typename T> struct enable_if<true, T>
+{
+    typedef T type;
+};
+
+int main()
+{
+    //enable_if<true, int>::type t0; // 타입이 int로 결정
+    //enable_if<true>::type t1; // 타입이 void로 결정
+    //enable_if<false, int>::type t2; // 타입이 없어서 error
+}
+ 
+enable_if 예제
+
+
+정수일때만 동작하는 함수를 만들고 싶을때
+
+
+static_assert
+
+
+처리하게 되면 조건을 만족하지 않을 경우 컴파일 에러
+
+
+
+
+enable_if
+
+
+SFINAE 특성을 활용한 방법
+
+
+조건을 만족하지 않으면 함수를 생성하지 않고 다른 후보가 있다면 사용함
+
+
+확장성 유리
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+// 정수일때만 함수 코드를 생성하고 싶음
+template<typename T>
+typename enable_if<is_integral<T>::value, int>::type
+foo(T a)
+{
+    cout << "T" << endl;
+
+    return 0;
+}
+
+void foo(...)
+{
+    cout << "not integer" << endl;
+}
+
+int main()
+{
+    foo(2.3);
+}
+ 
+enable_if 위치
+
+
+함수 리턴 타입
+
+
+함수 인자 타입 -> 생성자에서 주로 사용
+
+
+템플릿 인자 -> 함수 자체의 모양이 단순해 보이는 장점 있음
+
+
+#include <iostream>
+using namespace std;
+
+// 함수 리턴 타입 위치
+template<typename T>
+typename enable_if<is_integral<T>::value, int>::type
+foo(T a)
+{
+    cout << "T" << endl;
+
+    return 0;
+}
+
+// 함수 인자 타입 위치(리턴 타입이 없는 생성자에서 주로 사용)
+template<typename T>
+void foo(T a, 
+    typename enable_if<
+    is_integral<T>::value>::type* = nullptr)
+{
+    cout << "T" << endl;
+}
+
+// 템플릿 인자(함수 자체의 원형이 최대한 유지됨으로 간결해 보이는 장점)
+template<typename T, 
+    typename enable_if<
+    is_integral<T>::value>::type* = nullptr>
+void foo(T a)
+{
+    cout << "T" << endl;
+}
+
+// 모두 만족하지 않을때 호출
+void foo(...)
+{
+    cout << "not integer" << endl;
+}
+
+int main()
+{
+    foo(2); // 템플릿 함수 호출(현재 예제코드는 3개의 템플릿이 만족함으로 에러 발생함)
+    foo(2.3); // foo(...) 호출
+}
+ 
+타입의 종류에 따라 다르게 동작하는 함수 생성 방법
+
+type_traits(is_pointer) + if constexpr // C++17에서만 가능
+type_traits + 함수 오버로딩(false_type, true_type)
+
+디스패치 함수 1개 더 필요
+
+
+type_traits + enable_if
+
+// C++17이상 가능 if constexpr 사용 방법
+
+#include <iostream>
+using namespace std;
+
+template<typename T> void printv(const T& v)
+{
+    if constexpr(is_pointer<T>::value)
+        cout << v << ":" << *v << endl;
+    else
+        cout << v << endl;
+}
+
+int main()
+{
+    int n = 0;
+    printv(n);
+    printv(&n);
+}
+// type_traits + 함수 오버로딩(false_type, true_type)
+
+#include <iostream>
+using namespace std;
+
+template<typename T>
+void printv_imp(const T& v, true_type)
+{
+    cout << v << ":" << *v << endl;
+}
+
+template<typename T>
+void printv_imp(const T& v, false_type)
+{
+    cout << v << ":" << endl;
+}
+
+template<typename T> void printv(const T& v)
+{
+    printv_imp(v, is_pointer<T>());
+}
+
+int main()
+{
+    int n = 0;
+    printv(n);
+    printv(&n);
+}
+// type_traits + enable_if 사용 방법
+
+#include <iostream>
+using namespace std;
+
+template<typename T> 
+typename enable_if<is_pointer<T>::value>::type 
+printv(const T& v)
+{
+    cout << v << ":" << *v << endl;
+}
+
+template<typename T> 
+typename enable_if<!is_pointer<T>::value>::type
+printv(const T& v)
+{
+    cout << v << ":" << endl;
+}
+
+int main()
+{
+    int n = 0;
+    printv(n);
+    printv(&n);
+}
+출처: https://www.devoops.kr/154?category=691976 [데브웁스:티스토리]
+
+
+Member Detect IDioms
+
+
+클래스의 멤버 타입 존재 여부 확인
+
+
+클래스의 멤버 함수 존재 여부 확인
+
+
+//컴파일 타임의 함수 시그니처에 대한 특성만 활용하는 특성을 이용하는 기법
+
+// 함수 시그니처만 사용함으로 구현부가 없어도 괜찮음
+char foo(int a);
+short foo(double d);
+
+int main()
+{
+    int n = 10;
+
+    cout << sizeof(n) << endl; // 4
+    //cout << sizeof(foo) << endl; // Error
+    cout << sizeof(foo(3)) << endl; // 1
+    cout << sizeof(foo(3.3)) << endl; // 2
+}
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// 멤버 타입을 가진 데이터용 템플릿(반환값이 char로 1바이트)
+template<typename T> 
+char check(typename T::value_type* a);
+
+// 멤버 타입이 없는 데이터용 템플릿(반환값이 short로 2바이트)
+template<typename T>
+short check(...);
+
+// 멤버 타입이 없는 데이터
+struct NoValueType
+{
+};
+// 멤버 타입이 있는 데이터
+struct HasValueType
+{
+    typedef int value_type;
+};
+
+// 멤버 타입 존재를 여부 확인 함수
+template<typename T>
+struct has_value_type
+{
+    // 반환값이 char(1바이트)일때는 true, short(2바이트)일때는 false
+    static constexpr bool value = (sizeof(check<T>(0)) == 1); 
+};
+
+int main()
+{
+    cout << has_value_type<HasValueType>::value << endl;
+    cout << has_value_type<NoValueType>::value << endl;
+
+    HasValueType t1;
+    cout << sizeof(check<HasValueType>(0)) << endl;
+    NoValueType t2;
+    cout << sizeof(check<NoValueType>(0)) << endl;
+}
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// 멤버함수가 존재할 경우 
+template<typename T> 
+char check(decltype(T().resize(0))* a);
+
+// 멤버함수가 존재하지 않을 경우
+template<typename T>
+short check(...);
+
+// 멤버함수 존재 체크
+template<typename T>
+struct has_resize
+{
+    static constexpr bool value = (sizeof(check<T>(0)) == 1); 
+};
+
+int main()
+{
+    // vector는 resize가 있으므로 true 리턴
+    cout << has_resize<vector<int>>::value << endl;
+    
+    // array는 resize가 없으므로 false 리턴
+    cout << has_resize<array<int, 10>>::value << endl;
+}
+출처: https://www.devoops.kr/155?category=691976 [데브웁스:티스토리]
+
+
+Typelist
+
+
+값이 아닌 타입의 리스트를 보관하는 데이터 타입
+
+
+템플릿 인자가 1개라도 Typelist를 활용하면 복수의 타입을 만들 수 있음
+
+
+#include <iostream>
+using namespace std;
+
+// 값을 보관하지 않음
+// 타입 2개를 보관함
+template<typename T, typename U> struct Typelist
+{
+    typedef T Head;
+    typedef U Tail;
+};
+
+struct NullType {};
+
+// 매크로 도입
+#define TYPELIST_1(T1) Typelist<T1, NullType>
+#define TYPELIST_2(T1, T2) Typelist<T1, Typelist<T2, Nulltype>>
+#define TYPELIST_3(T1, T2, T3) Typelist<T1, Typelist<T2, Typelist<T3, Nulltype>>>
+#define TYPELIST_2(T1, T2, T3, T4) Typelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, Nulltype>>>>
+
+template<typename T> class xtuple {};
+
+int main()
+{
+    xtuple<int> t1;
+
+    Typelist<int, NullType> t1;
+    Typelist<int, Typelist<int, NullType>> t2;
+    Typelist<int, Typelist<int, Typelist<char, NullType>>> t3;
+}
+
+ 
+Typelist Length
+
+
+타입리스트의 요소 수 구하기
+
+
+#include <iostream>
+using namespace std;
+
+// 값을 보관하지 않음
+// 타입 2개를 보관함
+template<typename T, typename U> struct Typelist
+{
+    typedef T Head;
+    typedef U Tail;
+};
+
+struct NullType {};
+
+// 매크로 도입
+#define TYPELIST_1(T1) Typelist<T1, NullType>
+#define TYPELIST_2(T1, T2) Typelist<T1, Typelist<T2, NullType>>
+#define TYPELIST_3(T1, T2, T3) Typelist<T1, Typelist<T2, Typelist<T3, NullType>>>
+#define TYPELIST_4(T1, T2, T3, T4) Typelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>
+
+// 1. 사용하는 모습을 보고 메인 템플릿 생성
+template<typename T> struct Length;
+
+// 2. 갯수를 구할 수 있도록 부분 특수화
+template<typename T, typename U> struct Length<Typelist<T, U>>
+{
+    enum { value = Length<U>::value + 1 };
+};
+
+// 3. 재귀를 종료하기 위한 특수화
+template<> struct Length<NullType>
+{
+    enum { value = 0 };
+};
+
+template<typename T> void test()
+{
+    cout << Length<T>::value << endl; // 4
+}
+
+int main()
+{
+    test<TYPELIST_4(int, int, double, float)>();
+}
+
+TypeAt
+#include <iostream>
+using namespace std;
+
+// 값을 보관하지 않음
+// 타입 2개를 보관함
+template<typename T, typename U> struct Typelist
+{
+    typedef T Head;
+    typedef U Tail;
+};
+
+struct NullType {};
+
+// 매크로 도입
+#define TYPELIST_1(T1) Typelist<T1, NullType>
+#define TYPELIST_2(T1, T2) Typelist<T1, Typelist<T2, NullType>>
+#define TYPELIST_3(T1, T2, T3) Typelist<T1, Typelist<T2, Typelist<T3, NullType>>>
+#define TYPELIST_4(T1, T2, T3, T4) Typelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>
+
+
+// Typelist의 N번째 요소의 타입 구하기
+// 메인 템플릿
+template<typename T, int N> struct TypeAt
+{
+    //typedef ? type;
+};
+
+// 원하는 타입을 구할 수 있도록 부분 특수화
+// N == 0
+template<typename T, typename U> struct TypeAt<Typelist<T, U>, 0>
+{
+    typedef T type;
+};
+
+// 원하는 타입을 구할 수 있도록 부분 특수화
+// N != 0
+template<typename T, typename U, int N> struct TypeAt<Typelist<T, U>, N>
+{
+    typedef typename TypeAt<U, N-1>::type type;
+};
+
+template<typename T> void test()
+{
+    typename TypeAt<T, 0>::type i; // int
+    cout << typeid(i).name() << endl;
+
+    typename TypeAt<T, 1>::type c; // char
+    cout << typeid(c).name() << endl;
+
+    typename TypeAt<T, 2>::type d; // double
+    cout << typeid(d).name() << endl;
+
+    typename TypeAt<T, 3>::type l; // long
+    cout << typeid(l).name() << endl;
+}
+
+int main()
+{
+    test<TYPELIST_4(int, char, double, long)>();
+}
+
+ 
+Append
+#include <iostream>
+using namespace std;
+
+// 값을 보관하지 않음
+// 타입 2개를 보관함
+template<typename T, typename U> struct Typelist
+{
+    typedef T Head;
+    typedef U Tail;
+};
+
+struct NullType {};
+
+// 매크로 도입
+#define TYPELIST_1(T1) Typelist<T1, NullType>
+#define TYPELIST_2(T1, T2) Typelist<T1, Typelist<T2, NullType>>
+#define TYPELIST_3(T1, T2, T3) Typelist<T1, Typelist<T2, Typelist<T3, NullType>>>
+#define TYPELIST_4(T1, T2, T3, T4) Typelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>
+
+// Typelist 끝에 타입 추가하기
+template<typename TL, typename T> struct Append;
+
+// TL T
+// 1. NullType, NullType => NullType
+template<> struct Append<NullType, NullType>
+{
+    typedef NullType type;
+};
+
+// 2. NullType, 임의의 타입 => Typelist<임의의 타입, NullType>
+template<typename T> struct Append<NullType, T>
+{
+    typedef Typelist<T, NullType> type;
+};
+
+// 3. NullType, Typelist<Head, Tail> = Typelist<Head, Tail>
+template<typename Head, typename Tail> struct Append<NullType, Typelist<Head, Tail>>
+{
+    typedef Typelist<Head, Tail> type;
+};
+
+// 4. Typelist<Head, Tail>, NullType => Typelist<Head, Tail>
+template<typename Head, typename Tail> struct Append<Typelist<Head, Tail>, NullType>
+{
+    typedef Typelist<Head, Tail> type;
+};
+
+// 5. Typelist<Head, Tail>, 임의의 타입 => Typelist<Head, Append<Tail, T>::type>
+template<typename Head, typename Tail, typename T> struct Append<Typelist<Head, Tail>, T>
+{
+    typedef Typelist<Head, typename Append<Tail, T>::type> type;
+};
+
+template<typename T> void test()
+{
+    typename Append<T, int>::type t1;
+    cout << typeid(t1).name() << endl; // int, char, double, int, NullType
+}
+
+int main()
+{
+    test<TYPELIST_3(int, char, double)>();
+}
+
+ 
+Typelist 예제
+#include <iostream>
+using namespace std;
+
+// 값을 보관하지 않음
+// 타입 2개를 보관함
+template<typename T, typename U> struct Typelist
+{
+    typedef T Head;
+    typedef U Tail;
+};
+
+struct NullType {};
+
+// 매크로 도입
+#define TYPELIST_1(T1) Typelist<T1, NullType>
+#define TYPELIST_2(T1, T2) Typelist<T1, Typelist<T2, NullType>>
+#define TYPELIST_3(T1, T2, T3) Typelist<T1, Typelist<T2, Typelist<T3, NullType>>>
+#define TYPELIST_4(T1, T2, T3, T4) Typelist<T1, Typelist<T2, Typelist<T3, Typelist<T4, NullType>>>>
+
+// Holder : 임의 타입의 data 1개 보관
+template<typename T> struct Holder
+{
+    T value;
+};
+
+// GenScatterHierachy => MakeCode
+template<typename T, template<typename> class Unit> 
+class MakeCode : public Unit<T>
+{
+};
+
+template<template<typename> class Unit> 
+class MakeCode<NullType, Unit>
+{
+};
+
+template<typename Head,             //            , Holder<double>,     empty 
+    typename Tail,                  // Holder<int>, MakeCode<double, Unit>, MakeCode<NullType>
+    template<typename> class Unit>  // MakeCode<int, Unit>, MakeCode<Typelist<double, NullType>, Unit
+    
+class MakeCode<Typelist<Head, Tail>, Unit> : public MakeCode<Head, Unit>, public MakeCode<Tail, Unit>
+{
+    // int value;
+    // double value;
+};
+
+int main()
+{
+    // MakeCode의 1번째 인자가 Typelist일때
+    MakeCode<TYPELIST_2(int, double), Holder> mc1;  // 기반 클래스 Holder<int>
+                                // Holder<int>와 메모리 모양이 동일
+    MakeCode<double, Holder> mc2; // Holder<double>
+    MakeCode<NullType, Holder> mc3; // Empty
+}
+출처: https://www.devoops.kr/156?category=691976 [데브웁스:티스토리]
+
+
+Concept의 개념
+
+일반적으로 함수 템플릿(또는 클래스 템플릿)은 모든 타입이 아니라 특정 조건을 만족하는 타입에 대해서 동작하게 됨
+타입이 가져야 하는 조건을 코드로 표현 한 것
+2000년 중반부터 이야기 되었으나 아직 표준화 되지 않음
+C++20 표준에 추가될 예정
+Concept 문법이 도입될 경우 템플릿 코드에 많은 변화가 있게됨
+
+#include <iostream>
+using namespace std;
+
+struct Point
+{
+    int x, y;
+};
+
+// 실제 파라미터가 모든 타입이 아닌 연산자 < 가능한 타입에 대해서만 지원하는 템플릿임
+template<typename T> T Min(T x, T y)
+{
+    return y < x ? y : x;
+}
+
+int main()
+{
+    Point p1, p2;
+    Min(p1, p2);
+}
+
+#include <iostream>
+using namespace std;
+
+struct Point
+{
+    int x, y;
+    bool operator<(const Point& p) { return true; }
+};
+
+// 1. concept 만들기
+template<typename T>
+concept bool LessThanComparable = requires(T a, T b)
+{
+    { a < b }-- > bool;
+};
+
+// 2. template 만들때 concept 표기
+template<typename T> requires LessThanComparable<T>
+T Min(T x, T y)
+{
+    return y < x ? y : x;
+}
+
+// 3. template 만들때 T대신 concept 사용
+LessThanComparable Min(LessThanComparable x, LessThanComparable y)
+{
+    return y < x ? y : x;
+}
+
+int main()
+{
+    Point p1, p2;
+    Min(p1, p2);
+}
+출처: https://www.devoops.kr/157?category=691976 [데브웁스:티스토리]

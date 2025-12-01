@@ -1,0 +1,189 @@
+클래스 템플릿도 프렌드를 가질 수 있습니다.
+
+
+템플릿의 프렌드를 3가지로 분류할 수 있습니다.
+
+  템플릿이 아닌 프렌드
+
+  바운드 템플릿 프렌드(클래스가 구체화될 때 클래스의 데이터형에 의해 프렌드의 데이터형이 결정됩니다.)
+
+  언바운드 템플릿 프렌드(프렌드의 모든 특수화가 그 클래스의 각 특수화에 대해 프렌드들입니다.)
+
+------------------------------------------------------------------------------------------------------------------
+템플릿이 아닌 프렌드
+
+template <typename T>
+class ClassTemplate {
+       friend void Show();
+};
+void Show() {
+}
+
+이 선언은 Show 함수를 그 템플릿의 가능한 모든 구체화들에 대해 프렌드로 만듭니다.
+
+즉 어떤 타입으로 구체화가 되든 항상 프렌드라는 것입니다.(ClassTemplate<int>, ClassTemplate<double>)
+
+그런데 Show 함수가 매개변수로 해당 객체를 가지지 않기 때문에 어떻게 접근할 수 있는지 고민해야 합니다.
+
+전역 객체에 접근할 수 있다.
+
+전역 포인터를 사용하여 전역이 아닌 객체에 접근할 수 있다.
+
+static 데이터 멤버에 접근할 수 있다.
+
+위와 같은 상황으로 해결해야 한다면 나올 수도 있겠지만, 더 나은 방법이 있습니다.
+
+ 
+------------------------------------------------------------------------------------------------------------------
+바운드 템플릿 프렌드
+
+어떤 프렌드 함수에 템플릿 클래스 매개변수를 제공하기를 원한다고 가정해봅시다.
+
+template <typename T>
+class ClassTemplate {
+       friend void Show(ClassTemplate &);
+};
+이게 가능하다고 생각될 수 있지만, 불가능합니다.
+
+ClassTemplate 객체와 같은 것은 없기 때문입니다.
+
+(템플릿 클래스는 ClassTemplate<int>, ClassTemplate<double>같은 특수화만이 존재함.)
+
+template <typename T>
+class ClassTemplate {
+       friend void Show(ClassTemplate<T> &); //바운드 템플릿 프렌드
+};
+ClassTemplate<int>의 객체가 있을 때 T는 int로 대체되면서
+
+friend void Show(ClassTemplate<int> &);
+와 같은 프렌드 선언이 됩니다.
+
+즉 ClassTemplate<int> 매개변수를 사용하는 Show함수는 ClassTemplate<int>클래스에 대해 프렌드가 됩니다.
+
+근데 이 방법은 Show함수는 함수 템플릿이 아니기 때문에, 모든 타입에 대해 대응할 수 없습니다.
+
+void Show(ClassTemplate<int> & a) {
+}
+void Show(ClassTemplate<double> & a) {
+}
+//...
+그래서 Show를 템플릿 함수로 만들어봅시다.
+
+이 방법은 템플릿이 아닌 프렌드보다 다소 복잡하며, 세 단계를 거칩니다.
+
+ 
+
+제1 단계, 클래스 템플릿 앞에 함수 템플릿을 선언
+template<class T> void Show(T &); //선언
+template <typename T>
+class ClassTemplate {
+       
+};
+template<class T>
+void Show(T & a) {
+}
+클래스 템플릿 안에 함수 템플릿을 선언하는 이유는 프렌드 걸 때 해당 함수 템플릿(Show)을 확인하지 못하기 때문입니다.
+
+(컴파일러는 위에서 아래로 확인함)
+
+ 
+
+제2 단계, 그 함수 안에서 다시 템플릿들을 프렌드로 선언
+template<class T> void Show(T &);
+template <typename TT>
+class ClassTemplate {
+       friend void Show<>(ClassTemplate<TT> &);
+};
+template<class T>
+void Show(T & a) {
+}
+선언에 있는 <>에 의해 이들은 템플릿 특수화로 인식됩니다.
+
+ 
+
+제3 단계, 프렌드들을 위한 정의를 제공
+#include <iostream>
+template<class T> void Show(T &);
+template <typename TT>
+class ClassTemplate {
+private:
+       int age = 0;
+public:
+       ClassTemplate(const TT & a) {
+              age = a;
+       }
+       friend void Show<>(ClassTemplate<TT> &);
+};
+template<class TT>
+void Show(ClassTemplate<TT>& a)
+{
+       std::cout << a.age;
+}
+int main(void) {
+       ClassTemplate<int> a = ClassTemplate<int>(1);
+       Show(a);
+}
+최종적으로 이런 코드가 됩니다.
+
+출력은 "1"이 나오므로 friend가 제대로 되었습니다.
+
+ 
+------------------------------------------------------------------------------------------------------------------
+언바운드 템플릿 프렌드
+
+앞에서 설명한 바운드 템플릿 프렌드 함수들은, 클래스의 바깥에서 선언된 템플릿의 템플릿 특수화들입니다.
+
+예를 들어, int 클래스 특수화는 int 함수 특수화를 얻는 방식입니다.
+
+템플릿을 클래스 안에 선언함으로써, 언바운드 프렌드 함수를 생성할 수 있습니다.
+
+이때 모든 함수 템플릿의 특수화는 모든 클래스 템플릿 특수화에 대해 프렌드입니다.
+
+언바운드 프렌드들의 경우에, 프렌드 템플릿 데이터형 매개변수들은 템플릿 클래스 데이터형 매개변수들과 다릅니다.
+
+#include <iostream>
+
+template <typename TT>
+class ClassTemplate {
+private:
+	int age = 0;
+public:
+	ClassTemplate(const TT& a) {
+		age = a;
+	}
+	template<typename C>
+	friend void Show(C &);
+};
+template<class T>
+void Show(T & a)
+{
+	std::cout << a.age;
+}
+
+int main(void) {
+	ClassTemplate<int> a = ClassTemplate<int>(1);
+	Show(a);
+}
+friend 선언과 동시에 정의도 가능합니다.
+
+#include <iostream>
+
+template <typename TT>
+class ClassTemplate {
+private:
+	int age = 0;
+public:
+	ClassTemplate(const TT& a) {
+		age = a;
+	}
+	template<typename C>
+	friend void Show(C & a) {
+		std::cout << a.age;
+	}
+};
+
+
+int main(void) {
+	ClassTemplate<int> a = ClassTemplate<int>(1);
+	Show(a);
+}

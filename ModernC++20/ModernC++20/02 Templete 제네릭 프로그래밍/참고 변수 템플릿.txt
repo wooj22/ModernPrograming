@@ -1,0 +1,74 @@
+https://c-annotationskr.sourceforge.io/cplusplus21.html
+
+1.18: C++14: 변수처럼 템플릿 사용하기(템플릿 변수)
+
+함수 템플릿과 클래스 템플릿 외에도 (제 22장) C++14 표준에서는 변수 템플릿을 정의할 수 있다. 
+변수 템플릿은 (함수나 클래스) 템플릿을 정의할 때 편리하다. 변수 템플릿 안에 정의된 유형 매개변수에 유형을 지정한다.
+변수 템플릿은 익숙한 template 헤더로 시작하여 다음에 변수 자체의 정의가 따라온다. 
+템플릿 헤더는 유형을 지정한다. 거기에 기본 유형을 지정해도 된다. 예를 들어,
+
+    template<typename T = long double>
+    constexpr T pi = T(3.1415926535897932385);
+
+이 변수를 사용하려면 유형을 지정해야 한다. 그리고 초기화된 그 값을 지정된 유형으로 변환할 수 있으면 컴파일러가 변환해 준다.
+
+    cout << pi<> << ' ' << pi<int>;
+
+두 번째 삽입에서 long double 초기화 값은 int로 변환되고 3을 화면에 보여준다.
+
+특정화도 지원한다. 예를 들어 텍스트 `pi'를 보여주기 위해 char const * 유형에 대한 특정화는 다음과 같이 정의할 수 있다.
+
+    template<>
+    constexpr char const *pi<char const *> = "pi";
+
+이 특정화로 cout << pi<char const *>을 하면 pi를 보여줄 수 있다.
+
+-------------------------------------------------------------------------------
+template<class T>
+constexpr T pi = T(3.1415926535897932385L);  // variable template
+ 
+template<class T>
+T circular_area(T r) // function template
+{
+    return pi<T> * r * r; // pi<T> is a variable template instantiation
+}
+-------------------------------------------------------------------------------
+클래스 범위에서 사용될 때 변수 템플릿은 정적 데이터 멤버 템플릿을 선언합니다.
+using namespace std::literals;
+struct matrix_constants
+{
+    template<class T>
+    using pauli = hermitian_matrix<T, 2>; // 별칭 템플릿
+ 
+    template<class T> // 정적 데이터 멤버 템플릿
+    static constexpr pauli<T> sigmaX = { { 0, 1 }, { 1, 0 } }; 
+ 
+    template<class T>
+    static constexpr pauli<T> sigmaY = { { 0, -1i }, { 1i, 0 } };
+ 
+    template<class T>
+    static constexpr pauli<T> sigmaZ = { { 1, 0 }, { 0, -1 } };
+};
+-------------------------------------------------------------------------------
+정적 데이터 멤버 템플릿의 정의
+
+struct limits {
+    template<typename T>
+    static const T min; // 정적 데이터 멤버 템플릿 선언
+};
+template<typename T>
+const T limits::min = { }; // 정적 데이터 멤버 템플릿 정의
+ 
+template<class T>
+class X {
+   static T s; // 클래스 템플릿의 비 템플릿 정적 데이터 멤버 선언
+};
+template<class T>
+T X<T>::s = 0; // 클래스 템플릿의 비 템플릿 데이터 멤버 정의
+
+-------------------------------------------------------------------------------
+변수 템플릿이 C ++ 14에 도입 될 때까지 매개 변수화 된 변수는 일반적으로 클래스 템플릿의 정적 데이터 멤버 또는 원하는 값을 반환하는 constexpr 함수 템플릿으로 구현되었습니다.
+
+변수 템플릿은 템플릿 템플릿 인수 로 사용할 수 없습니다 .
+
+
