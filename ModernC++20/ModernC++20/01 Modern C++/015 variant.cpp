@@ -66,7 +66,6 @@ int main()
         //std::get_if<bool>(&vunion);                       // nullptr
         //타입이 유효하지 않다면 bad_variant_access 예외를 던지는 대신, nullptr을 반환
     }
-
 }
 
 //std::monostate

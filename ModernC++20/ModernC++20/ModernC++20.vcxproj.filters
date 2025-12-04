@@ -16,6 +16,12 @@
     <Filter Include="01 Modern C++">
       <UniqueIdentifier>{39a9398b-d3e3-418d-b0e7-1b0b8b8707c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lab">
+      <UniqueIdentifier>{5a9ce441-6835-4e5d-a341-20a52e3ff523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lab\Lab1">
+      <UniqueIdentifier>{cd69594d-2ed0-4639-b36a-a01651567b0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
@@ -125,6 +131,30 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 common_type.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 Init Statement.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 invoke.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 invoke2.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 optional.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 optional2.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 spaceship operator.cpp">
+      <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제01\테스트 static_assert.cpp">
+      <Filter>Lab\Lab1</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

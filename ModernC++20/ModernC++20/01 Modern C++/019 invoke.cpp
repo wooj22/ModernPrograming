@@ -46,13 +46,13 @@ int main()
     */
 }
 
-//callable한 객체는 모두 가능하기 때문에, 
+// callable한 객체는 모두 가능하기 때문에,
 //      함수 뿐만이 아니라 
 //      공개된 멤버 변수도 사실상 callable 이므로, std::invoke를 통해 확인할 수 있다. ***
 //      공개된(public) 멤버 변수도, 
 //      그 타입이 operator() 를 제공하거나 std::function 같은 callable 타입이면, 호출 가능한 존재가 된다.
 
-//공개된 멤버 변수 자체는 callable(호출 가능한 것)이 아니다.
+// 공개된 멤버 변수 자체는 callable(호출 가능한 것)이 아니다.
 //      다만, std::invoke는 '멤버 변수 포인터' 에도 동작한다는 점 때문에 오해.
 //      std::invoke는 “호출(call)”만 하는 도구가 아니라, member pointer dispatch 유틸리티에 가깝습니다.
 
