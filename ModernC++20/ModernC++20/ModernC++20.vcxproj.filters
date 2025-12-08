@@ -22,6 +22,9 @@
     <Filter Include="Lab\Lab1">
       <UniqueIdentifier>{cd69594d-2ed0-4639-b36a-a01651567b0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02 Template Generic Programming">
+      <UniqueIdentifier>{1b9e962d-7f51-4e54-86f6-fc56c25790c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
@@ -155,6 +158,66 @@
     </ClCompile>
     <ClCompile Include="..\과제\과제01\테스트 static_assert.cpp">
       <Filter>Lab\Lab1</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\100_templete.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\101_templete Argument.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\101_templete Parameter.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete Argument Type Deduction.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction4_CTAD.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\103_Templete typedef.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\104_Templete typeid.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\104_Templete typeid2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\105_Templete typename.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\105_Templete typename2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\200 Templete parsing adl.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\300 Variable template.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\310 alias template.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\310 alias template2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\400_templete_array.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\401_template_smart pointer1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="02 Templete 제네릭 프로그래밍\401_template_smart pointer2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

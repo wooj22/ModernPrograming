@@ -128,7 +128,8 @@ using namespace std;
     #include <type_traits>
     using namespace std;
 
-    template<typename T> class Vector
+    template<typename T> 
+    class Vector
     {
         T* buff;
     public:

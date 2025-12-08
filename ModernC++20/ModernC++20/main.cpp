@@ -1,20 +1,27 @@
-//static_assert 활용
-// 
-// 사용자가 정수가 아닌 값을 입력을 전달했을 때, 
-// 컴파일 에러 메시지가 표시되도록 template을 작성하세요.  
-
-#include <concepts>
 #include <iostream>
-#include <assert.h>
-#include <type_traits>
+#include <list>
 
-template <typename T>
-void process(T value) {
-	static_assert(std::is_integral_v<T>, "T must be an integral type");
-}
+using namespace std;
+
+
+template<typename T>
+class Foo
+{
+public:
+	T data;
+	explicit Foo(const T& a) : data(a) {}
+	Foo(const T& a, const T& b) : data(a + b) {}
+};
+
+template<typename T1, typename T2>
+Foo(const T1& a, const T2& b) -> Foo<std::common_type_t<T1, T2>>;
 
 int main()
 {
-    process(5);         // 통과
-    process(3.14);      // 컴파일 에러 : "T must be an integral type"
+	Foo f1{ 42 };
+	Foo f2{ 42, 77.7 };
+
+	cout << f2.data << endl;
+
+	return 0;
 }
