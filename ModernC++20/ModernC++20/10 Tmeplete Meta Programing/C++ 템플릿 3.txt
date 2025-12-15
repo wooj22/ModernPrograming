@@ -1,0 +1,1064 @@
+Contents
+Template Recursion (템플릿 재귀)
+Variadic Templates (가변인수 템플릿)
+Fold Expression (폴드 표현식)
+MetaProgramming (메타프로그래밍)
+Type Traits
+[C++] 템플릿 (Templates)
+
+[C++] 템플릿(Template) 심화편 (1)
+
+지난 포스팅에 이어서 계속해서 템플릿에 대해 알아보도록 하겠습니다.
+
+ 
+
+4. Template Recursion
+
+C++의 템플릿은 단순히 클래스나 함수를 정의하는 것보다 더 많은 것들을 할 수 있습니다. 
+그중 하나가 바로 템플릿 재귀입니다. 
+구체적인 구현 방법을 살펴보기 전에 먼저 템플릿 재귀가 필요한 이유에 대해서 알아보도록 하겠습니다.
+
+ 
+
+ 
+
+4.1 N차원 Grid - 첫 번째 방법
+
+이전 포스팅에서 본 Grid 템플릿은 2차원까지만 지원해서 활용 범위가 제한됩니다. 
+예를 들어 3D 틱택토나 4차원 행렬을 계산하는 수학 프로그램을 구현할 수 없습니다. 
+물론 원하는 차원마다 템플릿이나 클래스를 새로 만들면 됩니다. 하지만 이렇게 하면 코드가 중복될 수 있습니다. 
+또 다른 방법은 일차원 Grid만 만들어두고, 이 Grid를 원소의 타입으로 갖는 Grid를 인스턴스화하는 방식으로 원하는 차원에 대한 Grid를 만들 수도 있습니다. 
+이때 상위 Grid의 원소로 사용하는 일차원 Grid는 실제 원소의 타입으로 인스턴스화합니다.
+
+ 
+
+다음 코드는 OneDGrid 클래스 템플릿의 구현 코드를 보여줍니다. 
+앞선 포스팅에서 본 예제를 일차원 버전으로 만들고, resize() 메소드를 추가하고, at()에 대한 operator[]를 교체했습니다. 
+vector를 비롯한 다른 표준 라이브러리 컨테이너처럼 여기서 구현한 operator[]도 경계 검사를 수행하지 않습니다. 
+또한, 이 예제에서는 m_elements에 std::optional<T>가 아닌 T의 인스턴스를 저장하도록 수정했습니다.
+
+template<typename T>
+class OneDGrid
+{
+public:
+    explicit OneDGrid(size_t size = DefaultSize) { resize(size); }
+    virtual ~OneDGrid() = default;
+ 
+    T& operator[](size_t x) { return m_elements[x]; }
+    const T& operator[](size_t x) const { return m_elements[x]; }
+ 
+    void resize(size_t newSize) { m_elements.resize(newSize); }
+    size_t getSize() const { return m_elements.size(); }
+ 
+    static const size_t DefaultSize{ 10 };
+private:
+    std::vector<T> m_elements;
+};
+이렇게 구현한 OneDGrid를 이용하여 다음과 같이 다차원 그리드를 만들 수 있습니다.
+
+int main()
+{
+    OneDGrid<int> singleDGrid;
+    OneDGrid<OneDGrid<int>> twoDGrid;
+    OneDGrid<OneDGrid<OneDGrid<int>>> threeDGrid;
+ 
+    singleDGrid[3] = 5;
+    twoDGrid[3][3] = 5;
+    threeDGrid[3][3][3] = 5;
+}
+이렇게 해도 사용하는 데 문제는 없지만 선언하는 부분이 조금 지저분합니다.
+
+ 
+
+4.2 N 차원 Grid - 두 번째 방법 (템플릿 재귀)
+
+템플릿 재귀를 활용하면 진정한 N차원 그리드를 구현할 수 있습니다. 다음 선언문에서 보듯이 그리드의 차원은 본질적으로 재귀적인 속성이 있기 때문입니다.
+
+OneDGrid<OneDGrid<OneDGrid<int>>> threeDGrid;
+여기서 각가의 OneDGrid를 재귀의 한 단계로 볼 수 있습니다. int에 대한 OneDGrid는 재귀의 베이스 케이스(기저 상태) 역할을 합니다. 다시 말해 3차원 그리드는 int에 대한 일차원 그리드에 대한 일차원 그리드에 대한 일차원 그리드로 볼 수 있습니다. 이때 재귀 문장을 길게 나열할 필요없이 다음과 같이 작성하면 알아서 N차원 그리드로 풀어서 써줍니다.
+
+NDGrid<int, 1> singleDGrid;
+NDGrid<int, 2> twoDGrid;
+NDGrid<int, 3> threeDGrid;
+여기 나온 NDGrid 클래스 템플릿은 원소의 타입과 차원을 지정하는 정수를 인수로 받습니다. 여기서 핵심은 NDGrid의 원소 타입이 템플릿 매개변수 리스트에 지정된 원소 타입이 아니라 현재 Grid보다 한 차원 낮은 NDGrid라는 데 있습니다. 다시 말해 3차원 그리드는 2차원 그리드의 벡터고, 2차원 그리드는 1차원 그리드의 벡터입니다.
+
+ 
+
+이렇게 재귀적으로 구성하려면 베이스 케이스를 지정해야 합니다. 1차원으로 NDGrid를 부분 특수화하고, 원소를 NDGrid가 아닌 템플릿 매개변수로 지정한 타입으로 지정해야 합니다.
+
+ 
+
+이렇게 일반화한 NDGrid 템플릿의 정의 코드는 다음과 같습니다.
+
+template<typename T, size_t N>
+class NDGrid
+{
+public:
+    explicit NDGrid(size_t size = DefaultSize) { resize(size); }
+    virtual ~NDGrid() = default;
+ 
+    NDGrid<T, N - 1>& operator[](size_t x) { return m_elements[x]; }
+    const NDGrid<T, N - 1>& operator[](size_t x) const { return m_elements[x]; }
+ 
+    void resize(size_t newSize)
+    {
+        m_elements.resize(newSize);
+        // vector에 대해 resize()를 호출하면 NDGrid<T, N-1> 원소에 대한
+        // 0-argument 생성자를 호출해서 디폴트 크기로 원소가 생성됩니다. 따라서,
+        // 각 원소마다 명시적으로 resize()를 재귀 호출하는 방식으로 중첩된 Grid 원소의
+        // 크기를 조절합니다.
+        for (auto& element : m_elements) {
+            element.resize(newSize);
+        }
+    }
+ 
+    size_t getSize() const { return m_elements.size(); }
+ 
+    static const size_t DefaultSize{ 10 };
+private:
+    std::vector<NDGrid<T, N - 1>> m_elements;
+};
+이렇게 구현할 때 템플릿 재귀 정의를 제외한 가장 까다로운 부분은 그리드의 각 차원의 크기를 적절히 정하는 것입니다. 
+여기서는 각 차원의 크기가 같은 N차원 Grid를 만들었습니다. 차원마다 크기를 다르게 구현하는 방법은 이보다 훨씬 복잡합니다. 하지만 이렇게 단순한 경우에도 옂전히 문제는 남아 있습니다. 예를 들어 사용자가 지정한 크기(ex, 20이나 50)로 배열을 생성해야 합니다. 그러기 위해서는 생성자에 정수 크기를 받는 매개변수가 있어야 합니다. 그런데 하위 그리드의 vector 크기를 동적으로 변경할 때 이 크기값을 하위 그리드 원소로 전달할 수 없습니다. vector는 디폴트 생성자로 객체를 만들기 때문입니다. 따라서 vector에 있는 각 그리드 원소마다 resize()를 일일이 호출해주어야 합니다.
+
+여기서 m_elements는 NDGrid<T, N - 1>의 vector로서 재귀 단계에 해당합니다. 
+또한 operator[]는 원소 타입에 대한 레퍼런스를 리턴하는데 이것 역시 T가 아닌 NDGrid<T, N - 1> 입니다.
+
+ 
+
+ 
+
+베이스 케이스에 대한 템플릿 정의는 다음과 같이 차원이 1인 부분 특수화로 작성합니다. 
+특수화를 구현하는 코드는 하나도 상속하지 않기 때문에 다시 작성해야할 부분이 많습니다.
+
+template<typename T>
+class NDGrid<T, 1>
+{
+public:
+    explicit NDGrid(size_t size = DefaultSize) { resize(size); }
+    virtual ~NDGrid() = default;
+ 
+    T& operator[](size_t x) { return m_elements[x]; }
+    const T& operator[](size_t x) const { return m_elements[x]; }
+ 
+    void resize(size_t newSize) { m_elements.resize(newSize); }
+    size_t getSize() const { return m_elements.size(); }
+ 
+    static const size_t DefaultSize{ 10 };
+private:
+    std::vector<T> m_elements;
+};
+ 
+
+이렇게 작성한 코드는 다음과 같이 사용할 수 있습니다.
+
+int main()
+{
+    NDGrid<int, 3> my3DGrid{ 4 };
+    my3DGrid[2][1][2] = 5;
+    my3DGrid[1][1][1] = 5;
+    std::cout << my3DGrid[2][1][2] << std::endl;
+}
+ 
+
+5. Variadic Templates
+
+일반적으로 템플릿의 매개변수는 개수가 고정되어 있습니다. 하지만 가변 인수 템플릿은 템플릿 매개변수의 개수가 고정되어 있지 않습니다. 
+예를 들어 다음과 같이 템플릿 매개변수의 개수를 지정하지 않게 정의할 수 있습니다. 이때 Types라는 매개변수 팩(parameter pack)을 사용합니다.
+
+template<typename... Types>
+class MyVariadicTemplate {};
+typename 뒤에 붙은 ...은 오타가 아닌 가변 인수 템플릿에 대한 매개변수 팩을 정의하는 구문입니다. 
+매개변수 팩은 다양한 수의 인수를 받을 수 있습니다. 점 세 개의 앞이나 뒤에 공백을 넣어도 됩니다.
+ 
+
+예를 들어 임의 개수의 타입에 대해 MyVariadicTemplate을 인스턴스화하면 다음과 같습니다.
+
+MyVariadicTemplate<int> instance1;
+MyVariadicTemplate<std::string, double, std::list<int>> instance2;
+심지어 인수 없이 템플릿을 인스턴스화할 수도 있습니다.
+
+MyVariadicTemplate<> instance3;
+ 
+
+가변 인수 템플릿을 인스턴스화할 때 반드시 템플릿 인수를 지정하게 하려면 다음과 같이 정의하면 됩니다.
+
+template<typename T1, typename... Types>
+class MyVariadicTemplate { };
+위와 같이 정의한 상태에서 MyVariadicTemplate을 인수없이 인스턴스화하려고 시도하면 컴파일 에러가 발생합니다. MSVC의 경우에는 다음의 에러가 발생합니다.
+
+"error C2976: 'MyVariadicTemplate': too few template arguments"
+
+ 
+
+가변 인수 템플릿에 인수를 지정하는 구문은 반복문으로 작성할 수 없습니다. 이렇게 하려면 템플릿 재귀를 활용하는 수 밖에 없습니다.
+
+ 
+
+5.1 Type-Safe Variable-Length Argument Lists
+
+가변 인수 템플릿을 사용하면 타입에 안전한 가변 길이 인수 리스트를 만들 수 있습니다. 다음 예제는 processValue()라는 가변 인수 템플릿을 정의한 것입니다. 이 템플릿은 인수의 타입과 개수가 일정하지 않더라도 타입에 안전하게 처리합니다. processValue() 함수는 가변 길이 인수 리스트로 주어진 각각의 인수마다 handleValue()를 호출합니다. 그러므로 처리하려는 타입마다 handleValue() 함수를 구현해야 합니다. 예제 코드에서는 int, double, string 타입을 사용합니다.
+
+void handleValue(int value) { std::cout << "Integer: " << value << std::endl; }
+void handleValue(double value) { std::cout << "Double: " << value << std::endl; }
+void handleValue(std::string_view value) { std::cout << "String: " << value << std::endl; }
+ 
+void processValues() // Base case to stop recursion
+{ /* Nothing to do in this base case */ }
+ 
+template<typename T1, typename... Tn>
+void processValues(T1 arg1, Tn... args)
+{
+    handleValue(arg1);
+    processValues(args...);
+}
+이 예제를 보면 점 세 개(...) 연산자가 세 번 나오는데, 두 가지 용도로 사용합니다.
+
+첫 번째 용도는 템플릿 매개변수 리스트의 typename 뒤와 함수 매개변수 리스트의 Tn 타입 뒤에 적은 것처럼 매개변수 팩(parameter pack)을 표현하는 것입니다. 매개변수 팩은 가변 인수를 받습니다.
+
+ 
+
+두 번째 용도는 ...를 함수 바디에서 매개변수 이름인 args 뒤에 붙여서 매개변수 팩 확장(parameter pack expasion) 하는 연산을 하는 것입니다. 다시 말해 이 연산자는 파라미터 팩을 풀어서(unpack/expand) 각각의 개별 인수로 분리합니다. 기본적으로 이 연산자는 좌변을 인수로 받고, 팩에 있는 모든 템플릿 매개변수에 대해 반복하면서 각 인수를 콤마로 구분해서 하나씩 대입합니다. 예를 들어 다음의 코드를 살펴보겠습니다.
+
+processValues(args...);
+이렇게 하면 args 매개변수 팩을 개별 인수로 풀고, 각각을 콤마로 구분합니다. 그리고 나서 펼쳐진 인수 리스트로 procesValues() 함수를 호출합니다. 이 템플릿은 최소한 T1이라는 템플릿 매개변수를 받습니다. processValues()를 args...에 대해 재귀적으로 호출하면 매 단계마다 매개변수를 하나씩 줄이면서 재귀적으로 호출합니다.
+
+ 
+
+processValues() 함수를 재귀적으로 구현했기 때문에 재귀 호출을 종료하는 조건도 반드시 지정해야 합니다. 여기서는 인수를 받지 않는 processValues() 함수를 구현하는 방식으로 지정했습니다.
+
+ 
+
+이렇게 작성한 processValues() 가변 인수 템플릿을 다음과 같이 테스트할 수 있습니다.
+
+processValues(1, 2, 3.56, "test", 1.1f);
+이때 재귀 호출되는 과정은 다음과 같습니다.
+
+
+여기서 명심할 부분은 이 메소드의 가변 길이 인수 리스트는 타입에 매우 안전하다는 점입니다. processValues() 함수는 실제 타입에 맞게 오버로딩된 handleValue()를 알아서 호출합니다. C++의 다른 코드처럼 자동 캐스팅이 일어납니다. 예를 들어, 바로 위 코드에서 1.1f를 자동으로 float로 캐스팅합니다. processValues() 함수는 handleValue(double value)를 호출하는데, float를 double로 변환해도 손실이 발생하지 않기 때문입니다. 하지만 processValues()를 호출할 때 handleValue()를 지원하지 않는 타입으로 인수를 지정하면 컴파일 에러가 발생합니다.
+
+ 
+
+앞서 구현한 코드에서는 한 가지 문제가 있습니다. 재귀적으로 호출했기 때문에 매번 processValues()를 호출할 때마다 매개변수가 복사됩니다. 그러면 인수의 타입에 따라 오버헤드가 커질 수 있습니다. processValues()에 값이 아닌 레퍼런스로 전달하면 복사 비용을 줄일 수 있을 것이라고 생각하기 쉽지만, 아쉽게도 그렇게 하면 리터럴에 대해 processValues()를 호출할 수 없게 됩니다. const 레퍼런스를 제외하면 리터럴값에 대해서는 레퍼런스를 쓸 수 없기 때문입니다.
+
+ 
+
+non-const 레퍼런스를 사용하면서 리터럴값을 사용하게 하려면 포워드 레퍼런스(forwarding references)를 사용하면 됩니다. 다음 코드는 포워드 레퍼런스인 T&&를 사용했고, 모든 매개변수에 대해 퍼펙트 포워딩(perfect forwarding)을 적용하도록 std::forward()를 사용했습니다. 여기서 퍼펙트 포워딩이란 processValues()에 우측값(rvalue)가 전달되면 우측값 레퍼런스로 forward(전달)되고, 좌측값(lvalue)이나 좌측값 레퍼런스가 전달되면 좌측값 레퍼런스로 forward(전달)된다는 의미입니다. std::forward는 <utility> 헤더에 정의되어 있습니다.
+
+template<typename T1, typename... Tn>
+void processValues(T1&& arg1, Tn&&... args)
+{
+    handleValue(std::forward<T1>(arg1));
+    processValues(std::forward<Tn>(args)...);
+}
+ 
+
+다음 문장을 조금 더 살펴보겠습니다.
+
+processValues(std::forward<Tn>(args)...);
+... 연산자는 매개변수 팩을 풀 때(unpack) 사용합니다. 이 연산자는 매개변수 팩에 있는 각 인수를 std::forward()로 호출하고, 그들을 콤마로 구분해서 분리합니다. 예를 들어, args란 매개변수 팩이 A1, A2, A3 타입으로 된 a1, a2, a3라는 인수로 구성되었다고 가정해보겠습니다. 이 팩을 풀려면 다음과 같이 호출될 것입니다.
+
+processValues(std::forward<A1>(a1),
+              std::forward<A2>(a2),
+              std::forward<A3>(a3));
+ 
+
+매개변수 팩을 사용하는 함수의 바디 안에서 이 팩에 담긴 인수의 개수를 알아내는 방법은 다음과 같습니다.
+
+int numberOfArguments{ sizeof...(args) };
+가변 인수 템플릿을 실제로 활용하는 예로는 보안과 타입에 안전한 printf() 류의 함수 템플릿이 있습니다.
+
+ 
+
+5.2 Variable Number of Mixin Classes
+
+매개변수 팩은 거의 모든 곳에서 사용할 수 있습니다. 예를 들어 다음 코드는 매개변수 팩을 이용하여 MyClass에 대한 가변 개수의 믹스인 클래스를 정의합니다.
+
+class Mixin1
+{
+public:
+    Mixin1(int i) : m_value{ i } {}
+    virtual void mixin1Func() { std::cout << "Mixin1: " << m_value << std::endl; }
+private:
+    int m_value;
+};
+ 
+class Mixin2
+{
+public:
+    Mixin2(int i) : m_value{ i } {}
+    virtual void mixin2Func() { std::cout << "Mixin2: " << m_value << std::endl; }
+private:
+    int m_value;
+};
+ 
+template<typename... Mixins>
+class MyClass : public Mixins...
+{
+public:
+    MyClass(const Mixins&... mixins) : Mixins{ mixins }... {}
+    virtual ~MyClass() = default;
+};
+이 코드는 먼저 믹스인 클래스 2개(Mixin1과 Mixin2)를 정의합니다. 여기서는 간단히 정의했습니다. 각 클래스마다 정수를 인수로 받아서 저장하는 생성자와 각 인스턴스의 정보를 화면에 출력하는 함수를 하나씩 정의했습니다. 가변 인수 템플릿인 MyClass는 매개변수 팩인 typename... Mixins를 사용하여 다양한 수의 믹스인 클래스를 받습니다. 이 클래스는 이렇게 전달된 모든 믹스인 클래스를 상속하고, 생성자에서도 같은 수의 인수를 받아서 각자 상속한 믹스인 클래스를 초기화합니다. 여기서 ... 연산자는 기본적으로 좌측의 내용을 인수로 받아서 팩에 있는 템플릿 매개변수에 대해 루프를 돌면서 콤바로 구분하면서 unpack합니다.
+
+ 
+
+이렇게 정의한 클래스는 다음과 같이 사용할 수 있습니다.
+
+int main()
+{
+    MyClass<Mixin1, Mixin2> a{ Mixin1(11), Mixin2(22) };
+    a.mixin1Func();
+    a.mixin2Func();
+ 
+    MyClass<Mixin1> b{ Mixin1{33} };
+    a.mixin1Func();
+    // b.mixin2.Func(); // Error
+ 
+    MyClass<> c;
+    //a.mixin1Func(); // Error
+    //a.mixin2Func(); // Error
+}
+실행 결과는 다음과 같습니다.
+
+
+ 
+
+5.3 Fold Expressions
+
+C++17부터 추가된 폴드 표현식(fold expression)이란 기능을 활용하면 가변 인수 템플릿에서 매개변수 팩을 보다 쉽게 다룰 수 있습니다. 다음 표는 C++에서 지원하는 4가지 종류의 폴드 표현식을 보여줍니다. 여기서 \ThetaΘ 자리에 나올 수 있는 연산자는 + - * / % ^ & | << >> += -= *= /= %= ^= &= |= <<= >>= = == != < > <= >= && || , .* ->* 등이 있습니다.
+
+
+ 
+
+몇 가지 예제를 살펴보겠습니다. 앞에서 본 processValues() 함수 템플릿은 다음과 같이 재귀적으로 정의했습니다.
+
+void processValues() // Base case to stop recursion
+{ /* Nothing to do in this base case */ }
+ 
+template<typename T1, typename... Tn>
+void processValues(T1 arg1, Tn... args)
+{
+    handleValue(arg1);
+    processValues(args...);
+}
+재귀적으로 정의했기 때문에 재귀를 멈출 베이스 케이스를 지정해야 합니다. 폴딩 표현식을 사용하면 단항 우측 폴드(unary right fold)를 이용한 함수 템플릿 하나로 구현할 수 있습니다. 따라서 베이스 케이스를 따로 지정하지 않아도 됩니다.
+
+template<typename... Tn>
+void processValues(const Tn&... args)
+{
+    (handleValue(args), ...);
+}
+기본적으로 함수 본문에 있는 점 3개(...) 연산자로 폴딩합니다. 이 문장이 펼쳐지면서 매개변수 팩에 있는 인수마다 handleValue()를 호출하며 결과가 콤바로 구분되어 담깁니다. 예를 들어 args가 a1, a2, a3라는 세 인수로 구성된 매개변수 팩에 대해 단항 우측 폴드가 다음과 같이 펼쳐집니다.
+
+(handleValue(a1), (handleValue(a2), handleValue(a3)));
+따라서 아래 코드를 실행하면,
+
+processValues(1, 2, 3.56, "test", 1.1f);
+
+위의 결과를 확인할 수 있습니다.
+
+ 
+
+또 다른 예를 살펴보겠습니다. printValues() 함수 템플릿은 주어진 인수를 각각 한 줄씩 구분해서 콘솔에 출력합니다.
+
+template<typename... Values>
+void printValues(const Values&... values)
+{
+    ((std::cout << values << std::endl), ...);
+}
+여기서 values가 v1, v2, v3라는 세 인수로 구성된 매개변수 팩이라면 단항 우측 폴드로 인해 다음과 같이 펼쳐집니다.
+
+((std::cout << v1 << std::endl), ((std::cout << v2 << std::endl), (std::cout << v3 << std::endl)));
+printValues()에 원하는 수만큼 인수를 얼마든지 지정해서 호출할 수 있습니다.
+
+printValues(1, "test", 2.34);
+ 
+
+위 예제에서는 폴딩에 콤마 연산자를 사용했지만 거의 모든 연산자와 함께 사용할 수도 있습니다. 예를 들어 다음 코드는 주어진 값을 모두 더한 결과를 구하는 가변 인수 함수 템플릿을 이항 좌측 폴드(binary left fold)로 정의하고 있습니다. 이항 좌측 폴드에는 반드시 Init 값을 지정해야 합니다. 따라서 sumValues()는 두 개의 템플릿 타입 매개변수(Init의 타입을 지정하는 일반 매개변수와 0개 이상의 인수를 받을 수 있는 매개변수 팩)로 구성됩니다.
+
+template<typename T, typename... Values>
+double sumValues(const T& init, const Values&... values)
+{
+    return (init + ... + values);
+}
+만약 values가 v1, v2, v3라는 3개의 인수로 구성된 매개변수 팩이라면, 이항 좌측 폴드를 펼친 결과는 다음과 같습니다.
+
+return (((init + v1) + v2) + v3);
+이렇게 만든 sumValues() 함수 템플릿을 사용하는 방법은 다음과 같습니다.
+
+std::cout << sumValues(1, 2, 3.3) << std::endl;
+std::cout << sumValues(1) << std::endl;
+이렇게 템플릿을 정의하면 인수를 최소 한 개 이상 지정해주어야 합니다. 따라서 다음과 같이 작성하면 컴파일 에러가 발생합니다.
+
+std::cout << sumValues() << std::endl;
+ 
+
+sumValues() 함수 템플릿은 단항 좌측 폴드로 정의할 수도 있습니다. (인수를 최소 한 개 이상 지정해줘야하는 것은 동일합니다.)
+
+template<typename... Values>
+double sumValues(const Values&... values)
+{
+    return (... + values);
+}
+ 
+
+일부 단항 폴드에 zero length의 파라미터 팩이 허용되지만 오직 AND(&&)와 OR(||)과 콤마(,) 연산자 조합에서만 가능합니다. 예를 들면 다음과 같습니다.
+
+template<typename... Values>
+double allTrue(const Values&... values) { return (... && values); }
+ 
+template<typename... Values>
+double anyTrue(const Values&... values) { return (... || values); }
+ 
+int main()
+{
+    std::cout << allTrue(1, 1, 0) << allTrue(1, 1) << allTrue() << std::endl; // 011
+    std::cout << anyTrue(1, 1, 0) << anyTrue(0, 0) << anyTrue() << std::endl; // 100
+}
+ 
+
+6. MetaProgramming
+템플릿 메타프로그래밍(TMP, template metaprogramming)에 대해서 이번 포스팅에서 간단하게 살펴보겠습니다. 메타프로그래밍을 자세하게 살펴보려면 책 한 권 분량의 내용이 나올 정도로 방대하기 때문에 간단하게 핵심 개념과 몇 가지 예제만 알아보겠습니다.
+
+ 
+
+템플릿 메타프로그래밍은 실행 시간이 아닌 컴파일 시간에 연산을 수행할 목적으로 사용합니다. 기본적으로 C++ 위에 정의된 프로그래밍 언어입니다.
+
+ 
+
+6.1 Factorial at Compile Time
+
+다음 코드는 어떤 수의 팩토리얼을 컴파일 시간에 계산하는 예를 보여줍니다. 여기서는 위에서 소개한 템플릿 재귀를 사용하여 코드를 구현했습니다. 그래서 재귀 템플릿과 재귀를 멈추기 위한 베이스 템플릿을 작성해야 합니다. 팩토리얼에서 0! = 1입니다. 따라서 이 값을 베이스 케이스로 지정합니다.
+
+template<unsigned char f>
+class Factorial
+{
+public:
+    static const unsigned long long value{ f * Factorial<f - 1>::value };
+};
+ 
+template<>
+class Factorial<0>
+{
+public:
+    static const unsigned long long value{ 1 };
+};
+ 
+int main()
+{
+    std::cout << Factorial<6>::value << std::endl;
+}
+이 코드는 6 팩토리얼을 계산합니다. 수학 기호로 6!라고 표현하며, 1x2x3x4x5x6인 720가 출력됩니다.
+
+여기 나온 팩토리얼 계싼이 수행되는 시점은 컴파일 시간이라는 점을 기억해야 합니다. 이렇게 컴파일 시간에 계산된 결과는 실행 시간에서 볼 때 정적 상수값이므로 ::value로 접근합니다.
+
+ 
+
+이렇게 컴파일 시간에 특정한 수의 팩토리얼을 구하는 작업을 굳이 템플릿 메타프로그래밍으로 구현할 필요는 없습니다. constexpr이 도입되면서 다음과 같이 템플릿을 쓰지 않고도 구현할 수 있습니다.
+
+constexpr unsigned long long factorial(unsigned char f)
+{
+    if (f == 0) {
+        return 1;
+    }
+    else {
+        return f * factorial(f - 1);
+    }
+}
+만약 다음과 같이 호출하면 값이 컴파일 시간에 계산됩니다.
+
+constexpr auto f1 = factorial(6);
+하지만 이 문장에서 constexpr을 빼먹으면 안됩니다. 이 키워드를 생략하면 실행 시간에 계산됩니다.
+
+ 
+
+6.2 Loop Unrolling
+템플릿 메타프로그래밍의 두 번째 예로 반복문을 실행 시간에 처리하지 않고, 컴파일 시간에 일렬로 펼쳐놓는 방식으로 처리하는 루프 언롤링(loop unrolling)이라는 기법이 있습니다. 참고로 루프 언롤링은 꼭 필요할 때만 사용하는 것이 좋습니다. 굳이 언롤링하도록 작성하지 않아도 컴파일러의 판단에 따라 자동으로 언롤링하기 때문입니다.
+
+ 
+
+이번 예제 코드도 템플릿 재귀로 작성합니다. 컴파일 시간에 루프 안에서 작업을 처리해야 하기 때문입니다. 각 재귀 단계마다 Loop 템플릿이 i - 1에 대해 인스턴스화됩니다. 0에 도달하면 재귀가 종료됩니다.
+
+template<int i>
+class Loop
+{
+public:
+    template<typename FuncType>
+    static inline void run(FuncType func) {
+        Loop<i - 1>::run(func);
+        func(i);
+    }
+};
+ 
+template<>
+class Loop<0>
+{
+public:
+    template<typename FuncType>
+    static inline void run(FuncType /* func */) { }
+};
+ 
+
+이렇게 작성한 Loop 템플릿은 다음과 같이 사용할 수 있습니다.
+
+void doWork(int i) { std::cout << "doWork(" << i << ")\n"; }
+ 
+int main()
+{
+    Loop<3>::run(doWork);
+}
+이렇게 작성하면 컴파일러는 doWork() 함수를 세 번 연속 호출하는 문장으로 루프를 펼칩니다. 이 코드를 실행한 결과는 다음과 같습니다.
+
+
+ 
+
+6.3 Printing Tuples
+
+이번에는 std::tuple에 있는 각 원소를 화면에 출력하는 기능을 템플릿 메타프로그래밍으로 구현해보도록 하겠습니다. 튜플(tuple)은 타입이 별도로 지정된 값을 원하는 만큼 담을 수 있습니다. tuple의 크기와 값의 타입은 컴파일 시간에 결정됩니다. 하지만 튜플은 원소에 대해 반복하는 메커니즘을 기본으로 제공하지 않습니다. 다음 코드는 템플릿 메타프로그래밍으로 tuple의 원소에 대해 컴파일 시간에 루프를 돌 수 있도록 구현하는 예를 보여줍니다.
+
+ 
+
+다른 예제와 마찬가지로 이번에도 템플릿 재귀를 사용합니다. TuplePrint 클래스 템플릿은 템플릿 매개변수 2개를 받습니다. 하나는 tuple 타입이고, 다른 하나는 초기화할 때 설정할 튜플의 크기를 나타내는 정수입니다. 생성자에서 이 템플릿을 재귀적으로 인스턴스화하고 매번 호출될 때마다 정수값을 하나씩 감소시킵니다. 이 정수값이 0에 도달하면 재귀를 멈추도록 TuplePrint를 부분 특수화합니다. main() 함수는 이렇게 정의한 TuplePrint 클래스 템플릿을 사용하는 방법에 대해 보여주고 있습니다.
+
+template<typename TupleType, int n>
+class TuplePrint
+{
+public:
+    TuplePrint(const TupleType& t) {
+        TuplePrint<TupleType, n - 1> tp{ t };
+        std::cout << std::get<n - 1>(t) << std::endl;
+    }
+};
+ 
+template<typename TupleType>
+class TuplePrint<TupleType, 0>
+{
+public:
+    TuplePrint(const TupleType& t) { }
+};
+ 
+int main()
+{
+    using MyTuple = std::tuple<int, std::string, bool>;
+    MyTuple t1{ 16, "Test", true };
+    TuplePrint<MyTuple, std::tuple_size<MyTuple>::value> tp{ t1 };
+}
+
+main() 함수의 코드를 보면 TuplePrint 템플릿을 사용하는 문장이 다소 복잡하게 표현되어 있습니다. tuple의 정확한 타입과 tuple의 크기를 템플릿 매개변수로 지정하기 때문입니다. 템플릿 매개변수를 자동으로 추론하는 헬퍼 함수 템플릿을 사용하면 이 부분을 좀 더 간결하게 표현할 수 있습니다.
+
+template<typename TupleType, int n>
+class TuplePrintHelper
+{
+public:
+    TuplePrintHelper(const TupleType& t) {
+        TuplePrintHelper<TupleType, n - 1> tp{ t };
+        std::cout << std::get<n - 1>(t) << std::endl;
+    }
+};
+ 
+template<typename TupleType>
+class TuplePrintHelper<TupleType, 0>
+{
+public:
+    TuplePrintHelper(const TupleType& t) { }
+};
+ 
+template<typename T>
+void tuplePrint(const T& t)
+{
+    TuplePrintHelper<T, std::tuple_size<T>::value> tph{ t };
+}
+ 
+int main()
+{
+    std::tuple t1{ 167, "Testing"s, false, 2.3 };
+    tuplePrint(t1);
+}
+
+가장 먼저 원본인 TuplePrint 클래스 템플릿을 TuplePrintHelper로 이름을 변경했습니다. 그런 다음 tuplePrint()라는 간단한 함수 템플릿을 구현했습니다. 이 템플릿은 tuple의 타입을 템플릿 타입 매개변수로 받으며, tuple 자체에 대한 레퍼런스를 함수 매개변수로 받습니다. 이 함수 템플릿의 본문에서는 TuplePrintHelper 클래스 템플릿을 인스턴스화합니다. main() 함수는 이렇게 간략하게 수정한 버전을 사용하는 방법을 보여줍니다.
+
+인수를 보고 컴파일러가 추론하기 때문에 함수 템플릿 매개변수는 직접 지정할 필요가 없습니다.
+
+ 
+
+6.3.1 constexpr if
+
+C++17부터 constexpr if가 추가되었습니다. constexpr if는 실행 시간이 아닌 컴파일 시간에 수행됩니다. constexpr if의 조건을 만족하지 않으면 컴파일은 되지 않습니다. 이 구문을 사용하면 템플릿 메타프로그래밍 코드를 훨씬 간결하게 작성할 수 있습니다. 
+
+예를 들어, 위에서 tuple의 원소를 화면에 출력하는 코드에 constexpr if를 적용해서 다음과 같이 간결하게 표현할 수 있습니다. 이렇게 하면 템플릿 재귀의 베이스 케이스를 더 이상 지정하지 않아도 되며, constexpr if에서 재귀가 멈춥니다.
+
+template<typename TupleType, int n>
+class TuplePrintHelper
+{
+public:
+    TuplePrintHelper(const TupleType& t) {
+        if constexpr (n > 1) {
+            TuplePrintHelper<TupleType, n - 1> tp{ t };
+        }
+        std::cout << std::get<n - 1>(t) << std::endl;
+    }
+};
+ 
+template<typename T>
+void tuplePrint(const T& t)
+{
+    TuplePrintHelper<T, std::tuple_size<T>::value> tph{ t };
+}
+ 
+
+이렇게 하면 클래스 템플릿 자체를 제거하고, 그 자리에 다음과 같이 간단히 구현한 tuplePrintHelper()라는 함수 템플릿을 넣어도 됩니다.
+
+template<typename TupleType, int n>
+void tuplePrintHelper(const TupleType& t) {
+    if constexpr (n > 1) {
+        tuplePrintHelper<TupleType, n - 1>(t);
+    }
+    std::cout << std::get<n - 1>(t) << std::endl;
+}
+ 
+template<typename T>
+void tuplePrint(const T& t)
+{
+    tuplePrintHelper<T, std::tuple_size<T>::value>(t);
+}
+ 
+
+또는, 위의 두 함수 템플릿을 하나로 합쳐서 더 간결하게 표현할 수도 있습니다.
+
+template<typename TupleType, int n = std::tuple_size<TupleType>::value>
+void tuplePrint(const TupleType& t)
+{
+    if constexpr (n > 1) {
+        tuplePrint<TupleType, n - 1>(t);
+    }
+    std::cout << std::get<n - 1>(t) << std::endl;
+}
+이렇게 변경해도, 처음에 실행했던 main() 함수와 같은 방식으로 호출할 수 있습니다.
+
+int main()
+{
+    std::tuple t1{ 167, "Testing"s, false, 2.3 };
+    tuplePrint(t1);
+}
+ 
+
+6.3.2 Using a Compile-Time Integer Sequence with Folding
+
+C++은 <utility> 헤더에 정의된 std::integer_sequence를 이용한 컴파일 시간 정수 시퀀스를 제공합니다. 이 기능은 템플릿 메타프로그래밍에서 인덱스의 시퀀스, 즉 size_t 타입에 대한 정수 시퀀스를 컴파일 시간에 생성하는 데 주로 사용됩니다. 이를 위해 std::index_sequence도 제공합니다. 주어진 매개변수 팩과 같은 길이의 인데기스 시퀀스를 생성할 때는 std::index_sequence_for을 사용하면 됩니다.
+
+ 
+
+튜플을 출력하는 코드를 다음과 같이 가변 인수 템플릿, 컴파일 시간 인덱스 시퀀스 그리고 폴드 표현식으로 구현할 수 있습니다.
+
+template<typename Tuple, size_t... Indices>
+void tuplePrintHelper(const Tuple& t, std::index_sequence<Indices...>)
+{
+    ((std::cout << std::get<Indices>(t) << std::endl), ...);
+}
+ 
+template<typename... Args>
+void tuplePrint(const std::tuple<Args...>& t)
+{
+    tuplePrintHelper(t, std::index_sequence_for<Args...>());
+}
+이렇게 작성해도 이전과 같은 방식으로 호출할 수 있습니다.
+
+int main()
+{
+    std::tuple t1{ 167, "Testing"s, false, 2.3 };
+    tuplePrint(t1);
+}
+ 
+
+위 코드로 호출하면 tuplePrintHelper() 함수 템플릿에 있는 단항 우측 폴드 표현식이 다음과 같이 펼쳐지게 됩니다.
+
+(((cout << get<0>(t) << endl),
+ ((cout << get<1>(t) << endl),
+ ((cout << get<2>(t) << endl),
+  (cout << get<3>(t) << endl)))));
+ 
+
+6.4 Type Traits
+
+타입 트레이트(type traits)를 이용하면 타입에 따라 분기하는 동작을 컴파일 시간에 처리할 수 있습니다. 
+예를 들어 특정한 타입을 상속하는 타입, 특정한 타입으로 변환할 수 있는 타입, 정수 계열의 타입을 요구하는 템플릿 등을 작성할 수 있습니다. 
+C++ 표준에서는 이를 위해 몇 가지 헬퍼 클래스를 제공합니다. 타입 트레이트에 관련된 기능은 모두 <type_traits> 헤더에 정의되어 있습니다. 
+타입 트레이트는 몇 가지 범주로 나눌 수 있는데, 다음 표는 각 범주마다 제공하는 타입에 대한 예를 보여주고 있습니다. 
+전체 목록은 C++ 레퍼런스 문서를 참조하시길 바랍니다.
+
+
+(*)가 붙은 타입 트레이트는 C++20부터 지원합니다.
+타입 트레이트는 C++에서도 상당히 고급 기능에 속합니다. 
+위에서 나온 목록은 C++ 표준에 나온 것 중에서도 일부분이지만 이것마저 일일이 설명하기는 힘들고, 타입 트레이트의 몇 가지 활용 사례들만 살펴보도록 하겠습니다.
+
+ 
+
+6.4.1 Using Type Categories
+
+타입 트레이트를 사용하는 템플릿 예제를 살펴보기 전에 먼저 is_integral과 같은 클래스의 작동 방식을 살펴볼 필요가 있습니다. 
+C++ 표준에서는 다음과 같이 integral_constant 클래스를 정의하고 있습니다.
+
+template <class T, T v>
+struct integral_constant {
+    static constexpr T value{ v };
+    using value_type = T;
+    using type = integral_constant<T, v>;
+    constexpr operator value_type() const noexcept { return value; }
+    constexpr value_type operator()() const noexcept { return value; }
+};
+또한 bool_constant, true_type, false_type과 같은 타입 앨리어스도 정의하고 있습니다.
+
+template <bool B>
+using bool_constant = integral_constant<bool, B>;
+using true_type = bool_constant<true>;
+using false_type = bool_constant<false>;
+이 코드는 true_type과 false_type이라는 두 가지 타입을 정의합니다. 
+true_type::value로 접근하면 true라는 값을 구하고, false_type::value로 접근하면 false란 값을 구할 수 있습니다. 
+또한 true_type::type으로 접근하면 true_type이란 타입을 구할 수 있습니다. false_type도 마찬가지로 적용할 수 있습니다. 
+is_integral이나 is_class와 같은 클래스는 true_type이나 false_type을 상속합니다.
+
+ 
+
+예를 들어 is_integral을 다음과 같이 bool 타입에 대해 특수화할 수 있습니다.
+
+template <> struct std::is_integral<bool> : public std::true_type {};
+이렇게 하면 is_integral<bool>::value란 문장으로 true란 값을 구할 수 있습니다. 
+특수화하는 코드는 직접 작성하지 않아도 되며, 이는 표준 라이브러리에서 기본으로 제공합니다.
+
+ 
+
+타입 범주를 사용하는 가장 간단한 예는 다음과 같습니다.
+
+#include <iostream>
+#include <string>
+#include <type_traits>
+ 
+int main()
+{
+    if (std::is_integral<int>::value) { std::cout << "int is integral\n"; }
+    else { std::cout << "int is not integral\n"; }
+ 
+    if (std::is_class<std::string>::value) { std::cout << "string is a class\n"; }
+    else { std::cout << "string is not a class\n"; }
+}
+
+ 
+
+C++17부터 value 멤버가 있는 트레이트마다 트레이트이름 뒤에 _v가 붙은 가변 템플릿이 추가되었습니다. 
+그래서 some_trait<T>::value라고 적지 않고, some_trait_v<T>와 같은 형태로(ex, is_integral_v<T>, is_const_v<T>) 표현할 수 있습니다. 
+위의 코드를 이러한 헬퍼를 사용하도록 수정하면 다음과 같습니다.
+
+int main()
+{
+    if (std::is_integral_v<int>) { std::cout << "int is integral\n"; }
+    else { std::cout << "int is not integral\n"; }
+ 
+    if (std::is_class_v<std::string>) { std::cout << "string is a class\n"; }
+    else { std::cout << "string is not a class\n"; }
+}
+물론 타입 트레이트를 이렇게 사용하는 일은 거의 없습니다. 그보다는 타입의 특정한 속성을 기준으로 코드를 생성하기 위해 템플릿과 함께 사용할 때 유용합니다. 
+다음에 나오는 템플릿 함수가 바로 이러한 예를 보여줍니다. 이 코드는 타입을 템플릿 매개변수로 받는 process_helper() 함수 템플릿을 두 가지 방식으로 오버로딩하도록 정의합니다. 첫 번째 매개변수는 값이고, 두 번째 매개변수는 true_type이나 false_type 중 한 인스턴스입니다. process() 함수 템플릿은 매개변수를 하나만 받아서 process_helper()를 호출합니다.
+
+template<typename T>
+void processHelper(const T& t, std::true_type)
+{
+    std::cout << t << " is an integral type.\n";
+}
+ 
+template<typename T>
+void processHelper(const T& t, std::false_type)
+{
+    std::cout << t << " is a non-integral type.\n";
+}
+ 
+template<typename T>
+void process(const T& t)
+{
+    processHelper(t, typename std::is_integral<T>::type{});
+}
+ 
+
+여기서 processHelper()를 호출할 때 두 번째 인수를 다음과 같이 지정했습니다.
+
+typename std::is_integral<T>::type{}
+이 인수는 is_integral을 이요하여 T가 정수 계열 타입인지 검사합니다. 
+그 결과로 나오는 integral_constant 타입을 ::type으로 접근하면 true_type이나 false_type 중 하나가 나옵니다.
+
+ 
+
+processHelper() 함수는 true_type이나 false_type 중 한 인스턴스를 두 번째 매개변수로 받습니다. 
+그래서 ::type 뒤에 빈 소괄호를 붙여 줍니다.
+
+여기서 processHelper()에 대한 두 가지 오버로딩 버전은 true_type과 false_type이란 타입에 대해 이름 없는 매개변수를 받습니다. 
+이렇게 이름이 없는 이유는 본문에서 이 매개변수를 사용하지 않기 때문입니다. 
+이 매개변수는 여러 가지 오버로딩 버전 중 하나를 결정하는 데만 사용됩니다.
+
+ 
+
+바로 위에서 작성한 코드는 다음과 같이 사용할 수 있습니다.
+
+int main()
+{
+    process(123);
+    process(2.2);
+    process("Test");
+}
+
+위에서 작성한 예제 코드는 다음과 같이 함수 템플릿 하나만으로 표현할 수도 있습니다.
+
+template<typename T>
+void process(const T& t)
+{
+    if constexpr (std::is_integral_v<T>) {
+        std::cout << t << " is an integral type.\n";
+    }
+    else {
+        std::cout << t << " is a non-integral type.\n";
+    }
+}
+ 
+
+6.4.2 Using Type Relationships
+
+타입 관계에 대한 예로는 is_same, is_base_of, is_convertible 등이 있습니다. 
+여기서는 is_same을 사용하는 방법에 대해 알아보도록 하겠습니다. 나머지 타입 관계도 사용법은 비슷합니다.
+
+ 
+
+다음 코드에 나온 same() 함수 템플릿은 is_same 타입 트레이트를 이용하여 주어진 두 인수의 타입이 서로 같은지 검사한 뒤 결과에 따라 메세지를 출력합니다.
+
+template<typename T1, typename T2>
+void same(const T1& t1, const T2& t2)
+{
+    bool areTypesTheSame{ std::is_same_v<T1, T2> };
+    std::cout << t1 << " and " << t2 << " are "
+        << (areTypesTheSame ? "the same" : "different") << " types.\n";
+}
+ 
+int main()
+{
+    same(1, 32);
+    same(1, 3.01);
+    same(3.01, "Test");
+}
+
+ 
+
+6.4.3 Using enable_if
+
+enable_if는 C++의 난해한 특성 중 하나인 subsituition failure is not an error(SFINAE, 치환 실패는 에러가 아니다)에 기반에 두고 있습니다. 
+여기서는 SFINAE의 기본 개념만 알아보도록 하겠습니다.
+
+ 
+
+오버로딩된 함수가 여러 개 있을 때 enable_if를 이용하여 특정한 타입 트레이트에 따라 오버로딩된 함수 중 일부를 끌 수 있습니다. 
+enable_if 트레이트는 오버로딩 함수들에 대한 리턴 타입을 기준으로 분기할 때 주로 사용합니다. 
+enable_if는 템플릿 타입 매개변수를 두 개 받습니다. 하나는 bool 값이고, 다른 하나는 타입인데 디폴트는 void입니다. 
+bool값을 true로 지정하면 enable_if는 중첩된 타입(nested type)을 가지며, ::type으로 접근할 수 있습니다. bool값을 false로 지정하면 중첩된 타입이 생기지 않습니다.
+
+ 
+
+C++ 표준은 enable_if처럼 type 멤버를 가진 트레이트에 대한 앨리어스 템플릿을 몇 가지 정의하고 있습니다. 
+각각의 이름은 트레이트 이름 뒤에 _t가 붙어 있습니다. 예를 들어 다음 문장을
+
+typename enable_if<..., bool>::type
+다음과 같이 간략하게 표현할 수 있습니다.
+
+enable_if_t<..., bool>
+ 
+
+위에서 본 same() 함수 템플릿을 다음과 같이 enable_if를 사용하여 오버로딩 버전인 checkType() 함수 템플릿으로 표현할 수 있습니다. 
+이때 checkType() 함수는 주어진 두 값의 타입이 같은지 여부에 따라 true나 false 중에서 하나를 리턴합니다. checkType()에서 아무것도 리턴하고 싶지 않다면 return문을 삭제하고, enable_if 문의 두 번째 템플릿 타입 매개변수로 삭제하거나 void로 지정합니다.
+
+template<typename T1, typename T2>
+std::enable_if_t<std::is_same_v<T1, T2>, bool>
+    checkType(const T1& t1, const T2& t2)
+{
+    std::cout << t1 << " and " << t2 << " are the same types.\n";
+    return true;
+}
+ 
+template<typename T1, typename T2>
+std::enable_if_t<!std::is_same_v<T1, T2>, bool>
+checkType(const T1& t1, const T2& t2)
+{
+    std::cout << t1 << " and " << t2 << " are different types.\n";
+    return false;
+}
+ 
+int main()
+{
+    checkType(1, 32);
+    checkType(1, 3.01);
+    checkType(3.01, "Test");
+}
+
+이 코드는 checkType()을 두 가지 버전으로 정의합니다. 두 버전의 리턴 타입은 모두 enable_if에 대한 중첩 타입인 bool 입니다. 먼저 is_same_v로 두 타입이 같은지 검사하고, 그 결과를 enable_if_t로 전달합니다. enable_if_t의 첫 번째 인수가 true면 enable_if_t는 bool 타입을 갖고, 그렇지 않으면 타입이 없습니다. 바로 여기서 SFINAE가 적용됩니다.
+
+ 
+
+main()의 첫 문장을 컴파일할 때 정수값 두 개를 받는 checkType()이 있는지를 찾습니다. 먼저 소스 코드에 있는 첫 번째 checkType() 함수 템플릿을 보고 T1과 T2를 모두 정수로 만들어서 이 함수 템플릿의 인스턴스를 사용할 수 있다고 추론합니다. 그런 다음 리턴 타입을 알아냅니다. 두 인수 모두 정수라서 is_same_v<T1, T2>의 결과는 true가 됩니다. 그래서 enable_if_t<true, bool>의 타입은 bool이 됩니다. 이렇게 인스턴스화하는 과정에서 아무런 문제가 발생하지 않으면 컴파일러는 이 버전의 checkType()을 적용합니다.
+
+ 
+
+main()의 두 번째 문장을 컴파일할 때도 적절한 checkType() 함수를 찾는 작업을 또 수행합니다. 먼저 checkType()를 찾아서 T1을 int로, T2를 double로 설정해서 오버로딩하도록 처리합니다. 그런 다음 리턴 타입을 결정하는데, 이번에는 T1과 T2가 서로 타입이 다르기 때문에 is_same_v<T1, T2>의 결과는 false가 됩니다. 그래서 enable_if_v<false, bool>은 타입을 표현하지 않고, checkType() 함수의 리턴 타입도 지정하지 않습니다. 컴파일러는 이 에러를 발견해도 SFINAE를 적용하기 때문에 실제로 컴파일 에러가 발생하지는 않습니다. 그 대신 지금까지 하던 작업을 조용히 역추적해서 다른 checkType() 함수를 찾습니다. 이제 두 번째 checkType()이 !is_same_v<T1, T2>에 대해 true가 된다는 것을 발견하고 enable_if_t<true, bool>의 타입이 bool이 되어 정상적으로 인스턴스화합니다.
+
+ 
+
+enable_if를 여러 버전의 생성자에 적용할 때 리턴 타입에는 적용할 수 없습니다. 생성자는 원래 리턴 타입이 없기 때문입니다. 이럴 때는 생성자에 디폴트값을 가진 매개변수를 하나 더 추가해서 enable_if를 적용하면 됩니다.
+
+ 
+
+enable_if를 사용할 때는 조심해야 합니다. 특수화나 부분 특수화와 같은 다른 기법으로는 도저히 적합한 오버로딩 버전을 찾기 힘들 때만 사용하는 것이 좋습니다. 예를 들어 잘못된 타입으로 템플릿을 사용할 때 그냥 컴파일 에러만 발생시키고 싶다면 SFINAE를 적용하지 말고 static_assert()를 사용하는 것이 좋습니다. 물론 enable_if를 사용하는 것이 좋을 때도 있는데, 예를 들어 vector와 비슷한 기능을 정의하는 커스텀 클래스에 복사 함수를 제공할 때 enable_if와 is_trivially_copyable 타입 트레이트를 활용하면 단순히 복사할 수 있는 타입을 비트 단위 복사로 처리하도록 특수화할 수 있습니다. 예를 들면, memcpy()를 사용하도록 복사 함수를 특수화할 수 있습니다.
+
+SFINAE를 적용하는 방법은 상당히 까다롭고 복잡합니다. SFINAE와 enable_if를 적용할 때 여러 가지 오버로딩 버전 중 엉뚱한 버전을 비활성화하게 되면 알 수 없는 컴파일 에러가 발생하는데, 에러 메세지만 보고서 문제와 원인을 찾기가 굉장히 힘듭니다.
+ 
+
+6.4.4 constexpr if로 enable_if 간결하게 표현하기
+
+위에서 살펴봤듯이 enable_if를 사용하면 코드가 굉장히 복잡해질 수 있습니다. 
+C++17부터 추가된 constexpr if 기능을 활용하면 enable_if를 활용하는 코드를 훨씬 간결하게 표현할 수 있습니다.
+
+ 
+
+예를 들어 다음과 같이 정의된 두 클래스를 살펴보도록 하겠습니다.
+
+class IsDoable
+{
+public:
+    virtual void doit() const { std::cout << "IsDoable::doit()\n"; }
+};
+class Derived : public IsDoable {};
+ 
+
+이제 doit() 메소드가 제공된다면 이를 호출하고, 그렇지 않으면 콘솔에 에러 메세지를 출력하는 call_doit() 이라는 함수 템플릿을 만들어 보겠습니다. 
+이때 enable_if를 이용하여 주어진 타입이 IsDoable을 상속했는지 확인할 수 있습니다.
+
+template<typename T>
+std::enable_if_t<std::is_base_of_v<IsDoable, T>, void> callDoit(const T& t)
+{
+    t.doit();
+}
+ 
+template<typename T>
+std::enable_if_t<!std::is_base_of_v<IsDoable, T>, void> callDoit(const T& t)
+{
+    std::cout << "Cannot call doit()!\n";
+}
+이 템플릿은 다음과 같이 사용할 수 있습니다.
+
+int main()
+{
+    Derived d;
+    callDoit(d);
+    callDoit(123);
+}
+
+ 
+
+constexpr if를 활용하면 위 코드를 다음과 같이 조금 더 간결하게 표현할 수 있습니다.
+
+template<typename T>
+void callDoit(const T& [[std::maybe_unused]] t)
+{
+    if constexpr (std::is_base_of_v<IsDoable, T>) {
+        t.doit();
+    }
+    else {
+        std::cout << "Cannot call doit()!\n";
+    }
+}
+기존의 if문으로는 절대로 이렇게 할 수 없습니다. 
+일반 if문은 모든 분기문이 반드시 컴파일되어야 하기 때문에 IsDoable을 상속하지 않는 타입을 T에 지정하면 에러가 발생합니다. 
+위 코드에서 일반 if문을 사용하면 t.doit()이 나오는 문장에서 컴파일 에러가 발생합니다. 
+하지만 constexpr if문을 이용하여 IsDoable을 상속하지 않는 타입을 지정하면 t.doit()이란 문장 자체를 아예 컴파일하지 않게 됩니다.
+
+ 
+
+여기서 C++17부터 추가된 [[maybe_unused]] 어트리뷰트를 사용하고 있습니다. 
+IsDoable을 상속하지 않은 타입으로 T를 지정하면 t.doit()이 컴파일되지 않기 때문에 callDoit을 인스턴스화한 코드에서 매개변수 t가 사용되지 않습니다. 
+대다수의 컴파일러는 이렇게 사용하지 않는 매개변수가 있을 때 경고 메세지나 에러 메세지를 출력합니다. 이때 [[maybe_unused]] 어트리뷰트를 지정하면 이러한 매개변수 t에 대해 경고나 에러가 발생하지 않습니다.
+
+ 
+
+is_base_of 타입 트레이트 대신 C++17부터 추가된 is_invocable 트레이트를 사용해도 됩니다. 
+이 트레이트는 주어진 함수가 주어진 인수 집합에 대해 호출이 되는지 검사합니다. 
+is_invocable 트레이트로 callDoit()을 구현하면 다음과 같습니다.
+
+template<typename T>
+void callDoit(const T& [[std::maybe_unused]] t)
+{
+    if constexpr (std::is_invocable_v<decltype(&IsDoable::doit), T>) {
+        t.doit();
+    }
+    else {
+        std::cout << "Cannot call doit()!\n";
+    }
+}
+ 
+
+6.4.5 Logical Operator Traits
+
+논리 연산자에 대해서도 3가지 트레이트(conjunction, disjunction, negation)를 제공하며, _v로 끝나는 가변 템플릿도 제공됩니다. 
+이러한 트레이트는 다양한 개수의 템플릿 타입 매개변수를 받으며, 타입 트레이트에 대해 논리 연산을 수행하는 데 활용할 수 있습니다. 
+conjunction은 AND 연산을 수행하고, disjunction은 OR 연산, negation은 NOT 연산을 수행합니다.
+
+예를 들면 다음과 같습니다.
+
+int main()
+{
+    std::cout << std::conjunction_v<std::is_integral<int>, std::is_integral<short>> << " ";
+    std::cout << std::conjunction_v<std::is_integral<int>, std::is_integral<double>> << " ";
+    std::cout << std::disjunction_v<std::is_integral<int>, std::is_integral<double>,
+        std::is_integral<short>> << " ";
+    std::cout << std::negation_v<std::is_integral<int>> << " ";
+}
+
+ 
+
+6.4.6 Static Assertions
+
+static_assert()는 특정 조건을 컴파일 시간에 검사할 수 있도록 해줍니다. 
+만약 assertion이 false라면 컴파일러는 에러를 발생시킵니다. 
+static_assert()는 2개의 매개변수를 받는데, 하나는 컴파일 시간에 평가할 표현식이고, 하나는 문자열입니다. 
+이 표현식이 false로 평가되면 컴파일러는 주어진 문자열을 포함한 에러를 발생시킵니다.
+
+ 
+
+예를 들어, 64비트 컴파일러로 컴파일하는지 체크하기 위한 코드는 다음과 같이 작성할 수 있습니다.
+
+static_assert(sizeof(void*) == 8, "Required 64-bit compilation.");
+32비트 컴파일러는 포인터가 4바이트이므로, 컴파일러는 다음과 같은 에러를 발생시킵니다.
+
+
+ 
+
+C++17부터는 string 파라미터는 옵션이며, 다음과 같이 생략하고 작성해도 됩니다.
+
+static_assert(sizeof(void*) == 8);
+이 경우, 표현식이 false일 때 컴파일러에 따라 다른 에러 메세지가 발생되는데, MSVC 2019에서는 다음의 에러가 발생됩니다.
+
+
+ 
+
+static_assert()는 다음과 같이 타입 트레이트와 같이 사용될 수 있습니다.
+
+template<typename T>
+void foo(const T& t)
+{
+    static_assert(std::is_integral_v<T>, "T should be an integral type.");
+}
+ 
+
+위에서 살펴본 것 처럼 템플릿 메타프로그래밍은 강력한 도구이지만 코드가 상당히 난해해질 위험도 있습니다. 
+또한 모든 작업을 컴파일 시간에 처리하기 때문에 문제가 발생해도 디버거로 찾을 수 없다는 문제도 있습니다.
+
+ 
+
+템플릿 메타프로그래밍으로 코드를 작성할 때는 반드시 주석에 메타프로그래밍을 사용하는 목적과 진행 과정을 명확히 밝히는 것이 좋습니다. 
+그렇지 않으면 다른 사람이 코드를 이해하기 굉장히 어려워지고, 심지어 작성한 본인조차 나중에 다시 보면 무슨 뜻인지 알 수 없을 수도 있습니다.
+
+
+
+출처: https://junstar92.tistory.com/335 [별준 코딩]

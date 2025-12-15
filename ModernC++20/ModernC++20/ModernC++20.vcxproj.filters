@@ -219,5 +219,86 @@
     <ClCompile Include="02 Templete 제네릭 프로그래밍\401_template_smart pointer2.cpp">
       <Filter>02 Template Generic Programming</Filter>
     </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\100_Templete Instantiation.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\803 Templete overload1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\803 Templete overload2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\803_Template specialization1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\803_Template specialization2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\803_Template specialization3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\816_Templete Instantiation.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\817_Templete Instantiation extern.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\905_Generic copy constructor.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\906 Template copy constructor.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="03 Templete 인스턴스화\907 Templete Compile.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\820_NestedClassTemplate1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\820_NestedClassTemplate2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\821_Template Inheritance.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\821_Template Inheritance2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\822_Template Inheritance3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\822_Template Inheritance4.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton1.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton2.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
+    <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton3.cpp">
+      <Filter>02 Template Generic Programming</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

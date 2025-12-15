@@ -1,0 +1,78 @@
+의존 타입
+	
+템플릿 인자에 따라서 어떠한 타입이 달라질 수 있는 것을 의존 타입(dependent type) 이라한다.
+
+
+typename 키워드
+
+컴파일러에 구조상 어떠한 식별자(변수 이름이든 함수 이름이든 코드 상의 이름들을 보았을 때 
+이 식별자가 '값' 인지 '타입' 인지 결정을 해야 합니다. 
+
+typename 키워드를 붙여주어야 '타입' 인지를 알수있다.
+
+의존 '값' 의 경우 typename 을 안 붙여줘도 된다.
+컴파일러는 어떤 식별자를 보았을 때 기본으로 '값' 이라고 생각한다.
+
+
+
+auto 키워드
+
+타입을 알아서 추측 
+템플릿의 사용으로 복잡해진 타입 이름들을 간단하게 나타낸디.
+
+
+
+템플릿 파라미터의 별칭
+아래와 같이 템플릿 파라미터의 별칭을 지을 수도 있다.
+
+이처럼 템플릿 내부의 이름 중에 템플릿 매개변수에 종속된 것을 의존 이름(dependent name)이라고 한다. (의존 타입이라고도 함)
+여기선 TempType이 의존이름.
+의존 이름이 클래스 안에 중첩되어 있으면 중첩 의존 타입 이름(nested dependent type name) 이라고 한다. 여기서도 클래스 안에 TempType 이라는 타입이 있으니까 TempType은 중첩 의존 타입 이름이다.
+
+#include <iostream>
+
+template<typename T>
+class MyTempClass
+{
+public:
+    typedef T TempType;
+};
+
+int main()
+{
+    MyTempClass<int> a;
+    MyTempClass<int>::TempType b;
+    MyTempClass<double> c;
+    MyTempClass<double>::TempType d;
+    return 0;
+}
+
+typename
+템플릿 매개변수를 선언하는 경우에는 typename과 class 키워드는 완벽하게 동일하게 동작한다.
+template <class T> class Widget;
+template <typename T> class Widget;
+하지만 이 두 키워드가 항상 동등한 것은 아니다.
+중첩 의존 타입 이름을 식별하는 용도에서는 반드시 typename을 사용해야 한다.
+
+
+template <typename T>
+void print_vector(std::vector<T>& vec) {
+  // 전체 벡터를 출력하기
+  for (typename std::vector<T>::iterator itr = vec.begin(); itr != vec.end();
+       ++itr) {
+    std::cout << *itr << std::endl;
+  }
+}
+int main() {
+  std::vector<int> vec;
+  vec.push_back(10);
+  vec.push_back(20);
+  vec.push_back(30);
+  vec.push_back(40);
+
+  std::cout << "벡터 상태" << std::endl;
+  print_vector(vec);
+  std::cout << "----------------------------" << std::endl;
+
+	return 0;
+}

@@ -1,0 +1,180 @@
+CRTP(Curiously Recurring Template Pattern)은 정적 다형성, 최적화, 코드 재사용을 위해 폭넓게 쓰입니다.
+
+CRTP 활용 패턴 정리
+
+아래 패턴은 모두 다음 기본 구조를 바탕으로 합니다:
+
+template <typename Derived>
+struct Base {
+    void interface() {
+        static_cast<Derived*>(this)->impl();
+    }
+};
+
+
+1) 정적 다형성(static polymorphism)
+
+런타임 가상 함수 없이 파생 클래스의 동작을 호출.
+
+목적
+
+가상 함수 오버헤드 제거
+인라이닝 가능
+성능 최적화
+
+예
+
+행렬, 벡터, 수치 계산 라이브러리에서 자주 사용.
+
+template <class Derived>
+struct Shape {
+    double area() const {
+        return static_cast<const Derived*>(this)->area();
+    }
+};
+
+struct Circle : Shape<Circle> {
+    double area() const { return 3.14 * r * r; }
+    double r;
+};
+
+2) CRTP 기반 policy pattern
+
+동작을 정책(policy) 클래스로 분리해 구성 요소를 교체 가능하게 만든다.
+
+목적
+
+전략 패턴(Strategy)과 유사하지만 컴파일 타임 바인딩
+런타임 비용 0
+조합 가능한 모듈 구성
+
+예
+
+로깅 정책, 메모리 관리 정책 선택
+
+template <typename Policy>
+class Manager : public Policy {
+public:
+    void run() {
+        this->log("run");   // Policy에서 구현
+    }
+};
+
+3) Interface Mixin / 기능 확장
+
+CRTP로 “섞어 넣는(mixin)” 형태의 기능 제공.
+
+목적
+
+재사용 가능한 기능 세트 제공
+다중상속 충돌 없이 타입 안전한 확장
+
+예
+
+Cloneable, Comparable, Printable, Observer 패턴 등
+
+(1) Cloneable Mixin
+template <typename Derived>
+struct Cloneable {
+    Derived* clone() const {
+        return new Derived(static_cast<const Derived&>(*this));
+    }
+};
+
+(2) Comparable Mixin
+template <typename Derived>
+struct Comparable {
+    bool operator==(const Derived& other) const {
+        return static_cast<const Derived*>(this)->isEqual(other);
+    }
+};
+
+4) Barton–Nackman trick (연산자 자동 생성)
+
+대표적인 CRTP 기반 패턴.
+파생 클래스에서 최소한의 함수만 정의하면 나머지 연산자를 자동 생성.
+
+예
+
+동등 비교, 순서 비교, 산술 연산 자동 구현.
+
+template <typename Derived>
+struct Eq {
+    friend bool operator!=(const Derived& a, const Derived& b) {
+        return !(a == b);
+    }
+};
+
+5) 컴파일타임 카운팅 / 싱글턴 관리
+
+객체 생성 수 추적, instance 관리, static registry 구축 등.
+
+template <typename Derived>
+struct Counter {
+    static inline int count = 0;
+    Counter() { ++count; }
+    ~Counter() { --count; }
+};
+
+6) EBO(Empty Base Optimization) 활용한 zero-cost abstraction
+
+CRTP 기반 정책 클래스를 빈 클래스(empty class) 형태로 만들면
+파생 클래스에서 메모리 오버헤드 0 으로 다중 정책 상속 가능.
+
+Boost, EASTL, Folly 등에서 매우 자주 쓰이는 방식입니다.
+
+template <class Derived>
+struct PolicyA { /* 빈 클래스 */ };
+
+template <class Derived>
+struct PolicyB { /* 빈 클래스 */ };
+
+struct Component 
+    : PolicyA<Component>
+    , PolicyB<Component> 
+{};
+
+7) Static Virtual Functions (정적 가상 함수)
+
+“가상 함수처럼 보이지만 가상성이 없음”.
+결국 컴파일 타임 디스패치.
+
+목적
+
+디바이스 드라이버/플랫폼 레이어에서 빠른 분기
+템플릿 기반 알고리즘 최적화
+
+8) 임포스터 패턴(Impostor pattern)
+
+라이브러리에서 인터페이스를 감추고 파생 클래스 내부 구조만 노출하는 패턴.
+
+예: Eigen, Boost.Geometry
+CRTP로 사용자에게 구체 타입을 빌드타임에 강제하여 최적화한다.
+
+9) 메모리 관리 / 커스텀 allocator
+
+Allocator를 CRTP로 구현하여 타입별 최적화 제공.
+
+10) 파이프라인/연산자 체이닝
+
+파생 클래스가 연산 단계를 정의하고
+CRTP 기반 base가 pipeline builder 제공.
+
+유사 예: ranges, expression template libraries
+
+11) Expression Templates (표현식 템플릿)
+
+CRTP 대표적 활용 분야.
+행렬 연산에서 불필요한 임시 객체 제거.
+
+목적
+
+지연 계산(lazy evaluation)
+인라이닝
+고성능 수치 연산
+Eigen, Blaze, Armadillo 전부 이 기법 사용.
+
+마무리
+
+CRTP는 “정적 다형성 기반의 무가상 패턴”이라고도 볼 수 있습니다.
+특히 성능이 중요한 C++ 코드에서 유연성 + 비용 절감을 동시에 달성하려는 상황에서 가장 강력합니다.

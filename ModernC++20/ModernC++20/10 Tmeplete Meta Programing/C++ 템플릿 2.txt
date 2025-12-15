@@ -1,0 +1,869 @@
+Contents
+More About Template Parameters
+Class Template Partial Specialization (부분 특수화)
+Function Partial Specialization with Overloading
+[C++] 템플릿 (Templates)
+
+위 포스팅에서 클래스와 함수 템플릿을 어떻게 사용할 수 있는지에 대해서 살펴봤습니다.
+
+표준 라이브러리의 내부 작동 방식을 파악하거나 간단한 클래스를 직접 정의할 수 있는 정도로만 템플릿을 사용하고자 한다면 이번 포스팅에 대한 내용은 모르더라도 괜찮을 것입니다. 
+만약 템플릿의 세부사항과 한계들을 알고 싶다면 이번 포스팅의 내용이 조금 도움이 되실 거라 생각됩니다.
+
+ 
+
+C++20에 대한 내용은 최대한 포함하지 않았습니다.
+ 
+
+ 
+
+1. More About Template Parameters
+템플릿 매개변수의 종류를 세부적으로 살펴보면 타입, 비타입, 템플릿 템플릿(오타 x, 실제 이름임)의 3가지가 있습니다. 
+이전 포스팅에서는 타입 템플릿 매개변수와 비타입 템플릿 매개변수만 사용했고, 아마도 템플릿 템플릿 매개변수는 사용한 적이 없으실 것입니다.
+
+그런데, 타입과 비타입 템플릿 매개변수에서는 이전 템플릿 포스팅에서 언급하지 않은 주의사항들이 몇 가지 있는데 먼저 3가지 템플릿 매개변수를 조금 더 깊이 있게 살펴보겠습니다.
+
+ 
+
+1.1 Template Type Parameters
+템플릿을 사용하는 주 목적은 템플릿 타입 매개변수를 사용하는 데 있습니다. 타입 매개변수는 원하는 만큼 얼마든지 많이 선언할 수 있습니다. 
+예를 들어, 이전 포스팅에서 소개한 Grid 템플릿에 두 번째 매개변수로 다른 클래스 템플릿 컨테이너에 대한 타입 매개변수를 추가해서 그 컨테이너로 그리드를 만들 수 있게 수정할 수 있습니다. 
+표준 라이브러리는 vector나 deque를 비롯한 다양한 클래스 템플릿 컨테이너를 제공합니다. 
+이전 포스팅에서 정의한 Grid 클래스는 그리드의 원소를 저장하기 위해 vector에 대한 vector(2중 벡터)를 사용했습니다. 
+그런데 그리드를 deque에 대한 vector로 구현하고 싶을 수도 있습니다. 
+이럴 때는 템플릿 타입 매개변수를 추가하는 방식으로 사용자가 내부 컨테이너로 vector를 사용할지 아니면 deque를 사용할지 선택하게 만들 수 있습니다.
+
+ 
+
+Grid에 이러한 템플릿 매개변수를 추가하려면 다음과 같이 작성합니다.
+
+/*** Grid.h ***/
+#pragma once
+#include <vector>
+#include <optional>
+#include <stdexcept>
+#include <string>
+ 
+template<typename T, typename Container>
+class Grid
+{
+public:
+    explicit Grid(size_t width = DefaultWidth,
+        size_t height = DefaultHeight);
+    virtual ~Grid() = default;
+ 
+    // Explicitly default a copy constructor and assignment operator
+    Grid(const Grid& src) = default;
+    Grid& operator=(const Grid& rhs) = default;
+ 
+    // Explicitly default a move constructor and assignmnet operator
+    Grid(Grid&& src) = default;
+    Grid& operator=(Grid&& rhs) = default;
+ 
+    typename Container::value_type& at(size_t x, size_t y);
+    const typename Container::value_type& at(size_t x, size_t y) const;
+ 
+    size_t getHeight() const { return m_height; }
+    size_t getWidth() const { return m_width; }
+ 
+    static const size_t DefaultWidth{ 10 };
+    static const size_t DefaultHeight{ 10 };
+private:
+    void verifyCoordinate(size_t x, size_t y) const;
+ 
+    std::vector<Container> m_cells;
+    size_t m_width{ 0 }, m_height{ 0 };
+};
+이렇게 하면 T와 Container라는 템플릿 매개변수를 갖게 됩니다. 이전에 작성한 Grid<T>를 Grid<T, Container>로 변경해주어야 하며, 
+또한 m_cells를 vector의 vector가 아닌 Container의 vector로 수정합니다.
+
+ 
+
+생성자 구현 코드는 다음과 같습니다.
+
+template<typename T, typename Container>
+Grid<T, Container>::Grid(size_t width, size_t height)
+    : m_width{ width }, m_height{ height }
+{
+    m_cells.resize(m_width);
+    for (auto& column : m_cells) {
+        column.resize(m_height);
+    }
+}
+이 생성자는 Container 타입에 resize() 메소드가 있다고 가정합니다. 만약 이 템플릿에 resize() 메소드가 없는 타입을 지정해서 인스턴스를 만들면 컴파일 에러가 발생합니다.
+
+ 
+
+나머지 구현 코드입니다.
+
+template<typename T, typename Container>
+typename Container::value_type&
+    Grid<T, Container>::at(size_t x, size_t y)
+{
+    return const_cast<std::optional<T>&>(std::as_const(*this).at(x, y));
+}
+ 
+template<typename T, typename Container>
+const typename Container::value_type&
+    Grid<T, Container>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+ 
+template<typename T, typename Container>
+void Grid<T, Container>::verifyCoordinate(size_t x, size_t y) const
+{
+    if (x >= m_width) {
+        throw std::out_of_range{ std::to_string(x) + " must be less than " + std::to_string(m_width) };
+    }
+    if (y >= m_height) {
+        throw std::out_of_range{ std::to_string(y) + " must be less than " + std::to_string(m_height) };
+    }
+}
+at() 메소드는 매개변수로 지정한 컨테이너 타입에 저장된 원소를 리턴합니다.
+
+여기서 보시면 'typename Container::value_type'이라고 작성한 부분이 의아하실 수 있습니다. at() 메소드에서는 컨테이너의 타입이 필요합니다. 
+하지만 우리는 그 타입이 무엇인지 모르며 이 타입은 컨테이너에 의존하는 것입니다. 
+
+예를 들어, 표준 라이브러리 컨테이너 중에서 vector가 정의된 부분을 살펴보면 다음과 같이 정의된 것이 있습니다.
+
+
+&amp;lt;vector&amp;gt; 헤더의 내용 일부
+이처럼 표준 라이브러리에서는 value_type, allocator_type, pointers 등 타입 앨리어스로 사용할 수 있는 것들이 몇 가지 있습니다. 
+여기서 value_type은 vector의 원소 타입을 타입 앨리어스로 표현하는 것이며 우리는 이를 사용하기 위해서 Container::value_type을 사용하고 있는 것입니다.
+
+하지만, 여기서 문제가 하나 있는데 일반적으로 T::A 라고 사용하면 이를 멤버 변수나 메소드로 인식합니다. 
+이렇게 작성한 것을 타입의 한 종류라고 컴파일러에게 전달하기 위해서 Container::value_type 앞에 typename을 붙이는 것이며, 
+'typename Container::value_type'이라고 작성하면 컴파일러는 'Container::value_type은 메소드나 멤버 변수가 아닌 타입을 지칭하는 것이구나'라고 해석합니다.
+
+(여기서 사용한 value_type이 임의로 이름을 붙인게 아닌 표준 라이브러리 컨테이너에서 value_type과 같은 것들을 타입 앨리어스로 제공하고 있기 때문입니다. 
+따라서 사용자 정의 컨테이너를 사용하는 경우에 해당 컨테이너에서 'using value type = ...' 과 같이 타입 앨리어스를 제공해주어야 컴파일 에러가 발생하지 않습니다.)
+
+ 
+
+이렇게 작성하면 다음과 같이 Grid 객체를 생성할 수 있습니다.
+
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <optional>
+#include "Grid.h"
+ 
+int main()
+{
+    Grid<int, std::vector<std::optional<int>>> myIntVectorGrid;
+    Grid<int, std::deque<std::optional<int>>> myIntDequeGrid;
+ 
+    myIntVectorGrid.at(3, 4) = 5;
+    std::cout << myIntVectorGrid.at(3, 4).value_or(0) << std::endl;
+ 
+    myIntDequeGrid.at(1, 2) = 3;
+    std::cout << myIntDequeGrid.at(1, 2).value_or(0) << std::endl;
+ 
+    Grid<int, std::vector<std::optional<int>>> grid2{ myIntVectorGrid };
+    grid2 = myIntVectorGrid;
+}
+ 
+
+매개변수 이름이 Container라고 해서 실제 타입도 컨테이너일 필요는 없습니다. 그래서 다음과 같이 Grid 클래스를 int에 대해 인스턴스화할 수 있습니다.
+
+Grid<int, int> test; // Compile Error!
+하지만 이렇게 하면 컴파일 에러가 발생합니다. 게다가 에러 메세지는 예상과 다르게 나올 수 있습니다. 
+다시 말하자면 Container의 타입을 int라고 지정해서 문제가 발생했다고 나오지 않고, 알 수 없는 메세지들만 발생합니다.
+
+여러 메세지들이 나오지만, 예를 들면 "'Container': must be a class or namespace when followed by '::'" 라고 나옵니다. 
+컴파일러가 int 타입 Container를 갖는 Grid를 생성하기 때문입니다. 이러한 에러는 클래스 템플릿에서 다음 문장을 발견하기 전까지는 문제가 발생하지 않습니다.
+
+typename Container::value_type& at(size_t x, size_t y);
+컴파일러가 이 문장을 보면 Container 타입이 int라고 처리하는데, int에는 value_type이란 타입 앨리어스가 없습니다. 
+위에서 언급한 것처럼 Container로 지정되는 타입은 value_type 이라는 타입 앨리어스를 가지고 있어야 합니다.
+
+ 
+
+ 
+
+함수 매개변수와 마찬가지로 템플릿 매개변수에도 기본값을 지정할 수 있습니다. 
+예를 들어 다음과 같이 클래스 템플릿을 정의하면 Grid의 기본 컨테이너를 vector로 지정할 수 있습니다.
+
+template<typename T, typename Container = std::vector<std::optional<T>>>
+class Grid
+{
+    // .. 나머지 코드는 동일
+};
+이렇게 작성하면 첫 번째 템플릿 매개변수인 T 타입을 두 번째 템플릿 매개변수의 기본값을 지정하는 optional 템플릿의 인수로 사용할 수 있습니다. 
+참고로 클래스 템플릿과 달리 메소드를 정의하는 템플릿 헤더 문장에서는 기본값을 반복하면 안됩니다.
+
+이렇게 클래스 템플릿의 매개변수에 기본값을 지정해주면 컨테이너 타입을 지정하지 않아도 그리드 인스턴스를 생성할 수 있습니다.
+
+int main()
+{
+    Grid<int, std::vector<std::optional<int>>> myVectorGrid;
+    Grid<int, std::deque<std::optional<int>>> myDequeGrid;
+    Grid<int> myVectorGrid2{ myVectorGrid };
+}
+ 
+
+표준 라이브러리는 이런식으로 작성되어 있습니다. stack, queue, priority_queue 클래스 템플릿은 모두 템플릿 타입 매개변수를 인수로 받고, 내부 컨테이너에 대한 기본값도 정해져 있습니다.
+
+ 
+
+ 
+
+1.2 Template Template Parameters
+방금 살펴본 Container 매개변수에는 한 가지 문제가 있습니다. Grid 클래스 템플릿을 인스턴스화할 때는 일반적으로 다음과 같이 작성합니다.
+
+Grid<int, std::vector<std::optional<int>>> myIntGrid;
+이 코드를 보면 int 타입이 두 번 나왔습니다. Grid의 원소 타입과 vector 안에 있는 optional의 원소 타입을 반드시 모두 int라고 명시해야 합니다. 만약 이렇게 하지 않고 다음과 같이 작성하면,
+
+Grid<int, std::vector<std::optional<SpreadsheetCell>>> myIntGrid;
+문제가 생길 수 있습니다.
+
+이를 방지하려면 다음과 같이 작성하는 것이 좋습니다.
+
+Grid<int, std::vector> myIntGrid;
+이때 Grid 클래스는 optional<int>에 대한 vector라는 것을 알아야 합니다. 하지만 컴파일러는 이런 인수를 일반 타입 매개변수로 전달하는 것을 허용하지 않습니다. 
+vector는 구체적인 타입이 아니라 템플릿이기 때문입니다.
+
+ 
+
+이렇게 템플릿 매개변수로 템플릿을 받으려면 템플릿 템플릿 매개변수라는 특수 매개변수를 사용해야 합니다. 
+템플릿 템플릿 매개변수를 지정하는 방식은 일반 함수 매개변수에 함수 포인터를 지정하는 방식과 비슷합니다. 함수 포인터 타입은 함수의 리턴 타입과 매개변수 타입으로 표현합니다. 
+마찬가지로 템플릿 템플릿 매개변수를 지정할 때도 그 템플릿에 대한 매개변수를 포함한 전체 항목을 지정해야 합니다.
+
+ 
+
+예를 들어 vector나 deque 같은 컨테이너는 다음과 같이 템플릿 매개변수 리스트 형태로 지정합니다. 여기서 매개변수 E는 원소의 타입을 가리킵니다.
+
+template<typename E, typename Allocator = std::allocator<E>>
+class vector
+{
+    // 벡터 정의
+}
+
+이렇게 정의되어 있는 컨테이너를 템플릿 템플릿 매개변수로 전달하려면 
+그 자리에 클래스 템플릿의 선언부(template <typename E, typename Allocator = std::allocator<E>> class vector)를 복사해서 붙여 넣고 
+클래스 이름(vector)을 매개변수 이름(Container)으로 바꾼 다음 템플릿의 템플릿 템플릿 매개변수로 지정합니다.
+
+따라서 Grid 클래스에 대한 클래스 템플릿 정의에서 두 번째 템플릿 매개변수로 컨테이너 템플릿을 받게 하려면 다음과 같이 작성합니다. (변경되는 부분만 작성하였습니다.)
+
+template<typename T,
+    template<typename E, typename Allocator = std::allocator<E>> class Container = std::vector>
+class Grid
+{
+public:
+    // .. 나머지 코드는 동일
+    std::optional<T>& at(size_t x, size_t y);
+    const std::optional<T>& at(size_t x, size_t y) const;
+    // .. 나머지 코드는 동일
+private:
+    std::vector<Container<std::optional<T>>> m_cells;
+    // .. 나머지 코드는 동일
+};
+위 코드를 하나씩 살펴보겠습니다. 첫 번째 템플릿 매개변수는 이전과 같이 원소 타입인 T 입니다. 
+두 번째 템플릿 매개변수는 이전과 다르게 vector나 deque 같은 컨테이너 템플릿 자체를 지정합니다. 
+앞에서 설명했듯이 이렇게 새로 작성한 템플릿 타입은 매개변수를 두 개(원소 타입인 E와 할당자 타입)을 받습니다.
+
+ 
+
+여기서 중첩된 템플릿 매개변수 리스트 뒤에 나온 코드에 class란 단어가 두 번 나왔습니다. 
+Grid 템플릿에서 이 매개변수의 이름은 이전과 마찬가지로 Container 입니다. 
+기본값은 vector<T>가 아닌 vector로 지정했는데, 수정된 코드에서 Container 매개변수는 실제 타입이 아니라 템플릿이기 때문입니다.
+
+ 
+
+템플릿 템플릿 매개변수의 문법을 개략적으로 표현하면 다음과 같습니다.
+
+template<..., template<TemplateTypeParams> class ParameterName, ...>
+C++17부터 class 대신 다음과 같이 typename 키워드를 사용할 수 있습니다.
+   template<..., template<TemplateTypeParams> typename ParameterName, ...>
+코드에서 컨테이너 타입을 지정할 때는 그냥 Container라고 적지 말고 Container<std::optional<T>>와 같이 표현해야 합니다. 
+예를 들면 m_cells는 다음과 같이 선언해주어야 합니다.
+
+std::vector<Container<std::optional<T>>> m_cells;
+ 
+
+메소드를 정의하는 부분은 다음과 같이 템플릿을 표현하는 문장을 제외하면 변경된 부분은 거의 없습니다.
+
+template<typename T,
+    template<typename E, typename Allocator = std::allocator<E>> class Container>
+Grid<T, Container>::Grid(size_t width, size_t height)
+    : m_width{ width }, m_height{ height }
+{
+    m_cells.resize(m_width);
+    for (auto& column : m_cells) {
+        column.resize(m_height);
+    }
+}
+ 
+template<typename T,
+    template<typename E, typename Allocator = std::allocator<E>> class Container>
+std::optional<T>& Grid<T, Container>::at(size_t x, size_t y)
+{
+    return const_cast<std::optional<T>&>(std::as_const(*this).at(x, y));
+}
+ 
+template<typename T,
+    template<typename E, typename Allocator = std::allocator<E>> class Container>
+const std::optional<T>& Grid<T, Container>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+ 
+template<typename T,
+    template<typename E, typename Allocator = std::allocator<E>> class Container>
+void Grid<T, Container>::verifyCoordinate(size_t x, size_t y) const
+{
+    if (x >= m_width) {
+        throw std::out_of_range{ std::to_string(x) + " must be less than " + std::to_string(m_width) };
+    }
+    if (y >= m_height) {
+        throw std::out_of_range{ std::to_string(y) + " must be less than " + std::to_string(m_height) };
+    }
+}
+ 
+
+이렇게 정의한 Grid 템플릿은 다음과 같이 사용할 수 있습니다.
+
+int main()
+{
+    Grid<int, std::vector> myGrid;
+    myGrid.at(1, 2) = 3;
+    std::cout << myGrid.at(1, 2).value_or(0) << std::endl;
+    Grid<int, std::vector> myGrid2{ myGrid };
+}
+ 
+
+1.3 Non-type Template Parameters
+그리드의 셀을 초기화할 때 적용한 기본 원소를 사용자가 지정하도록 만들 수도 있습니다. 구현 방법은 다음과 같습니다. 
+먼저 두 번째 템플릿 매개변수의 기본값을 T()로 지정합니다.
+
+template<typename T, const T DEFAULT = T()>
+class Grid
+{
+public:
+    explicit Grid(size_t width = DefaultWidth,
+        size_t height = DefaultHeight);
+    virtual ~Grid() = default;
+ 
+    // Explicitly default a copy constructor and assignment operator
+    Grid(const Grid& src) = default;
+    Grid& operator=(const Grid& rhs) = default;
+ 
+    // Explicitly default a move constructor and assignmnet operator
+    Grid(Grid&& src) = default;
+    Grid& operator=(Grid&& rhs) = default;
+ 
+    std::optional<T>& at(size_t x, size_t y);
+    const std::optional<T>& at(size_t x, size_t y) const;
+ 
+    size_t getHeight() const { return m_height; }
+    size_t getWidth() const { return m_width; }
+ 
+    static const size_t DefaultWidth{ 10 };
+    static const size_t DefaultHeight{ 10 };
+private:
+    void verifyCoordinate(size_t x, size_t y) const;
+ 
+    std::vector<std::vector<std::optional<T>>> m_cells;
+    size_t m_width{ 0 }, m_height{ 0 };
+};
+이렇게 첫 번째 매개변수로 지정한 T를 두 번째 매개변수의 타입으로 지정하고, 함수 매개변수처럼 비타입 매개변수를 const로 지정해도 됩니다. 
+그러면 그리드의 셀을 T의 초기값으로 초기화할 수 있습니다.
+
+template<typename T, const T DEFAULT>
+Grid<T, DEFAULT>::Grid(size_t width, size_t height)
+    : m_width{ width }, m_height{ height }
+{
+    m_cells.resize(m_width);
+    for (auto& column : m_cells) {
+        column.resize(m_height);
+        for (auto& element : column) {
+            element = DEFAULT;
+        }
+    }
+}
+다른 메소드의 정의도 비슷합니다. 템플릿 선언문에 두 번째 템플릿 매개변수를 반드시 추가해야 한다는 점과 Grid<T>의 인스턴스는 모두 Grid<T, DEFAULT>가 된다는 점만 다릅니다.
+
+template<typename T, const T DEFAULT>
+std::optional<T>& Grid<T, DEFAULT>::at(size_t x, size_t y)
+{
+    return const_cast<std::optional<T>&>(std::as_const(*this).at(x, y));
+}
+ 
+template<typename T, const T DEFAULT>
+const std::optional<T>& Grid<T, DEFAULT>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+ 
+template<typename T, const T DEFAULT>
+void Grid<T, DEFAULT>::verifyCoordinate(size_t x, size_t y) const
+{
+    if (x >= m_width) {
+        throw std::out_of_range{ std::to_string(x) + " must be less than " + std::to_string(m_width) };
+    }
+    if (y >= m_height) {
+        throw std::out_of_range{ std::to_string(y) + " must be less than " + std::to_string(m_height) };
+    }
+}
+이렇게 수정하면 다음과 같이 그리드를 인스턴스화할 때 모든 원소가 초기값을 갖게 됩니다.
+
+Grid<int> myIntGrid;     // 초기값은 0
+Grid<int, 10> myIntGrid; // 초기값은 10
+이처럼 초기값은 정수 타입 중에서 원하는 값으로 지정하면 됩니다.
+
+ 
+
+하지만 다음과 같이 SpreadsheetCell Grid를 생성한다고 가정해봅시다.
+
+SpreadsheetCell defaultCell;
+Grid<SpreadsheetCell, defaultCell> mySpreadsheet; // Compile Error!
+비타입 매개변수에는 객체를 전달할 수 없기 때문에 이렇게 작성하면 컴파일 에러가 발생합니다.
+
+C++17까지는 비타입 매개변수에 객체나 double, float으로 지정하면 안됩니다. 반드시 정수 계열의 타입인 enum과 포인터, 레퍼런스로만 지정해야 합니다. 
+C++20 부터는 이러한 제약이 조금 풀려서 비타입 매개변수에 부동소수점 타입이나 특정 클래스 타입을 지정할 수 있습니다. 다만, 이러한 클래스 타입에는 제약이 많습니다.
+ 
+
+이 예제를 보면 클래스 템플릿이 어떤 타입에 대해서는 잘 작동하고, 또 어떤 타입에 대해서는 컴파일 에러를 발생시킨다는 것을 알 수 있습니다.
+
+ 
+
+그리드 원소에 대한 초기값을 사용자가 지정하기 위한 또 다른 방법은 T에 대한 레퍼런스를 비타입 템플릿 매개변수로 사용하는 것입니다. 예를 들면 다음과 같습니다.
+
+template<typename T, const T& DEFAULT>
+class Grid
+{
+    // .. 나머지 코드 이전과 동일
+};
+이렇게 하면 클래스 템플릿을 모든 타입에 대해 인스턴스화할 수 있습니다. 
+하지만 이렇게 템플릿 인수로 전달하는 레퍼런스는 반드시 external or internal 링크(linkage)를 가지고 있어야 합니다.
+
+다음 예제 코드는 int와 SpreadsheetCell 그리드를 내부 링크로 정의된 초기값으로 선언하는 것을 보여줍니다.
+
+namespace {
+    int defaultInt{ 11 };
+    SpreadsheetCell defaultCell{ 1.2 };
+}
+ 
+int main()
+{
+    Grid<int, defaultInt> myIntGrid;
+    Grid<SpreadsheetCell, defaultCell> mySpreadsheet;
+}
+ 
+
+2. Class Template Partial Specialization
+[C++] 템플릿 (Templates)
+
+위 포스팅에서 Grid 클래스 템플릿을 const char*에 대해 특수화할 때는 모든 템플릿 매개변수에 대해 특수화했습니다. 
+이를 클래스 템플릿 완전 특수화(Full Class Template Specialization)이라고 부릅니다. 
+이렇게 특수화할 때는 템플릿 매개변수를 하나도 남겨두지 않습니다. 
+하지만 반드시 이렇게 하지 않아도 됩니다. 
+템플릿 매개변수 중에서 일부에 대해서만 특수화해도 되며, 이를 클래스 템플릿 부분 특수화(Partial Class Template Specialization)라고 부릅니다.
+
+구체적인 예를 살펴보기 위해서 비타입 매개변수로 너비와 높이를 받는 Grid 템플릿의 기본 버전을 다시 살펴보겠습니다.
+
+template<typename T, size_t WIDTH, size_t HEIGHT>
+class Grid
+{
+public:
+    Grid() = default;
+    virtual ~Grid() = default;
+    
+    // Explicitly default a copy constructor and assignment operator
+    Grid(const Grid& src) = default;
+    Grid<T, WIDTH, HEIGHT>& operator=(const Grid& rhs) = default;
+    
+    std::optional<T>& at(size_t x, size_t y);
+    const std::optional<T>& at(size_t x, size_t y) const;
+    
+    size_t getHeight() const { return HEIGHT; }
+    size_t getWidth() const { return WIDTH; }
+    
+private:
+    void verifyCoordinate(size_t x, size_t y) const;
+    
+    std::optional<T> m_cells[WIDTH][HEIGHT];
+};
+ 
+template<typename T, size_t WIDTH, size_t HEIGHT>
+std::optional<T>& Grid<T, WIDTH, HEIGHT>::at(size_t x, size_t y)
+{
+    return const_cast<std::optional<T>&>(std::as_const(*this).at(x, y));
+}
+ 
+template<typename T, size_t WIDTH, size_t HEIGHT>
+const std::optional<T>& Grid<T, WIDTH, HEIGHT>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+ 
+template<typename T, size_t WIDTH, size_t HEIGHT>
+void Grid<T, WIDTH, HEIGHT>::verifyCoordinate(size_t x, size_t y) const
+{
+    if (x >= WIDTH) {
+        throw std::out_of_range{ std::to_string(x) + " must be less than " + std::to_string(WIDTH) };
+    }
+    if (y >= HEIGHT) {
+        throw std::out_of_range{ std::to_string(y) + " must be less than " + std::to_string(HEIGHT) };
+    }
+}
+이 클래스 템플릿을 const char* 타입의 C 스타일 스트링에 대해 특수화하려면 다음과 같이 작성합니다.
+
+#include "Grid.h" // Grid 템플릿 정의가 담긴 파일
+ 
+template<size_t WIDTH, size_t HEIGHT>
+class Grid<const char*, WIDTH, HEIGHT>
+{
+public:
+    Grid() = default;
+    virtual ~Grid() = default;
+ 
+    Grid(const Grid& src) = default;
+    Grid& operator=(const Grid& rhs) = default;
+ 
+    std::optional<std::string>& at(size_t x, size_t y);
+    const std::optional<std::string>& at(size_t x, size_t y) const;
+ 
+    size_t getHeight() const { return HEIGHT; }
+    size_t getWidth() const { return WIDTH; }
+ 
+private:
+    void verifyCoordinate(size_t x, size_t y) const;
+ 
+    std::optional<std::string> m_cells[WIDTH][HEIGHT];
+};
+코드를 살펴보면 모든 템플릿 매개변수에 대해 특수화하지 않았습니다. 그래서 템플릿을 선언하는 첫 부분을 다음과 같이 작성했습니다.
+
+template<size_t WIDTH, size_t HEIGHT>
+class Grid<const char*, WIDTH, HEIGHT>
+이 템플릿에는 매개변수가 두 개만 있습니다(WIDTH와 HEIGHT). 그런데 T, WIDTH, HEIGHT라는 3가지 인수를 받는 Grid 클래스를 작성하고 있습니다. 
+따라서 템플릿 매개변수 리스트에는 매개변수가 2개이고, 명시적으로 선언한 Grid<const char*, WIDTH, HEIGHT>에는 인수가 3개입니다. 
+이 템플릿을 인스턴스화할 때는 반드시 매개변수를 3개 지정해야 합니다. 
+높이와 너비에 대한 매개변수만으로는 이 템플릿을 인스턴스화할 수 없습니다.
+
+Grid<int, 2, 2> myIntGrid;            // Uses the original Grid
+Grid<const char*, 2, 2> myStringGrid; // Uses the partial specialization
+Grid<2, 3> test;                      // Compile Error! No type specified
+이처럼 문법이 조금 복잡합니다. 게다가 완전 특수화와 달리 부분 특수화를 할 때는 다음과 같이 항상 메소드 정의 앞에 템플릿 선언문을 적어야 합니다.
+
+template<size_t WIDTH, size_t HEIGHT> // need to be written
+const std::optional<std::string>&
+    Grid<const char*, WIDTH, HEIGHT>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+항상 템플릿 선언문을 적어서 이 메소드가 템플릿 선언문에 지정한 두 매개변수를 사용한다고 표시해야 합니다. 
+전체 클래스 이름은 반드시 Grid<const char*, WIDTH, HEIGHT>라고 표현해야 합니다.
+
+ 
+
+이 예제만으로는 부분 특수화의 강점을 제대로 느끼기는 힘듭니다.
+
+부분 특수화를 사용하면 개별 타입에 대해 특수화하지 않고, 특수화 대상이 되는 타입들의 집합에 대해 특수화하도록 구현할 수 있습니다. 
+예를 들어 모든 종류의 포인터 타입에 대해 Grid 클래스 템플릿을 특수화하도록 구현할 수 있습니다. 
+이때 복사 생성자와 대입 연산자는 포인터가 가리키는 객체에 대해 얕은 복사 대신 깊은 복사를 수행하도록 구현할 수 있습니다.
+
+ 
+
+이렇게 정의한 클래스 코드는 다음과 같습니다. 여기서 매개변수가 하나뿐인 초기 버전의 Grid를 사용했습니다.
+
+이렇게 구현하면 Grid가 데이터 소유자이므로 필요할 때마다 메모리를 자동으로 해제합니다.
+
+#include "Grid.h"
+#include <memory>
+ 
+template<typename T>
+class Grid<T*>
+{
+public:
+    explicit Grid(size_t width = DefaultWidth, size_t height = DefaultHeight);
+    virtual ~Grid() = default;
+ 
+    // Copy constructor and copy assignment operator.
+    Grid(const Grid& src);
+    Grid& operator=(const Grid& rhs);
+ 
+    // Explicitly default a move constructor and assignment operator.
+    Grid(Grid&& src) = default;
+    Grid& operator=(Grid&& rhs) = default;
+ 
+    void swap(Grid& other) noexcept;
+ 
+    std::unique_ptr<T>& at(size_t x, size_t y);
+    const std::unique_ptr<T>& at(size_t x, size_t y) const;
+ 
+    size_t getHeight() const { return m_height; }
+    size_t getWidth() const { return m_width; }
+ 
+    static const size_t DefaultWidth{ 10 };
+    static const size_t DefaultHeight{ 10 };
+ 
+private:
+    void verifyCoordinate(size_t x, size_t y) const;
+ 
+    std::vector<std::vector<std::unique_ptr<T>>> m_cells;
+    size_t m_width{ 0 }, m_height{ 0 };
+};
+ 
+template<typename T>
+Grid<T*>::Grid(size_t width, size_t height)
+    : m_width{ width }
+    , m_height{ height }
+{
+    m_cells.resize(m_width);
+    for (auto& column : m_cells) {
+        column.resize(m_height);
+    }
+}
+ 
+template <typename T>
+Grid<T*>::Grid(const Grid& src)
+    : Grid{ src.m_width, src.m_height }
+{
+    // The ctor-initializer of this constructor delegates first to the
+    // non-copy constructor to allocate the proper amount of memory.
+ 
+    // The next step is to copy the data.
+    for (size_t i{ 0 }; i < m_width; i++) {
+        for (size_t j{ 0 }; j < m_height; j++) {
+            // Make a deep copy of the element by using its copy constructor.
+            if (src.m_cells[i][j]) {
+                m_cells[i][j].reset(new T{ *(src.m_cells[i][j]) });
+            }
+        }
+    }
+}
+ 
+template <typename T>
+Grid<T*>& Grid<T*>::operator=(const Grid& rhs)
+{
+    // Use copy-and-swap idiom.
+    auto copy{ rhs };    // Do all the work in a temporary instance
+    swap(copy);          // Commit the work with only non-throwing operations
+    return *this;
+}
+ 
+template <typename T>
+void Grid<T*>::swap(Grid& other) noexcept
+{
+    using std::swap;
+ 
+    swap(m_width, other.m_width);
+    swap(m_height, other.m_height);
+    swap(m_cells, other.m_cells);
+}
+ 
+template <typename T>
+const std::unique_ptr<T>& Grid<T*>::at(size_t x, size_t y) const
+{
+    verifyCoordinate(x, y);
+    return m_cells[x][y];
+}
+ 
+template <typename T>
+std::unique_ptr<T>& Grid<T*>::at(size_t x, size_t y)
+{
+    return const_cast<std::unique_ptr<T>&>(std::as_const(*this).at(x, y));
+}
+ 
+template <typename T>
+void Grid<T*>::verifyCoordinate(size_t x, size_t y) const
+{
+    if (x >= m_width) {
+        throw std::out_of_range{ std::to_string(x) + " must be less than " + std::to_string(m_width) };
+    }
+    if (y >= m_height) {
+        throw std::out_of_range{ std::to_string(y) + " must be less than " + std::to_string(m_height) };
+    }
+}
+이전 코드와 마찬가지로 여기서 핵심은 다음 두 문장입니다.
+
+template<typename T>
+class Grid<T*>
+이렇게 적으면 이 클래스가 모든 포인터 타입에 대해 Grid 템플릿을 특수화한다는 뜻입니다. 따라서 T가 포인터 타입일 때만 구현하면 됩니다. 
+참고로 Grid<int*> myIntGrid처럼 Grid를 인스턴스화하면 T는 int*가 아닌 int가 됩니다. 
+어떻게 보면 직관적이지 않지만 아쉽게도 문법 자체가 원래 그렇게 동작하도록 되어 있어서 어쩔 수 없습니다. 
+이렇게 부분 특수화한 클래스를 사용하는 방법은 다음과 같습니다.
+
+int main()
+{
+    Grid<int> myIntGrid;       // Uses the non-specialized grid
+    Grid<int*> psGrid{ 2, 2 }; // Uses the partial specialization for pointer types
+ 
+    psGrid.at(0, 0) = std::make_unique<int>(1);
+    psGrid.at(0, 1) = std::make_unique<int>(2);
+    psGrid.at(1, 0) = std::make_unique<int>(3);
+ 
+    Grid<int*> psGrid2{ psGrid };
+    Grid<int*> psGrid3;
+    psGrid3 = psGrid2;
+ 
+    auto& element{ psGrid2.at(1,0) };
+    if (element) {
+        std::cout << *element << std::endl;
+        *element = 6;
+    }
+    std::cout << *psGrid.at(1, 0) << std::endl;  // psGrid is not modified
+    std::cout << *psGrid2.at(1, 0) << std::endl; // psGrid2 is modifed
+}
+
+메소드 구현에서 복사 생성자를 제외하면 나머지 메소드 구현은 간단합니다. 
+복사 생성자의 경우에는 개별 원소에 대해 깊은 복사를 수행하도록 작성해야 되기 때문에 다음과 같이 구현되었습니다.
+
+template <typename T>
+Grid<T*>::Grid(const Grid& src)
+    : Grid { src.m_width, src.m_height }
+{
+    // The ctor-initializer of this constructor delegates first to the
+    // non-copy constructor to allocate the proper amount of memory.
+ 
+    // The next step is to copy the data.
+    for (size_t i{ 0 }; i < m_width; i++) {
+        for (size_t j{ 0 }; j < m_height; j++) {
+            // Make a deep copy of the element by using its copy constructor.
+            if (src.m_cells[i][j]) {
+                m_cells[i][j].reset(new T { *(src.m_cells[i][j]) } );
+            }
+        }
+    }
+}
+ 
+
+3. Function Partial Specialization with Overloading
+먼저 결론부터 이야기하면 함수에 대해서는 템플릿 부분 특수화를 적용할 수 없습니다. 
+하지만, 다른 템플릿으로 함수를 오버로딩해서 비슷한 효과를 낼 수는 있습니다. 물론 본질적인 차이는 존재합니다.
+
+예를 들어, 아래의 Find() 함수 템플릿을 포인터 타입에 대해 특수화한다고 해봅시다. 
+이 템플릿은 포인터가 가리키는 객체에 operator= 연산을 직접 적용하도록 포인터를 역참조합니다.
+
+static const size_t NOT_FOUND{ static_cast<size_t>(-1) };
+ 
+template<typename T>
+size_t Find(const T& value, const T* arr, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (arr[i] == value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+ 
+
+이때 다음과 같이 클래스 템플릿에 대한 부분 특수화 문법을 그대로 적용하는 실수를 저지르기 쉽습니다.
+
+template<typename T>
+size_t Find<T*>(T* const& value, T* const* arr, size_t)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (*arr[i] == *value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+하지만 이렇게 하면 함수 템플릿에 대한 부분 특수화를 선언하는 셈인데, C++ 표준에서는 이를 허용하지 않습니다. 
+원하는 동작을 제대로 구현하려면 Find()에 대한 템플릿을 새로 만들어야 합니다. 형식적인 차이일 뿐이지만, 다음과 같이 작성해야 컴파일 에러가 발생하지 않습니다.
+
+template<typename T>
+size_t Find(T* const& value, T* const* arr, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (*arr[i] == *value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+이렇게 작성한 Find()의 첫 번째 매개변수는 T* const& 입니다. const T&를 첫 번째 매개변수로 받는 원본 Find() 함수 템플릿과 대칭을 이루기 위해서 이렇게 작성했습니다. 
+그런데 여기서 Find()의 첫 번째 매개변수를 T* const&가 아닌 T*라고만 적어도 부분 특수화를 하는데 문제는 없습니다.
+
+template<typename T>
+size_t Find(T* value, T* const* arr, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (*arr[i] == *value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+ 
+
+원본 Find() 템플릿, 포인터 타입에 대한 부분 특수화를 적용하기 위해 오버로딩으로 구현한 Find(), const char*에 대한 완전 특수화 버전, const char*에 대해서만 오버로딩한 Find()를 한 프로그램 안에서 동시에 정의해도 됩니다. 
+컴파일러는 추론 규칙에 따라 적합한 버전으로 호출합니다.
+
+ 
+
+다음 코드는 Find()를 여러번 호출하고 있습니다. 각 문장마다 어떤 버전을 호출하는지 주석으로 설명하고 있습니다.
+
+static const size_t NOT_FOUND{ static_cast<size_t>(-1) };
+ 
+template<typename T>
+size_t Find(const T& value, const T* arr, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (arr[i] == value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+ 
+template<typename T>
+size_t Find(T* value, T* const* arr, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        if (*arr[i] == *value) {
+            return i;
+        }
+    }
+    return NOT_FOUND;
+}
+ 
+int main()
+{
+    size_t res{ NOT_FOUND };
+ 
+    int myInt{ 3 }, intArray[]{ 1,2,3,4 };
+    size_t sizeArray{ std::size(intArray) };
+    res = Find(myInt, intArray, sizeArray); // calls Find<int> by deduction
+    res = Find<int>(myInt, intArray, sizeArray); // calls Find<int> explicitly
+ 
+    double myDouble{ 5.6 }, doubleArray[]{ 1.2, 3.4, 5.7, 7.5 };
+    sizeArray = std::size(doubleArray);
+    // calls Find<double> by deduction
+    res = Find(myDouble, doubleArray, sizeArray);
+    // calls Find<double> explicitly
+    res = Find<double>(myDouble, doubleArray, sizeArray);
+ 
+    const char* word{ "two" };
+    const char* words[]{ "one", "two", "three", "four" };
+    sizeArray = std::size(words);
+    // calls Find<const char*> explicitly
+    res = Find<const char*>(word, words, sizeArray);
+    // calls Find overloaded Find for const char*s
+    res = Find(word, words, sizeArray);
+ 
+    int* intPointer{ &myInt }, * pointArray[]{ &myInt, &myInt };
+    sizeArray = std::size(pointArray);
+    // calls the overloaded Find for pointers
+    res = Find(intPointer, pointArray, sizeArray);
+}
+ 
+
+ 
+
+ 
+
+여기까지 템플릿 심화에 대한 1편을 마무리하고, 다음 포스팅에서 나머지 내용인 템플릿 재귀, 가변 인수 템플릿에 대해 알아보고, 
+템플릿 메타프로그래밍에 대해 간단하게 알아보도록 하겠습니다 !
+
+
+
+출처: https://junstar92.tistory.com/334?category=882590 [별준 코딩]

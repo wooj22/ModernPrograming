@@ -1,0 +1,149 @@
+
+//템플릿을 통해 객체와 멤버 함수를 일반화하여 호출하면서, 
+//lvalue/rvalue, const 상태까지 모두 유지하도록 하는 완벽 전달 버전을 만들기
+
+아래처럼 작성할 수 있습니다:
+
+#include <iostream>
+#include <utility>
+
+class A {
+public:
+    void foo() { std::cout << "A::foo()" << std::endl; }
+};
+
+class B {
+public:
+    void foo() const { std::cout << "B::foo() const" << std::endl; }
+};
+
+// 일반화 템플릿: 멤버 함수 호출 지원
+template<typename Obj, typename MemFunc>
+auto call_member(Obj&& obj, MemFunc func) 
+    -> decltype((std::forward<Obj>(obj).*func)())
+{
+    return (std::forward<Obj>(obj).*func)();
+}
+
+int main() {
+    A a;
+    const B b;
+
+    call_member(a, &A::foo);    // 출력: A::foo()
+    call_member(b, &B::foo);    // 출력: B::foo() const
+    call_member(A{}, &A::foo);  // rvalue 객체 호출, 출력: A::foo()
+}
+
+------------------------------------------------------------------------------------
+
+//매개변수를 가진 멤버 함수까지 완벽 전달(perfect forwarding)로 지원
+//멤버 함수 포인터 + 매개변수 패킹을 활용
+
+#include <iostream>
+#include <utility>
+
+class A {
+public:
+    void foo(int x) { std::cout << "A::foo(" << x << ")" << std::endl; }
+};
+
+class B {
+public:
+    int foo(const std::string& s) const { 
+        std::cout << "B::foo(" << s << ") const" << std::endl; 
+        return s.size();
+    }
+};
+
+// 완벽 전달 멤버 함수 호출 템플릿
+template<typename Obj, typename MemFunc, typename... Args>
+auto call_member(Obj&& obj, MemFunc func, Args&&... args)
+    -> decltype((std::forward<Obj>(obj).*func)(std::forward<Args>(args)...))
+{
+    return (std::forward<Obj>(obj).*func)(std::forward<Args>(args)...);
+}
+
+int main() {
+    A a;
+    const B b;
+
+    call_member(a, &A::foo, 42);              // 출력: A::foo(42)
+    int len = call_member(b, &B::foo, "Hi");  // 출력: B::foo(Hi) const
+    std::cout << "len: " << len << std::endl;
+
+    call_member(A{}, &A::foo, 99);            // rvalue 객체 호출, 출력: A::foo(99)
+}
+
+포인트
+Obj&& obj: forwarding reference로 lvalue/rvalue, const/non-const 모두 지원.
+Args&&... args: 전달되는 매개변수들을 완벽 전달.
+std::forward<Obj>(obj).*func: 객체의 원래 값 카테고리를 유지.
+std::forward<Args>(args)...: 모든 인수의 lvalue/rvalue 상태 유지.
+decltype: 반환형 자동 추론, 멤버 함수 반환값까지 지원.
+이제 임의 객체 + 임의 멤버 함수 + 임의 인자까지 모두 안전하게 호출할 수 있습니다.
+
+---------------------------------------------------------------------------------------------
+
+//일반 함수(overloaded free functions) + 멤버 함수 + lambda까지 모두 지원하는 단일 호출 템플릿
+
+#include <iostream>
+#include <utility>
+#include <string>
+#include <type_traits>
+
+// 범용 호출 템플릿
+template<typename Func, typename... Args>
+decltype(auto) invoke(Func&& f, Args&&... args)
+{
+    if constexpr (std::is_member_pointer_v<std::decay_t<Func>>) {
+        // 멤버 함수 포인터일 경우
+        // 첫 번째 인자가 객체
+        return (std::forward<Args>(args)....*f)(std::forward<Args>(args)...);
+    } else {
+        // 일반 함수나 람다
+        return std::forward<Func>(f)(std::forward<Args>(args)...);
+    }
+}
+
+// 테스트 클래스와 함수
+struct A {
+    void foo(int x) { std::cout << "A::foo(" << x << ")" << std::endl; }
+};
+
+struct B {
+    int foo(const std::string& s) const {
+        std::cout << "B::foo(" << s << ") const" << std::endl;
+        return s.size();
+    }
+};
+
+void bar(int x) { std::cout << "bar(" << x << ")" << std::endl; }
+
+int main() {
+    A a;
+    const B b;
+
+    // 멤버 함수 호출
+    invoke(&A::foo, a, 42);            // 출력: A::foo(42)
+    int len = invoke(&B::foo, b, "Hi"); // 출력: B::foo(Hi) const
+    std::cout << "len: " << len << std::endl;
+
+    // 일반 함수 호출
+    invoke(bar, 99);                    // 출력: bar(99)
+
+    // 람다 호출
+    auto lambda = [](const std::string& s){ std::cout << "lambda: " << s << std::endl; };
+    invoke(lambda, "Hello");            // 출력: lambda: Hello
+
+    // rvalue 객체 멤버 호출
+    invoke(&A::foo, A{}, 55);           // 출력: A::foo(55)
+}
+
+특징
+**std::is_member_pointer_v**를 통해 멤버 함수 포인터인지 판단.
+std::forward + forwarding reference를 이용하여 원래 lvalue/rvalue 상태 유지.
+일반 함수, 람다, 멤버 함수 모두 하나의 invoke로 호출 가능.
+매개변수도 완벽 전달하여 const, rvalue, 복사/이동 모두 지원.
+
+Tip: C++17 이상에서는 if constexpr 사용으로 멤버 함수 포인터와 일반 함수/람다를 분기 처리 가능하며, 
+반환형은 **decltype(auto)**로 추론해 반환값까지 안전하게 처리됩니다.

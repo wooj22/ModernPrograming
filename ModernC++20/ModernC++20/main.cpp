@@ -1,27 +1,23 @@
 #include <iostream>
-#include <list>
-
-using namespace std;
 
 
-template<typename T>
-class Foo
+template <typename T>
+void print(T a)
 {
-public:
-	T data;
-	explicit Foo(const T& a) : data(a) {}
-	Foo(const T& a, const T& b) : data(a + b) {}
-};
+	std::cout << a << std::endl;
+}
 
-template<typename T1, typename T2>
-Foo(const T1& a, const T2& b) -> Foo<std::common_type_t<T1, T2>>;
+template<typename T, typename... Ts>
+void print(T a, Ts... args)
+{
+	for (int i = 0; i < a; a++)
+	{
+		std::cout << args[i] << std::endl;
+	}
+}
 
 int main()
 {
-	Foo f1{ 42 };
-	Foo f2{ 42, 77.7 };
-
-	cout << f2.data << endl;
-
-	return 0;
+	print(1);
+	print(3, 4, 5);
 }
