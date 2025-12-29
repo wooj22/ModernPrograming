@@ -110,3 +110,31 @@ int main()
     int x[3] = { 1, 2, 3 };
     foo(x);
 }
+
+
+//연습) 배열의 차원 수 알아내기
+
+#include <iostream>
+#include <type_traits>
+#include <vector>
+
+
+int main()
+{
+    using A = int[3];
+
+    std::cout << std::extent<A, 0>::value << std::endl; // 3
+
+    using B = int[3][2];
+
+    std::cout << std::extent<B, 0>::value << std::endl; // 3
+    std::cout << std::extent<B, 1>::value << std::endl; // 2
+
+}
+
+//자주 함께 쓰는 메타함수들
+// 
+//std::rank<T>::value		배열의 차원 수
+//std::extent<T, N>			N번째 차원 크기
+//std::remove_extent<T>		한 차원 제거
+//std::remove_all_extents<T>	모든 차원 제거

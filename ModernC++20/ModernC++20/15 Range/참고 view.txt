@@ -1,0 +1,473 @@
+https://openmynotepad.tistory.com/88
+
+view_interface
+
+view가 되는 클래스는 공통 부분의 구현을 단순화하기 위해 view_interface라는 클래스를 상속하고 있습니다.
+
+view_interface는 CRTP에 의해 파생 클래스 타입을 받고, 파생된 view의 컨테이너 인터페이스를 대비하기 위함입니다.
+
+즉 'empty(), data(), size(), front(), back(), operator[]' 같은 컨테이너들의 함수를 제공하고, 참조할 수 있습니다.
+
+template<class D>
+  requires is_class_v<D> && same_as<D, remove_cv_t<D>>
+class view_interface : public view_base {
+  // impl
+};
+view_base는 단순하게, view가 될 수 있는 클래스를 식별하기 위한 것입니다.
+
+타입 D에 요구하는 것은, D는 클래스 타입이며 const/volatile 키워드가 제거된 타입이어야 한다는 것입니다.
+
+직접 view를 정의할 때 사용되는데, 이것을 상속하면 std::ranges::enable_view가 자동으로 true가 됩니다.
+
+ 
+
+이제 이를 상속받는 다양한 view들중, 주요한 view들만 간략하게 확인합시다.
+
+ 
+
+empty_view
+
+단순히 T 타입의, 빈 시퀀스를 나타내는 view 입니다.
+
+비어있는 (empty) range를 제공할 때 사용됩니다.
+
+empty_view는 다음과 같이 정의되어 있습니다.
+
+namespace std::ranges {
+  template<class T>
+    requires is_object_v<T>
+  class empty_view : public view_interface<empty_view<T>> {
+  public:
+    static constexpr T* begin() noexcept { return nullptr; }
+    static constexpr T* end() noexcept { return nullptr; }
+    static constexpr T* data() noexcept { return nullptr; }
+    static constexpr size_t size() noexcept { return 0; }
+    static constexpr bool empty() noexcept { return true; }
+  };
+
+  namespace views {
+    template<class T>
+    inline constexpr empty_view<T> empty{};
+  }
+}
+다음과 같이 range factories를 사용할 수 있습니다.
+
+#include <ranges>
+
+int main() {
+  for (int n : std::views::empty<int>) {
+    assert(false);
+  }
+}
+우리가 std::ranges::filter_view를 사용하지 않고 std::views::filter를 사용한 것 처럼,
+std::views의 네임스페이스에 view 객체들중 몇몇을 'range factory' 라고 합니다. -> 이는 아래에서 다시 설명합니다.
+ 
+
+single_view
+
+T 타입의 요소를 1개만 가지는 시퀀스를 나타내는 view입니다.
+
+range를 가지고 알고리즘에 대해 1개 요소만 넣고 싶을 경우 등에 사용됩니다.
+
+#include <ranges>
+
+int main() {
+  std::ranges::single_view<int> sv{20};
+
+  for (int n : sv) {
+    std::cout << n;
+  }
+}
+single_view는 다음과 같이 정의되어 있습니다.
+
+namespace std::ranges {
+  template<copy_constructible T>
+    requires is_object_v<T>
+  class single_view : public view_interface<single_view<T>> {
+  private:
+    semiregular-box<T> value_;
+  public:
+    single_view() = default;
+    constexpr explicit single_view(const T& t);
+    constexpr explicit single_view(T&& t);
+    template<class... Args>
+      requires constructible_from<T, Args...>
+    constexpr single_view(in_place_t, Args&&... args);
+
+    constexpr T* begin() noexcept;
+    constexpr const T* begin() const noexcept;
+    constexpr T* end() noexcept;
+    constexpr const T* end() const noexcept;
+    static constexpr size_t size() noexcept;
+    constexpr T* data() noexcept;
+    constexpr const T* data() const noexcept;
+  };
+}
+특이한 것은, 네 번째의 constructibe_from 을 사용한 single_view 생성자인데
+
+이것은 직접 생성자를 불러 구축할 수 있음을 명시합니다.
+
+int main() {
+  
+  std::ranges::single_view<std::string> sv(std::in_place, "in place construct", 8);
+
+  for (auto& str : sv) {
+    std::cout << str; // in place
+  }
+}
+다음과 같이 range factories를 사용할 수 있습니다.
+
+int main() {
+  for (auto& str : std::views::single(std::string{"in place construct", 8})) {
+    std::cout << str;
+  }
+}
+ 
+
+iota_view
+
+iota_view는 건네받은 2 개의 값을 시작점과 끝점으로 사용하여, 일정하게 증가하는 시퀀스를 나타내는 view 입니다.
+
+정수에 한정한다면, init, bound 두 값을 전달하면 [init, bound) 의 범위에서 1씩 증가하는 수열을 생성합니다.
+
+#include <ranges>
+
+int main() {
+  std::ranges::iota_view iv{1, 10};
+
+  for (int n : iv) {
+    std::cout << n; // 123456789
+  }
+}
+또한 bound를 제공하지 않으면, 무한한 수열을 생성합니다.
+
+#include <ranges>
+
+int main() {
+  std::ranges::iota_view iv{1};
+
+  for (int n : iv) {
+    std::cout << n;     // 1234567891011121314151617181920
+    if (n == 20) break; // 20번째에서 빠져나오기 위해..
+  }
+}
+기본적으로 수열을 생성하는데 사용하지만, 증가 가능하며 거리를 정의할 수만 있다면 어떤 형태든 가능합니다.
+
+이는 std::weakly_incrementable 에 의해 제한되는데, 이것만 만족한다면 어떤 경우든 가능합니다.
+
+예를 들어, 포인터와 컨테이너의 시퀀스를 생성해낼 수 있습니다.
+
+int main() {
+  
+  int array[] = {2, 4, 6, 8, 10};
+  
+  // 포인터 시퀀스
+  std::ranges::iota_view iva{std::ranges::begin(array), std::ranges::end(array)};
+
+  for (int* p : iva) {
+    std::cout << *p;  // 246810
+  }
+  
+  std::cout << '\n';
+  
+  std::list list = {1, 3, 5, 7, 9}; 
+  
+  // list 컨테이너의 iterator를 사용한 시퀀스
+  std::ranges::iota_view ivl{std::ranges::begin(list), std::ranges::end(list)};
+
+  for (auto it : ivl) {
+    std::cout << *it; // 13579
+  }
+}
+std::weakly_incrementable이 만족하려면 다음과 같아야 합니다.
+
+++i 또는 i++ 같은 연산자를 통해 증가가 가능해야 합니다.
+i가 증가 가능한경우, ++i와 i++는 i의 다음 요소가 제공되어야 합니다. ( 즉 i +1 은 i 다음의 요소가 제공되어야 함 )
+i가 증가 가능한경우, addressof(++i)와 addressof(i)는 등치 상태입니다.
+iota_view 같은 경우 lazy operation 이므로, 이터레이터가 증가됨에 따라 1 개씩 요소가 계산됩니다.
+
+int main() {
+  std::ranges::iota_view iv{1, 10}; // 이 때는 어떤 행동도 하지 않습니다.
+
+  auto it = std::ranges::begin(iv); // 이 때는 어떤 행동도 하지 않습니다.
+
+  int n1 = *it; // 1이라는 숫자를 이 때 계산합니다.
+  ++it;         // 2라는 숫자를 이 때 계산합니다.
+  it++;         // 3이라는 숫자를 이 때 계산합니다.
+  int n2 = *it; // 3이라는 숫자를 얻어낼 수 있습니다.
+}
+다음과 같이 range factories를 사용할 수 있습니다.
+
+#include <ranges>
+
+int main() {
+  for (int n : std::views::iota(1, 10)) {
+    std::cout << n;   // 123456789
+  }
+  
+  std::cout << '\n';
+
+  for (int n : std::views::iota(1)) {
+    std::cout << n;   // 1234567891011121314151617181920
+    if (n == 20) break;
+  }
+}
+ 
+
+istream_view
+
+istream이 나타내는 입력 스트림에 있는 T 값의 시퀀스를 생성하는 view 입니다.
+
+이는 std::istream_iterator를 view로 재설계한 것입니다.
+
+특성상 istream_view는 항상 input_range 이므로, 양방향성 (bidirection)을 보장하지 않습니다. 따라서 istream_view는 move-only 입니다.
+
+istream_view는 lazy operation 입니다.
+
+#include <ranges>
+
+int main() {
+  for (int n : std::ranges::istream_view<int>(std::cin)) {
+    std::cout << n; // 123456
+  }
+}
+istream_view<T>는 사실 view 클래스가 아니라, range factory 함수입니다.
+
+istream_view는 basic_istream_view라는 클래스에서 임의의 istream 인자를 받고 그것을 사용하여 basic_istream_view를 구축한 후 반환합니다. basic_istream_view의 정의는 다음과 같습니다.
+
+namespace std::ranges {
+
+  template<movable Val, class CharT, class Traits>
+    requires default_initializable<Val> &&
+             stream-extractable<Val, CharT, Traits>
+  class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, Traits>> {
+  public:
+    basic_istream_view() = default;
+    constexpr explicit basic_istream_view(basic_istream<CharT, Traits>& stream);
+
+    constexpr auto begin()
+    {
+      if (stream_) {
+        *stream_ >> object_;
+      }
+      return iterator{*this};
+    }
+
+    constexpr default_sentinel_t end() const noexcept;
+
+  private:
+    struct iterator;                                    
+    basic_istream<CharT, Traits>* stream_ = nullptr;    
+    Val object_ = Val();                                
+  };
+}
+basic_istream_view를 사용하면 3개의 템플릿 매개 변수를 다 지정해야 합니다.
+
+그러므로 그냥 istream_view 사용합시다
+
+ 
+
+이전까지의 empty_view, single_view, iota_view, istream_view는 range factories 였습니다.
+
+하지만 istream_view부터는 range adaptors 입니다.
+
+range adaptors는 range factories와는 다릅니다.
+range adaptors : 기본적으로 하나 이상의 range를 취하고, '특정 작업을 적용한' range를 반환하는 알고리즘
+range factories : range를 취하지 않고, range를 반환하는 알고리즘
+이해가 잘 안된다면, 다음 을 확인해주세요.
+ 
+
+take_view
+
+시퀀스의 시작 위치에서, 지정된 수만큼 요소를 꺼낸 시퀀스를 생성하는 view 입니다.
+
+다른 작업을 적용한 시퀀스에서 최종 결과를 꺼낼 때 사용합니다.
+
+take_view도 이전의 dangling 처럼 순서의 길이보다 긴 수를 지정하는 것을 대비해, 대책이 되어 있습니다.
+
+r이 sized_range에 있다면?
+1. r 이 random_access_range인 경우에, r의 마지막 iterator를 사용합니다.
+2. 아니라면, r의 처음 iterator와 주어진 길이중 짧을 쪽을 넘겨 구축 (std::counted_iterator)
+아니라면, 처음 iterator와 주어진 길이중 짧은 쪽을 넘겨 구축 (std::counted_iterator)
+sized_range란, concept을 이용해 거리를 정의할 수 있는 range를 나타냅니다.
+
+std::counted_iterator란 C++20 에서 추가되었으며, 주어진 반복자를 래핑하고, 지정된 길이만큼 반복이 가능합니다.
+
+ 
+
+sentinel에 의해 확실히 오버플로 나지 않도록 설계되었습니다.
+
+#include <ranges>
+
+int main() {
+  using namespace std::string_view_literals;
+  
+  // 문자열의 크기보다 긴 길이를 지정한다. (random_access_iterator)
+  std::ranges::take_view tv1{"str"sv, 10};
+  
+  int count = 0;
+  
+  // 안전, 3번만 돕니다.
+  for ([[maybe_unused]] char c : tv1) {
+    ++count;
+  }
+  
+  std::cout << "loop : " << count << '\n';  // loop : 3
+  
+  std::list li = {1, 2, 3, 4, 5};
+  
+  // list의 크기보다 긴 길이를 지정한다. (1.2의 std::counted_iterator)
+  std::ranges::take_view tv2{li, 10};
+  count = 0;
+
+  // 안전, 5번만 돕니다.
+  for ([[maybe_unused]] int n : tv2) {
+    ++count;
+  }
+  
+  std::cout << "loop : " << count << '\n';  // loop : 5
+
+  std::forward_list fl = {1, 2, 3, 4, 5};
+  
+  // 원래의 forward_list보다 긴 길이를 지정한다. (2의 std::counted_iterator)
+  std::ranges::take_view tv3{fl, 10};
+  count = 0;
+
+  // 안전, 5번만 돕니다.
+  for ([[maybe_unused]] int n : tv3) {
+    ++count;
+  }
+  
+  std::cout << "loop : " << count << '\n';  // loop : 5
+}
+take_view는 '거의' 길이의 관리만 하면 되기 때문에, lazy operation이 가능합니다.
+
+다음과 같이 range adaptors를 사용할 수 있습니다.
+
+#include <ranges>
+
+int main() {
+  
+  for (int n : std::views::take(std::views::iota(1), 5)) {
+    std::cout << n;
+  }
+  
+  std::cout << '\n';
+
+  for (int n : std::views::iota(1) | std::views::take(5)) {
+    std::cout << n;
+  }
+}
+이 외의 view들은 다음을 확인해 주세요.
+
+empty_view https://zenn.dev/onihusube/articles/6608a0185832dc51213c
+single_view https://zenn.dev/onihusube/articles/5c922fe6856859ef8bf7
+iota_view https://zenn.dev/onihusube/articles/87647047e094fe5f3b94
+istream_view https://zenn.dev/onihusube/articles/ff891b851802813d73a1
+ref_view https://zenn.dev/onihusube/articles/d900f52393b809f5300a
+filter_view https://zenn.dev/onihusube/articles/d6ea9550bd0daf46394c
+transform_view https://zenn.dev/onihusube/articles/6e053bfeb4fce1db0613
+take_view https://zenn.dev/onihusube/articles/cadd871201d9ac0dd322
+take_while_view https://zenn.dev/onihusube/articles/4c9df5ac12e042eb62a6
+drop_view https://zenn.dev/onihusube/articles/a0b5207df9d587ce0973
+drop_while_view https://zenn.dev/onihusube/articles/8fa73ccc945e6002ba5f
+join_view https://zenn.dev/onihusube/articles/42b5465e778cee595f76
+split_view https://zenn.dev/onihusube/articles/8accfa7e3e30239d7e91
+counted_view https://zenn.dev/onihusube/articles/5b857ad5bae3190d0d3b
+common_view https://zenn.dev/onihusube/articles/ee74272e49fb3953fa3b
+reverse_view https://zenn.dev/onihusube/articles/b91aa582d28ed869ec09
+elements_view https://zenn.dev/onihusube/articles/9a13745c24b36b9bd753
+이 외에도, 다음과 같은 함수가 있습니다.
+
+std::all_view, std::views::all : 모든 데이터에 대한 view를 생성합니다.
+
+#include <ranges>
+#include <vector>
+#include <iostream>
+#include <type_traits>
+ 
+int main()
+{
+    std::vector<int> v{0,1,2,3,4,5};
+    for(int n : std::views::all(v) | std::views::take(2) ) {
+        std::cout << n << ' ';	// 0, 1
+    }
+ 
+    static_assert(std::is_same<
+        decltype(std::views::single(42)),
+        std::ranges::single_view<int>
+        >{});
+ 
+    static_assert(std::is_same<
+        decltype(std::views::all(v)),
+        std::ranges::ref_view<std::vector<int, std::allocator<int>>>
+        >{});
+ 
+    int a[]{1,2,3,4};
+    static_assert(std::is_same<
+        decltype(std::views::all(a)),
+        std::ranges::ref_view<int [4]>
+        >{});
+ 
+    static_assert(std::is_same<
+        decltype(std::ranges::subrange{std::begin(a)+1, std::end(a)-1}),
+        std::ranges::subrange<int*, int*, std::ranges::subrange_kind(1)>
+        >{});
+}
+std::keys_view, std::views::keys : '페어 같은 값' 들의 첫번째 값을 가져옵니다.
+
+( 즉 map 이라면 키 값들의 view 들입니다, std::pair라면 first 값들의 view 들입니다. )
+
+ 
+
+#include <iomanip>
+#include <iostream>
+#include <ranges>
+#include <utility>
+#include <vector>
+ 
+int main()
+{
+    const std::vector<std::pair<std::string, double>> quark_mass{ // MeV/c²
+        {"up", 2.3},      {"down", 4.8},
+        {"charm", 1275},  {"strange", 95},
+        {"top", 173'210}, {"bottom", 4'180},
+    };
+ 
+    std::cout << "quark name:  │ ";
+    for (std::string const& name : std::views::keys(quark_mass))
+        std::cout << std::setw(9) << name << " │ ";
+ 
+    std::cout << "\n" "mass MeV/c²: │ ";
+    for (const double mass : std::views::values(quark_mass))
+        std::cout << std::setw(9) << mass << " │ ";
+    std::cout << '\n';
+}
+
+quark name:  │        up │      down │     charm │   strange │       top │    bottom │ 
+mass MeV/c²: │       2.3 │       4.8 │      1275 │        95 │    173210 │      4180 │
+std::values_view, std::views::values : '페어 같은 값' 들의 두번째 값을 가져옵니다.
+
+(즉 map 이라면 value 값들의 view 들입니다, std::pair라면 second 값들의 view 들입니다. )
+
+ 
+
+#include <iostream>
+#include <ranges>
+#include <map>
+ 
+int main()
+{
+    std::map<char, int> map{ {'A', 1}, {'B', 2}, {'C', 3}, {'D', 4}, {'E', 5} };
+ 
+    auto odd = [](int x) { return 0 != (x & 1); };
+ 
+    std::cout << "Odd values in the map: ";
+    for (int value : map | std::views::values | std::views::filter(odd))
+        std::cout << value << ' ';
+}
+
+Odd values in the map: 1 3 5
+이 외의, 이해가 안되는 함수들에 대해 질문을 주시거나
+
+설명을 원하는 함수가 있으시다면 댓글로 남겨주시면 추가 작성하여 수정하겠습니다.

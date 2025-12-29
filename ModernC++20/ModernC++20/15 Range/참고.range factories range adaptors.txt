@@ -1,0 +1,123 @@
+C++20에서 도입된 **ranges** 라이브러리에서, 
+**래인지 팩토리(range factories)**와 **래인지 어댑터(range adapters)**는 범위(View)를 생성하고 변형하는 데 사용되는 두 가지 주요 개념입니다. 
+두 가지 모두 범위를 다루는 작업을 쉽게 해주지만, 그 목적과 동작 방식은 다릅니다. 
+
+### 1. 래인지 팩토리 (Range Factories)
+
+**래인지 팩토리**는 새로운 **범위(View)**를 생성하는 데 사용됩니다. 
+기본적으로 데이터를 변환하거나 특정 조건에 맞는 범위를 생성하는 함수들을 제공합니다. 
+팩토리는 범위를 생성하는 "공장"처럼 동작하며, **새로운 범위 객체**를 반환합니다.
+
+#### 예시:
+
+- `std::views::iota`: 연속적인 값을 생성하는 범위 팩토리
+- `std::views::transform`: 각 요소에 대해 변환을 적용하는 범위 팩토리
+- `std::views::filter`: 특정 조건을 만족하는 요소만 선택하는 범위 팩토리
+
+#### 예시 1: `std::views::iota` (연속된 숫자 생성)
+```cpp
+#include <iostream>
+#include <ranges>
+
+int main() {
+    // 1부터 5까지의 연속적인 숫자 범위를 생성
+    auto iota_range = std::views::iota(1, 6);
+
+    for (int i : iota_range) {
+        std::cout << i << " ";  // 출력: 1 2 3 4 5
+    }
+
+    return 0;
+}
+```
+
+#### 예시 2: `std::views::transform` (변환)
+```cpp
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main() {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+    
+    // 각 요소를 제곱한 값을 가지는 새로운 범위 생성
+    auto squared_view = vec | std::views::transform([](int x) { return x * x; });
+    
+    for (int x : squared_view) {
+        std::cout << x << " ";  // 출력: 1 4 9 16 25
+    }
+
+    return 0;
+}
+```
+
+### 2. 래인지 어댑터 (Range Adapters)
+
+**래인지 어댑터**는 **기존 범위**를 변형하거나 조작하는 **어댑터**입니다. 
+어댑터는 기존의 범위를 **변경하지 않고 새로운 범위**를 반환합니다. 
+즉, 어댑터는 **기존 범위를 변형하는 역할**을 하며, 그 결과는 새로운 범위로 제공됩니다. 
+
+어댑터는 주로 범위에 대해 **필터링, 변환, 정렬 등**과 같은 연산을 할 때 사용됩니다. 
+어댑터는 주로 범위에 **지연 평가(lazy evaluation)**를 적용하여, 범위가 실제로 사용될 때까지 계산을 지연시킵니다.
+
+#### 예시:
+
+- `std::views::transform`: 범위의 각 요소에 변환을 적용 (팩토리와 어댑터 모두 사용 가능)
+- `std::views::filter`: 특정 조건을 만족하는 요소만 남기는 어댑터
+- `std::views::take`: 범위의 처음 n개 요소를 선택하는 어댑터
+
+#### 예시 1: `std::views::filter` (필터링)
+```cpp
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main() {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+
+    // 3보다 큰 값만 포함하는 범위를 생성
+    auto filtered_view = vec | std::views::filter([](int x) { return x > 3; });
+
+    for (int x : filtered_view) {
+        std::cout << x << " ";  // 출력: 4 5
+    }
+
+    return 0;
+}
+```
+
+#### 예시 2: `std::views::take` (첫 n개 요소 선택)
+```cpp
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main() {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+
+    // 처음 3개의 요소만 포함하는 범위를 생성
+    auto taken_view = vec | std::views::take(3);
+
+    for (int x : taken_view) {
+        std::cout << x << " ";  // 출력: 1 2 3
+    }
+
+    return 0;
+}
+```
+
+### 래인지 팩토리와 래인지 어댑터의 차이점
+
+| 구분                | 래인지 팩토리 (Range Factories) 			| 래인지 어댑터 (Range Adapters)                                   |
+|-------------------|--------------------------------------------------------------|-----------------------------------------------------------------|
+| 목적                | **새로운 범위 생성** (범위 객체 반환) 			| **기존 범위 변형** (기존 범위를 기반으로 새로운 범위 반환)  |
+| 특징                | 데이터를 생성하거나 변환하는 역할		 	| 기존 범위를 기반으로 작업을 수행하고 새로운 범위를 반환    |
+| 예시                | `std::views::iota`, `std::views::transform`, `std::views::filter` 	| `std::views::transform`, `std::views::filter`, `std::views::take`      |
+| 작동 방식          | 새로운 범위 객체를 생성하여 반환			| 기존 범위에 변형을 적용한 후 새로운 범위 객체를 반환         |
+
+### 결론
+
+- **래인지 팩토리**는 새로운 범위를 **생성**하는 데 사용됩니다. 범위 생성과 관련된 작업에서 사용됩니다.
+- **래인지 어댑터**는 기존 범위를 **변형**하거나 **조작**하는 데 사용됩니다. 범위를 필터링하거나 변환하는 등의 작업에 유용합니다.
+
+C++20에서 도입된 **ranges** 라이브러리를 활용하면 범위를 더 효율적이고 직관적으로 처리할 수 있으며, 팩토리와 어댑터를 결합하여 복잡한 범위 작업을 쉽게 구현할 수 있습니다.

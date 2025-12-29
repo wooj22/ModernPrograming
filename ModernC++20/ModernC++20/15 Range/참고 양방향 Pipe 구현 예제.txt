@@ -1,0 +1,89 @@
+양방향 Pipe 구현 예제
+
+1  CRTP 기반 Pipe
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <cctype>
+#include <utility>
+
+template <typename Derived>
+struct Pipe {
+    template <typename T>
+    auto operator()(T&& value) const {
+        return static_cast<const Derived&>(*this)(std::forward<T>(value));
+    }
+};
+
+
+2 전역 연산자 오버로드
+
+// 오른쪽 파이프: value | pipe
+template <typename T, typename F>
+auto operator|(T&& value, const Pipe<F>& pipe) {
+    return pipe(std::forward<T>(value));
+}
+
+// 왼쪽 파이프: pipe | value
+template <typename F, typename T>
+auto operator|(const Pipe<F>& pipe, T&& value) {
+    return pipe(std::forward<T>(value));
+}
+
+
+3 실전 Pipe 예제
+
+Trim
+struct Trim : Pipe<Trim> {
+    std::string operator()(std::string s) const {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            [](unsigned char c){ return !std::isspace(c); }));
+        s.erase(std::find_if(s.rbegin(), s.rend(),
+            [](unsigned char c){ return !std::isspace(c); }).base(), s.end());
+        return s;
+    }
+};
+
+Upper
+struct Upper : Pipe<Upper> {
+    std::string operator()(std::string s) const {
+        std::transform(s.begin(), s.end(), s.begin(),
+                       [](unsigned char c){ return std::toupper(c); });
+        return s;
+    }
+};
+
+Wrap
+struct Wrap : Pipe<Wrap> {
+    std::string left, right;
+    Wrap(std::string l, std::string r) : left(std::move(l)), right(std::move(r)) {}
+    std::string operator()(std::string s) const {
+        return left + s + right;
+    }
+};
+
+
+4 사용 예시
+
+int main() {
+    std::string s = "   hello world   ";
+
+    // 오른쪽 파이프
+    auto result1 = s | Trim{} | Upper{} | Wrap{"[", "]"};
+    std::cout << result1 << "\n"; // [HELLO WORLD]
+
+    // 왼쪽 파이프
+    auto result2 = Trim{} | Upper{} | Wrap{"<", ">"} | s;
+    std::cout << result2 << "\n"; // <HELLO WORLD>
+}
+
+양방향 모두 자연스럽게 읽히는 체인이 됩니다.
+
+
+5 장점
+
+CRTP + 전역 오버로드로 제로 오버헤드 구현
+람다나 Functor와 호환 가능
+왼쪽-오른쪽 모두 사용 가능 → 유연한 DSL
+함수형 체인 스타일로 가독성 극대화

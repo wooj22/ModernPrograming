@@ -115,8 +115,7 @@ int main()
 //enable_if
 //	enable_if 는 2개의 템플릿 인자 <bool Test, typename Type>를 받아,
 //	Test가 참인 경우 Type에 대한 type aliasing을 제공하는 구조체이다.
-// 
-//따라서, bool 형 조건이 false인 경우 아무런 타입을 제공하지 않음으로써, 컴파일 타임 에러를 유발할 수 있다.
+//	따라서, bool 형 조건이 false인 경우 아무런 타입을 제공하지 않음으로써, 컴파일 타임 에러를 유발할 수 있다.
 
 /*
 // 아래에서 trivial 한 타입을 고르세요.

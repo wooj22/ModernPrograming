@@ -1,8 +1,6 @@
-﻿// constexpr 함수 사용 -------------------------------------------------------------
+﻿//연습) constexpr 함수 사용 -------------------------------------------------------------
 // 
-//컴파일 도중에 3n의 크기를 갖는 array를 만들어 보자
- 
-//		std::pow() 는 부동소수점 타입, constexpr이 아니다 -> 만들자
+// 컴파일 도중에 3n의 크기를 갖는 array를 만들어 보자
 
 #include <iostream>
 #include <array>
@@ -21,13 +19,15 @@ int main()
 {
 	auto base = 2;
 	auto exp = 3;
-	auto baseToExp = pow(base, exp);				// 실행시점에서 값들을 구한다.
+	auto baseToExp = pow(base, exp);				// 실행시점에서 값들을 구한다. 2^3
 
 	constexpr auto numConds = 3;
-
 	std::array<int, pow(2, numConds)> results;		// 정적배열
 	cout << results.size();
+
+	//std::pow() 는 부동소수점 타입, constexpr이 아니다->만들자
 }
+
 
 // constexpr 객체 만들기 ---------------------------------------------------------
 

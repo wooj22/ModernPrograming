@@ -13,124 +13,154 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="01 Modern C++">
-      <UniqueIdentifier>{39a9398b-d3e3-418d-b0e7-1b0b8b8707c0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lab">
       <UniqueIdentifier>{5a9ce441-6835-4e5d-a341-20a52e3ff523}</UniqueIdentifier>
     </Filter>
     <Filter Include="Lab\Lab1">
       <UniqueIdentifier>{cd69594d-2ed0-4639-b36a-a01651567b0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02 Template Generic Programming">
+    <Filter Include="02. Template Generic Programming">
       <UniqueIdentifier>{1b9e962d-7f51-4e54-86f6-fc56c25790c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Modern C++">
+      <UniqueIdentifier>{39a9398b-d3e3-418d-b0e7-1b0b8b8707c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Concept">
+      <UniqueIdentifier>{982ec6b6-b0f0-4462-872b-94468604ee9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Range">
+      <UniqueIdentifier>{0adbca30-9ff3-4da6-b8dc-1494ec2a0b3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Base">
+      <UniqueIdentifier>{06fbe0e2-98a6-4336-a9fa-8f4ae5bb0b90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Instance">
+      <UniqueIdentifier>{8bbfe18e-0ab7-447c-a07d-0b04875a6031}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Tamplate Friend">
+      <UniqueIdentifier>{23de91b4-09e2-4aa3-a170-f3412dcd5110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Inheritance">
+      <UniqueIdentifier>{8e3376b5-3946-44d6-a846-5ddb722cba55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Variadic Tempalte">
+      <UniqueIdentifier>{5154888f-58b0-40dd-9a90-5fd5f00a2e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Meta Programing">
+      <UniqueIdentifier>{d0898828-86d5-4468-ac58-68e0775d433d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Meta Programing\Tuple">
+      <UniqueIdentifier>{c397e0cc-d401-4f23-b8f7-d45c4080b4f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Template Generic Programming\Template Traits">
+      <UniqueIdentifier>{67259e2f-1146-4892-84c2-2fb918b75a3c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\002 filesystem.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\003_static_assert.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\004 if init 1.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\004 if init 2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\005 if constexpr.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\006 structured binding.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\007 using enum.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\011 attributes1.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\011 attributes2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\011 attributes3.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\012 spaceship operator.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\012 spaceship operator2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\013 math.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\014 optional.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\014 optional1.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\014 optional2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\014 optional3.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\015 variant.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\017 trivial.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\018 common_type.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\019 invoke.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\019 invoke2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\020 Designated initalizers.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\021 __VA_OPT.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\021 char8_t.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\참고 carry_dependency.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 common_type.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 Init Statement.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 invoke.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 invoke2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 optional.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 optional2.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 spaceship operator.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="01 Modern C++\테스트 static_assert.cpp">
-      <Filter>01 Modern C++</Filter>
+      <Filter>01. Modern C++</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
@@ -159,146 +189,509 @@
     <ClCompile Include="..\과제\과제01\테스트 static_assert.cpp">
       <Filter>Lab\Lab1</Filter>
     </ClCompile>
+    <ClCompile Include="12_Concept\Concept.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept2.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept3.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept4.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept4_Abbreviated Function Template.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept5.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept10.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept11.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\Concept12.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="12_Concept\테스트 연습.cpp">
+      <Filter>03. Concept</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges1.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges2.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges3.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges4.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges5.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges6 ex1.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges6 ex2.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\ranges6 ex3.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\참고 Rvalue 컨테이너의 문제.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\copy.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\equal.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\fill.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\for_each.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\generate.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\identity.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\iter_swap.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\itoa.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\lower_bound.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\none_of.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\replace.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\search.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\transform.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
+    <ClCompile Include="15 Range\3_08 STL algorithm 3\unique.cpp">
+      <Filter>04. Range</Filter>
+    </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\100_templete.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\101_templete Argument.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\101_templete Parameter.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete Argument Type Deduction.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\102_templete_Deduction4_CTAD.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\103_Templete typedef.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\104_Templete typeid.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\104_Templete typeid2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\105_Templete typename.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\105_Templete typename2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\200 Templete parsing adl.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\300 Variable template.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\310 alias template.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\310 alias template2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\400_templete_array.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\401_template_smart pointer1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="02 Templete 제네릭 프로그래밍\401_template_smart pointer2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Base</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\100_Templete Instantiation.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\803 Templete overload1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\803 Templete overload2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\803_Template specialization1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\803_Template specialization2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\803_Template specialization3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\816_Templete Instantiation.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\817_Templete Instantiation extern.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\905_Generic copy constructor.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\906 Template copy constructor.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="03 Templete 인스턴스화\907 Templete Compile.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Instance</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\819_Template FriendFunction3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\820_NestedClassTemplate1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\820_NestedClassTemplate2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="04 Templete 프랜드, 중첩클래스\nested dependent type name 3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Tamplate Friend</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\821_Template Inheritance.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\821_Template Inheritance2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\822_Template Inheritance3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\822_Template Inheritance4.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton1.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton2.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
     </ClCompile>
     <ClCompile Include="05 Templete 템플릿과 상속\901_template_Singleton3.cpp">
-      <Filter>02 Template Generic Programming</Filter>
+      <Filter>02. Template Generic Programming\Template Inheritance</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\01 Variadic Argument.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\02 Variadic Templete.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\03 Parameter Pack.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\04 Pack Expansion.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\05 Fold Expression.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\06 Fold Expression0.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\06 Fold Expression1.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\06 Fold Expression2.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\06 Fold Expression3_equal.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\06 Fold Expression4_ex.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\07 Variadic template_lambda.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\07_Variadic template_string.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\13 template auto.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\14 template deduction guide.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="06 Variadic Template\15 tuple 출력.cpp">
+      <Filter>02. Template Generic Programming\Variadic Tempalte</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\정적 다형성 CRTP.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\template tuple 1.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\template tuple 2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\template tuple 3.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\template tuple 4.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\template tuple iostream.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\Tuple 구현\Tuple 구현.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing\Tuple</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\812_type_traits.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\812_type_traits2.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\812_type_traits3_sfinae.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\812_type_traits3_void_t.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\813_type_traits_enable_if.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\813_type_traits_is_array.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\813_type_traits_is_popinter.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\814_type_traits_remove_pointer.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\815_integral_constant.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\816_type_traits_return_type1.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\816_type_traits_return_type2 invoke_result.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\816_type_traits_return_type3 returnType.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\817_type_traits_value.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\818_type_traits_is_same.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\818_type_traits_is_same2.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\819_type_traits_conditional.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\820_type_traits_common_type.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\821_type_traits_decay.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\822_type_traits_is_trival.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\참고 invoke_result_t.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits\참고 is_invocable.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\01 type traits.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\10 datatype function 0.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\10 datatype function 1.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\10 datatype function 2.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\10 datatype function 3.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 0.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 1.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 2.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 3.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 4.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 5.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\20 traits 6.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\30 policy trait 0.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\30 policy trait 1.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="11 Templete traits 2\type sort.cpp">
+      <Filter>02. Template Generic Programming\Template Traits</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\002_decltype.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\005_const.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\006_constexpr.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\006_constexpr1.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\006_constexpr2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\006_constexpr3.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\006_constexpr4.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\811_TemplateMetaProgramming.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\811_TemplateMetaProgramming2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\812_template for.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\812_template for1.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\812_template for2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\812_template for5.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\813_template if SFINAE.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\813_template if SFINAE2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\813_template if tag dispatching.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\820. CRTP.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\820. CRTP1.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\820. CRTP2.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\820. CRTP3.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\822. Thin template.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\824. Policy Based Design.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\826. Member Detect IDioms.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\828. Typelist.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\907 Variadic Templete3.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\908 Variadic Templete4.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\909 Variadic Templete5.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\910 Variadic Templete6.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="10 Tmeplete Meta Programing\910 Variadic Templete7.cpp">
+      <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

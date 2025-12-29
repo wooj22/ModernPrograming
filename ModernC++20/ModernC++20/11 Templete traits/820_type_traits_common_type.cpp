@@ -32,9 +32,8 @@ int main()
     return 0;
 }
 
-/*
  
-// 아래에서 common_type 을 기입하세요.
+//연습) 아래에서 common_type 을 기입하세요.
 
 #include <iostream>
 #include <type_traits>
@@ -60,5 +59,3 @@ int main()
 
     return 0;
 }
-
-*/

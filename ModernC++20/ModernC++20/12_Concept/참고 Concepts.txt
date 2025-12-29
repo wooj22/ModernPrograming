@@ -1,0 +1,943 @@
+//컨셉에 대한 이해
+https://openmynotepad.tistory.com/69?category=853099
+
+
+-----------------------------------------------------------------------------------------------------------------
+C++20) Concepts ( 콘셉트, 개념 ) - 1
+
+Concepts : Generic Programming의 미래
+모든 내용은 Bjarne Stroustrup 교수님의 Good_Concepts에서 발췌하였습니다.
+
+Concepts 의 사용은 
+기존의 Unconstrained Template ( 제한되지 않은, 제약 없는 ) 에 비해 Runtime 비용이 없음을 의미합니다.
+순전히 선택 메커니즘이며 선택 후 생성된 코드는 기존 템플릿 코드와 동일합니다.
+
+1. 약간의 배경 지식
+
+1987년경 Bjarne Stroustrup 교수는 적절한 인터페이스로 템플릿을 디자인하려고 했으나 실패했습니다.
+
+원한 속성은 다음과 같습니다.
+
+완전한 일반성 / 표현성
+수작업 코딩에 비해 오버 헤드가 없음
+잘 지정된 (well-specified) 인터페이스
+
+그러나, 아무도 어떻게 이 세 속성을 다 얻을 수 있는지 알 수 없었습니다. 대신 다음과 같은 세 속성을 얻었습니다.
+
+튜링 완성도
+수작업 코딩보다 우수한 성능
+형편없는 인터페이스 ( 기본적으로 컴파일 타임에 덕 타이핑 )
+
+잘 지정된 (well-specified) 인터페이스가 없기 때문에, 템플릿은 매우 더러운 오류 메세지가 나타납니다.
+인터페이스의 부족은 수많은 사람을 수년간 괴롭혔습니다. 
+템플릿이 C++[Str94]의 기본 설계 기준을 충족하지 못했기 때문입니다.
+
+오늘날, 템플릿에 대한 목표는 일반적인 C++ 디자인 목표와 같습니다.
+ 
+인터페이스 사양 문제에 대한 해결책은 Alex Stepanov가 'Concepts' (개념) 라고 명명했습니다.
+Concepts는 템플릿 인수 집합에 대한 일련의 요구사항 입니다.
+
+
+2. 일반적인 프로그래밍 (Generic Programming)
+
+C++에서 Generic Programming을 단순화할 필요가 있습니다.
+Generic Code를 작성하는 방법은 다른 코드를 작성하는 방식과는 너무 다릅니다.
+
+// Traditional Code
+
+double sqrt(double d); // C++84 : double 인 모든 d를 허용
+
+double d = 7;
+double d2 = sqrt(d); // well, d는 double 입니다.
+
+vector<string> vs = {"Good", "Old", "Templates"};
+double d3 = sqrt(vs); // Ill-formed, vs는 double이 아닙니다.
+
+이것은 프로그래밍을 배우는 첫날 쯤에 알게되는 종류의 코드입니다. double을 요구하도록 지정된 함수 sqrt가 있습니다. 
+만약 double이 아닌 타입을 넘기면 ( sqrt(vs) 와 같이 ) 
+즉시 'vector<string>은 double이 아닙니다' 라는 오류메세지를 받게 됩니다.
+
+이와는 다르게
+
+// 1990s의 일반적인 코드 스타일
+
+template <class T> void sort(T& c) // C++98 : c는 모든 유형 T 가능
+{
+	// T의 속성에 따라서 정렬을 위한 코드가 들어있습니다.
+    	// 예를들어 operator[] 와 operator<가 있는 유형이 오길 기대합니다.
+}
+
+vector<string> vs = {"Good", "Old", "Templates"};
+sort(vs);	// Well, vs가 정렬에 필요한 모든 속성을 갖습니다.
+
+double d = 7;
+sort(d);	//Ill-formed, d에는 operator[]가 없습니다.
+
+이 코드에는 다음과 같은 문제가 있습니다.
+
+아시다시피, sort(d)에서 얻는 오류 메세지는 장황하고 아무 쓸모도 없습니다.
+sort를 하기 위해서 선언문만 있는 것이 아니라, 정의를 제공해야 합니다. 
+Generic Code로부터 그리고 우리가 코드를 구성하는 방법의 모델을 변경합니다.
+
+sort을 하기 위한 요구사항이 함수 본체에 내포되어 있습니다. (즉, argument type을 가지고 요구사항이 맞는지 확인할 수 없습니다.)
+sort(d)의 오류메세지는 템플릿이 인스턴스화 될 때만 나타납니다.
+
+template<typename T> 표기법은 독특하고, 장황하며, 반복적입니다.
+Concepts를 사용하면, template을 위한 template ( concepts는 template 으로 작성되기에 )을 지정하여, 문제의 근원에 도달할 수 있습니다. (주석을 통해)
+
+
+// Concepts를 사용하는 Generic 한 코드
+
+void sort (Sortable& c);		// concepts : 정렬 가능한 모든 c를 허용
+
+vector<string> vs = {"Hello", "New", "World"};
+sort(vs);	// Well, vs는 정렬 가능합니다.
+
+double d = 7;
+sort(d);	// Ill-formed, d는 operator[]를 지원하지 않습니다.
+
+이 코드는 위의 sort 예제와 유사합니다. 유일한 차이점은
+Sortable의 경우, 사용자가 코드에서 의미를 지정했습니다. 즉 유형은 다음과 같은 경우 정렬 가능합니다.
+
+- begin() 및 end()가 random_access_iterator 일것 
+- operator<를 사용하여 비교
+
+이제 잘못된 호출( sort(d) )를 발견한 즉시 컴파일러가 주석에 표시된대로 오류 메세지를 표시합니다.
+
+
+Concepts의 목표는 다음과 같습니다.
+
+Generic Programming을 통한 코드가 아닌 간단한 코드와 같은 간단한 Generic Programming 코드
+사용하기 쉽고, 작성하기가 그리 어렵지 않은 고급 Generic Programming 코드
+
+Concepts 자체로는 코드 구성의 차이를 해결할 수 없습니다. 여전히 템플릿을 헤더에 넣어야 합니다.
+그러나 그것은 모듈 [Rei16, C++20]에 의해 해결됩니다.
+모듈에서 템플릿 유형은 추상 그래프로 표현되며, Concepts를 사용하여 템플릿 함수 호출을 확인합니다.
+모듈에서 제공하는 인터페이스 ( 선언 ) 만 필요합니다
+
+-> 이 내용이 위에서 말했던 sort를 하기 위해서 선언문만 있는 것이 아니라, 정의를 제공해야 합니다. 의 설명입니다.
+
+
+3. Concepts (개념) 사용하기
+
+Concepts는 컴파일 시간 술어 (조건) 입니다. ( 즉, boolean 값을 생성하는 것 입니다. )
+
+예를들어 템플릿 타입 인수 T가 있을 때, 다음과 같이 요구될 수 있습니다.
+
+반복자 타입 : Iterator<T>
+임의 접근 반복자 타입 : Random_access_iterator<T>
+숫자 타입 : Number<T>
+표기법 C<T>에서 C는 Concepts이고 ( 위의 리스트가 이에 해당 ), 이는 'T가 충족되면 참' 을 의미하는 표현식 입니다.
+
+C의 모든 조건이 맞지 않다면 거짓입니다.
+
+마찬가지로 template 인수 집합이 술어를 충족해야 한다는 것도 지정할 수 있습니다.
+
+예를 들어 Mergeable<In1, In2, Out> 과 같은 다중 형식 술어는 STL과 대부분의 다른 응용 프로그램 도메인을 설명하기 위해 필요합니다.
+
+이것들은 매우 표현력이 뛰어나고, 컴파일하기에 저렴합니다. ( TMP 해결 방법보다 저렴합니다. )
+ 
+
+학생들은 한 두 번의 강의 후에 Concepts를 사용할 수 있다. 물론 직접 자신만의 Concepts를 정의할 수 있고,
+Concepts 라이브러리를 가질 수 있습니다. ( 5번 항목 참조 )
+
+Concepts는 
+overloading을 가능하게 하고, 많은 ad-hoc 메타 프로그래밍과 많은 메타프로그래밍 scaffolding code의 필요성을 제거하며 
+generic programming도 현저하게 단순화 시킵니다.
+ 
+
+3.1 템플릿 인터페이스 지정
+
+먼저 Concepts를 사용하여 알고리즘을 지정하는 방법을 살펴보겠습니다.
+
+std::find는 한 쌍의 Iterator대신 Sequence를 사용합니다.
+
+template <typename S, typename T>
+requires Sequence<S> && Equality_comparable<Value_type<S>, T>
+Iterator_of<S> find(S& seq, const T& value);
+
+라인별로 살펴봅시다.
+
+이것은 두 개의 템플릿 유형 인수를 사용하는 템플릿입니다.
+첫 번째 템플릿 인수는 Sequence(Sequence<S>)여야 하며, operator==를 통한 시퀀스 요소의 비교가 가능해야합니다. (Equality_comparable<Value_type<S>, T>)
+find() 함수는 reference로 Sequence를 가져오고, const reference로 찾을 값을 받습니다.  그리고, 반복자를 반환합니다. 
+Sequence는 begin()과 end()가 있지만, find()를 이해하기 위한 것입니다. 중요하진 않습니다.
+Value_type<S> 와 Iterator_of<S>를 사용하기 위해 별칭 템플릿 ( alias templates ) 을 사용했습니다. 
+
+정의는 다음과 같습니다.
+
+template <typename X> using Value_type<X> = X::value_type;
+template <typename X> using Iteartor_of<X> = X::Iterator;
+별칭 템플릿 ( alias templates )은 Concepts와 특별한 관련이 없습니다. 표현하는데 유용합니다.
+
+Equality_comparable Concepts는 표준 라이브러리 Concepts로 제안됩니다. 
+en.cppreference.com/w/cpp/concepts/equality_comparable
+그것은 operator==와 operator!=를 요구합니다. ( 이는 두 가지 인수를 취한다는 점을 유의하세요. )
+
+많은 Concepts들이 2개 이상의 인수를 취합니다.
+
+Concepts는 유형(types) 뿐만 아니라 유형간의 관계(relationships)도 표현할 수 있습니다.
+이것은 STL과 기타 대부분의 라이브러리에 필수적입니다. ( 이러한 관계는 다음에 설명됩니다. )
+Concepts는 단지 '유형의 유형' 만이 아닙니다.
+
+
+이제 find의 사용에 대해 보겠습니다.
+
+void use(vector<string>& vs, list<double>& lstd)
+{
+    auto p0 = find(vs, "Waldo"); // Well
+    auto p1 = find(vs, 0.5772); //Ill-formed, string과 double의 비교를 할 수 없습니다.
+    auto p2 = find(lstd, 0.5772); // Well
+    auto p3 = find(lstd, "Waldo"); // Ill-formed, double과 string의 비교를 할 수 없습니다.
+    
+    if(p0 != vs.end()) { /* found Waldo */ }
+    // ...
+}
+
+이것은 단지 하나의 예이고 아주 간단한 것입니다.
+
+Ranges TS[Nie15] 에서 Concepts 사용에 대한 더 많은 예를 찾을 수 있습니다. ( Ranges에 대한 정리도 해둘 것입니다. )
+ 
+
+3.2 속기 표기
+
+템플릿 인수가 Sequence가 되도록 요구할 때, 다음과 같이 작성할 수 있습니다.
+
+template <typename Seq> requires Sequence<Seq>
+void algo(Seq& s);
+즉 Sequence여야하는 Seq 유형의 인수가 필요합니다. 
+
+하지만 다음과 같이 작성했을때, 
+
+template <Sequence Seq>
+void algo(Seq& s);
+이건 위의 더 긴 버전과 정확히 동일하지만, 더 짧고 원했던 함수와 일치합니다.
+
+마찬가지로 우리는 '동물이 있고, 닭이 있다' 라고 말하지 않습니다. '닭이 있다.' 라고 말합니다.
+
+이처럼 Concepts에 대해서는 재작성 규칙이 간단하고 일반적입니다.
+
+template <C T>
+는 곧
+
+template <typename T> requires C<T>
+와 동일합니다.
+
+이 간단한 속기를 하나의 Concepts에 사용합니다.
+즉, 우리가 원할때 단순화 할 수 있습니다.
+
+예를 들어
+
+template <typename S, typename T>
+requires Sequence<S> && Equality_comparable<Value_type<S>, T>
+Iterator_of<S> find(S& seq, const T& value);
+에서 
+
+template <Sequence S, typaname T>
+requires Equality_comparable<Value_type<S>, T>
+Iterator_of<S> find(S& seq, const T& value);
+이 짧은 형태가 긴 버전에 비해 명확성을 크게 향상 시킨다고 생각한다.
+
+주로 다중 형식 Concepts에 대해서 ( 예 : Equality_comparable<Value_type<S>, T> )
+그리고, 템플릿 인수 type을 반복적으로 참조해야 하는 경우 ( 예 : find의 S ) 명시적 requires를 사용합니다.
+ 
+
+4. Concepts 정의
+
+종종 라이브러리에서 Equality_comparable과 같은 유용한 Concepts를 찾을 수 있습니다 ( 예 : Ranges )
+
+표준 라이브러리의 Concepts들을 보길 바랍니다. 어떻게 Concepts들을 정의했는지 확인해보세요.
+
+template <typename T>
+concept  quality_comparable =
+	requires(T a, T b) {
+    	    { a == b } -> std::same_as<bool>;
+            { a != b } -> std::same_as<bool>;
+    };
+Equality_comparable Concepts는 변수 템플릿 ( variable template )으로 정의됩니다.
+
+T 형은 반드시 bool 형을 반환하는 operator==와 operator!=를 제공해야 합니다. ( 기술적으로, bool로 변할 수 있다면 가능 )
+요구 표현 ( requires expression ) 은 형식 ( type ) 을 어떻게 사용할 수 있는지를 직접 표현할 수 있게 해줍니다.
+
+{ a == b }는 operator==를 사용하여 두 T를 비교할 수 있어야 한다고 말합니다.
+{ a == b } -> bool 은 이러한 비교 결과가 bool ( 기술적으로, bool로 변할 수 있다면 가능 ) 이여야 한다고 말합니다.
+요구 표현은 실제로 실행 ( execute )되지 않습니다. 대신, 컴파일러가 요구 사항들을 하나씩 살펴 봅니다.
+
+그리고, 컴파일이 가능하다면 true를, 불가능 하다면 false를 반환합니다.
+
+하나의 예제를 더 봅시다.
+
+template <typename T>
+concept bool Sequence = 
+	requires(T t) {
+            typename Value_type<T>;	// 반드시 value type을 가지고 있어야 합니다.
+            typename Iterator_of<T>; // 반드시 iterator type을 가지고 있어야 합니다.
+            
+            { begin(t) } -> Iterator_of<T>; // 반드시 begin() 과 end() 가 있어야 합니다.
+            { end(t) } -> Iterator_of<T>;
+            
+            requires Input_Iteartor<iterator_of<T>>;
+            requires Same_type<Value_type<T>, Value_type<Iterator_of<T>>>;
+        };
+Sequence는 다음과 같습니다.
+
+타입 T는 두 개의 관련된 값인 ( two associated type ) Value_type<T>와 Iterator_of<T>를 가져야 합니다.
+Value_type<T>와 Iterator_of<T>는 그저 평범한 별칭 템플릿 ( alias template )일 뿐입니다.
+이러한 유형을 요구 표현에 나열하면, T 유형이 Sequence가 되어야 함을 나타 냅니다.
+타입 T는 각각 적절한 iterator를 반환하는 begin()과 end()를 제공해야 합니다.
+적절한 (appropriate) iterator 를 통해 T의 iterator 타입이 input_iterator여야 함을 의미합니다.
+Value_type은 해당 Iterator의 value type과 동일해야 합니다.
+Input_Iterator와 Same_type은 라이브러리의 개념이지만, 누구나 쉽게 작성할 수 있습니다.
+마지막으로, Sortable을 살펴보겠습니다.
+
+정렬하려면 타입이 Sequence 타입이여야 하며, 임의 접근 (random access)가 가능하고, operator<를 지원해야 합니다.
+
+template <typename T>
+concept Sortable = 
+	Sequence<T> &&
+        Random_access_iterator<iterator_of<T>> &&
+        Less_than_comparable<Value_type<T>>;
+Random_access_iterator 와 Less_than_comparable 은 Equal_compatible과 유사하게 정의되어 있으며 라이브러리에서 조회할 수 있습니다.
+ 
+
+종종 concepts 간의 관계( relationship )에 대한 요구사항을 만들고 싶어합니다.
+예를 들어, Equality_compatible Concepts를 단일 유형을 요구하도록 정의했지만, 일반적으론 다음과 같은 두 가지 유형을 처리하도록 정의 됩니다.
+
+template <typename T, typename U>
+concept Equality_comparable = 
+	requires (T a, U b) {
+          { a == b } -> std::same_as<bool>;
+          { a != b } -> std::same_as<bool>;
+          { b == a } -> std::same_as<bool>;
+          { b != a } -> std::same_as<bool>;
+        };
+이것은 int를 double로, string을 char* 로 비교하는것을 허용하지만, int를 string과 비교할 순 없습니다.
+
+
+5. Concepts로 디자인 하기
+
+좋은 Concept는 무엇인가?
+
+이상적으로 Concept는 어떤 영역에서 근본적인 '개념'을 나타냅니다. 따라서 Concept는 의미론( semantics )을 가집니다.
+이것은 무언가를 의미합니다. 그것은 단지 관련없는( unrelated ) 작업 및 유형 집합입니다.
+operations이 무엇을 의미하고, 그들이 서로 어떻게 관련되어 있는지에 대한 아이디어가 없으면, 모든 적절한 유형에 대해 작동하는 
+Generic Code를 쓸 수 없습니다.
+
+불행하게도, 코드에서 concept의 의미를 ( 아직은 ) 말할 수 없습니다.
+개념 점검 ( concept checking )에 의해 받아들여지는 모든 유형이 올바르게 작동한다는 보장은 불가능합니다.
+그들은 정확히 필요한 구문적 속성 ( syntactic properties )을 가지고 있을 순 있지만, 잘못된 의미론을 가지고 있습니다.
+이건 새로운 게 아닙니다. double을 사용하는 함수는 호출자가 기대하는 바와는 다르게 행동할 수 있습니다.
+
+예를 들어, set_speed(4.5) 라는 함수가 있다고 합시다. 이게 대체 무엇을 뜻합니까?
+4.5가 m/s 여야 합니까,  miles/hour 여야 합니까?, 4.5가 절대값입니까? 현재속도에 대한 delta 입니까? 아니면 변화량입니까?
+
+모든 코드를 완벽하게 확인하는 것이 영원히 우리를 피할 것( elude )이라고 생각합니다.
+
+
+5.1 Type/Concept의 우발적( accidental ) 일치
+
+첫째로, 일반적인 디자인 실수를 해보겠습니다. 이것은 좋은 디자인을 쉽게 설명할 수 있게 해줄 것입니다.
+
+최근에 오래된 OO 문제의 concept 버전을 보았습니다.
+
+template <typename T>
+concept Drawable = requires(T t) { t.draw(); };
+
+class Shape {
+    // ...
+    void draw(); // 화면에서 선택한 픽셀을 밝힙니다.
+};
+
+class Cowboy {
+    // ...
+    void draw(); // 권총집에서 권총을 뺍(draw)니다.
+};
+
+template <Drawable D>
+void draw_all(vector<D*>& v) // 모든 Shape를 그립니다.
+{
+    for(auto x : v) v->draw();
+}
+draw_all 함수는 OO counterpart와 마찬가지로, vector<Cowboy*>를 사용할 수 있을 것이고, 잠재적인 손상( damaging )효과가 일어날 것 입니다.
+(overloading과 hierarchies 사이에서) 이러한 '사고( accidental )일치' 문제는 널리 우려되고 있으며, 실제 코드에서는 드물고, concepts에서는 쉽게 피할 수 있습니다.
+
+
+'인수를 갖지 않는 draw 멤버 함수를 가지고있는' 이 나타내는 기본( fundamental ) 개념은 무엇입니까? 좋은 대답은 없을 것입니다.
+Cowboy는 게임 컨텍스트( game context )에서, 좋은 개념( concept )을 만들 수 있고,  그릴 수 있는 Shape는 그래픽 컨텍스트 ( graphics context ) 에서 좋은 개념을 만들 수 있을 것입니다. 그리고 우린 그것들을 절대 헷갈리지 않아 할 것입니다.
+
+Shape는 단순히 '그릴 수 있다', '위치', '움직일 수 있다', '숨겨져있다' 같은 본질적인 성질을 가지고 있고
+Cowboy는 '말을 탈 수 있다', '술을 좋아한다', '죽을 수 있다' 를 가지고 있습니다.
+즉 세심하게 명시된 필수 속성 전체를 요구하는 개념은 다른 개념으로 오인될 가능성이 없습니다.
+
+가장 최우선으로 꼽는 것은, '단일 속성 Concepts를 피하라' 입니다. 그런 이유로, Drawable은 즉각 의심을 갖습니다.
+
+
+여기, application 제작자들에게는 절대 노출돼서는 안되는 좋은 사례가 있습니다.
+좀 더 현실적이기 위해서, 사람들은 때때로 이런 것을 정의하는데 어려움을 겪습니다.
+
+template <typename T>
+concept Addable = requires(T a, T b) { {a + b} -> T; };
+사람들은 종종 std::string이 Addable 하다는 것을 알게되면 놀라곤 합니다. ( std::string은 operator+를 제공하지만 더하기보단, 연결임 )
+
+Addable은 Generic한 사용에 적합한 개념이 아니며, 기본적인 user-level 개념을 나타내지 않습니다.
+Addable 한데, 왜 Subtractable 하지 않습니까? ( std::string은 Subtractable 하지 않습니다. int* 는 가능합니다. )
+
+이런 문제는 '단순하고, 단일 속성 Concepts'에 흔히 나타납니다. 대신 'Number' 같은 것을 정의하십시오.
+
+template <typename T>
+concept Number = requires(T a, T b) {
+    {a + b} -> std::same_as<T>;
+    {a - b} -> std::same_as<T>;
+    {a * b} -> std::same_as<T>;
+    {a / b} -> std::same_as<T>;
+    {-a} -> std::same_as<T>;
+
+    {a += b} -> std::same_as<T&>;
+    {a -= b} -> std::same_as<T&>;
+    {a *= b} -> std::same_as<T&>;
+    {a /= b} -> std::same_as<T&>;
+
+    { T{ 0 } };		// 0이라는 값을 통해 생성할 수 있다.
+};
+이것은 본의 아니게 일치될 가능성이 극히 낮습니다.
+
+Domain 전문가가 예상할 수 있는 operations과 member types같은 속성을 제공해야 한다.
+Drawable과 Addable 같은 실수는 디자인 원리와 무관하게 언어 특징을 순진하게 사용하는 것이었습니다.
+
+Number는 예시에 불과하다는 점에 유의하세요.
+
+만약 내가 C++ 산술( arithmetic ) 타입들을 설명해야 한다면, 나는 signed/unsgiend와, 혼합 산술( mixed-mode arithmetic )을 다뤄야함의 필요성이 있다고 할 것입니다.
+만약 내가 컴퓨터 대수학( computer algebra )을 묘사하고 싶다면, monoid, semi-group 같은 집단에서부터 시작했을 것입니다.
+
+
+5.2 의미론 ( semantics )
+
+유용한 개념을 설계하기 위해 어떻게 유용한 특성 집합을 찾을 수 있을까요? 대부분의 응용 분야에는 이미 있습니다. 예를 봅시다.
+
+C/C++ 기본 타입 (built-in type) 개념들 : 산술, 정수, 그리고 부동 소숫점 ( 맞아요, C는 개념을 가지고 있습니다! )
+Iterator와 Container 같은 STL 개념들
+monoid, group, ring, field 같은 수학 개념들
+edges, vertices, graph, DAG 같은 그래프 개념들
+그 중 하나는, 알고리즘과 타입을 '플러그 호환( plug compatible )' 으로 만드는데 도움이 됩니다.
+
+template <typename Iter, typename Val>
+Val sum(Iter first, Iter last, Val acc)
+{
+    while(first != last){
+        acc += *first;
+        ++first;
+    }
+    return acc;
+}
+ 
+
+template <Forward_Iterator Iter, typename Val>
+requires Incrementable<Val, Value_type<Iter>>
+Val sum(Iter first, Iter last, Val acc)
+{
+    while(first != last){
+        acc += *first;
+        ++first;
+    }
+    return acc;
+}
+Incrementable은 operator+=를 요구하는 개념입니다.
+
+분명히 sum을 디자인 하는 사람이 필요로 하는 작업을 최소화 합니다. 또한 인수 및 합계 알고리즘의 유용성을 최대화 합니다.
+
+그러나
+
+Val 이 복사 또는 이동이 가능해야 한다는 것을 잊었습니다.
+operator+와 operator=를 제공하는 Val에는 이 합계를 사용할 수 없습니다.
+요구사항 (함수 인터페이스의 일부)을 변경하지 않고 operator+= 대신 operator+와 operator=를 사용하도록 바꿀 수 없습니다. 
+이것은 plug compatible 이 아니고 ad-hoc 입니다. 이런 디자인은 다음과같은 프로그램으로 이어집니다.
+
+모든 알고리즘에는 고유한 요구사항이 있습니다. (우리가 쉽게 기억할 수 없는 다양성)
+모든 타입은 지정되지 않고 변경되는 일련의 요구 사항과 일치하도록 설계되어야 합니다.
+알고리즘의 구현을 개선할 때, 알고리즘의 요구사항(인터페이스의 일부)을 변경해야하며,
+concepts 코드를 다시 들여다봐야 합니다.
+이것엔 어려움이 좀 있습니다. 따라서 이상적인 것은 '최소 요구 사항( minimal requirements )' 이아니라 '기본적이고 완전한 개념으로 표현되는 요구사항( requirements expressed in terms of fundamental and complete concepts )'입니다.
+
+이는 타입 디자이너들에게 부담을 주지만 ( concepts와 일치 ) 더 나은 타입과 더 유연한 코드로 이어집니다.
+
+
+예를 들어, sum 함수를 더 개선한다면, 
+
+template <Forward_iterator Iter, Number<Value_type<Iter>> Val>
+Val sum(Iter first, Iter last, Val acc)
+{
+    while(first != last){
+        acc += *first;
+        ++first;
+    }
+    return acc;
+}
+Number를 요구사항으로 추가하면서, 유연성을 확보했다는 점에 유의하세요.
+
+또한 sum을 사용하여 std::string을 합치는 경우나 이나 std::vector<int> 를 char*로 합하는 경우를 제외시켰습니다.
+
+void poor_use(vector<string>& vs, vector<int>& vi)
+{
+        std::string s;
+	s = sum(vs.begin(),vs.end(),s); // Ill-formed, std::string은 Number가 아닙니다.
+	char* p = nullptr;
+	p = sum(vi.begin(),vi.end(),p); // Ill-formed, pointer는 Number가 아닙니다.
+	// …
+}
+이처럼 의도적으로 쉽게 작성하세요.
+
+
+좋은 개념을 설계하고 개념을 잘 사용하려면 구현이 명세( specification )가 아니라는 것을 기억해야 합니다.
+언젠가 누군가는 구현한 것을 개선하고 싶어할 것이고, 인터페이스에 영향을 주지않고 이상적으로 수정하는 것을 원할 것입니다.
+사용자 코드가 깨질수도 있기 때문에, 인터페이스를 변경하는 경우가 자주 발생합니다.
+유지관리 가능하고 광범위하게 사용할 수 있는 코드를 쓰기위해 각 개념과 알고리즘을 분리하여 최소화하는 것보다는 의미적 일관성( semantic coherence )을 목표로 합니다.
+
+
+5.4 제약 ( Constraints )
+
+
+여기서 설명된 개념의 관점은 다소 이상적( idealistic )이며 응용 프로그램 영역에서 응용 프로그램 작성자가 사용할 '최종( final )' 개념을 생성하는 것을 목표로 합니다.
+개념(Concepts)는 특히 새로운 애플리케이션의 개발 초기단계에서 매우 유용할 수 있습니다.
+예를 들어, 위의 Number 개념은 복사 가능하거나 이동 가능해야 하는 요구를 '잊었기' ( forgot ) 때문에 불완전 합니다.
+라이브러리는 그러한 불완전성을 피하기 위해 우선권( precedence )과 지원( supporting ) 개념 ( Concepts )을 제공합니다.
+
+그렇더라도, Number를 사용하면 많은 오류를 제거할 수 있습니다. 누락된 산술 연산과 관련된 모든 오류를 포착( catches )합니다.
+그러나 사용자가 산술 연산을 제공하지만 복사하거나 이동할 수 없는 타입으로 sum을 호출하는 경우, Number를 사용하는 sum은 오류를 포착하지 못합니다. ( Copyable 또는 Moveable의 요구를 하지 않았습니다. )
+ 
+하지만 괜찮습니다. 단지 우리가 수십 년 동안 익숙해져 온 오류 메세지 중 하나를 얻을 뿐입니다.
+시스템은 여전히 타입 안전( type safe ) 합니다. 나는 '불완전한 개념'을 개발 및 점진적인 개념 도입에 대한 중요한 보조 도구로 생각합니다.
+일반적 용도에 너무 단순하거나 명확한 의미론적 요소가 결여된 개념은 보다 완전한 개념을 위한 구성 요소로 사용될 수 있기 때문입니다.
+ 
+때떄로 그러한 지나치게 단순하거나 불완전한 개념을 '실제 개념( real concepts )'과 구별하기 위해 '불완전한 개념( incomplete concepts )' 이라고 부릅니다.
+
+
+5.5 개념의 타입 일치
+
+
+새로운 유형의 타입이 개념과 일치하는지 어떻게 확신할 수 있을까요? 
+
+단순하게 : 원하는 개념이 일치한다고 가정할때 static_assert를 사용하면 됩니다. 예를 들어,
+
+class My_number { /* … */ };
+static_assert(Number<My_number>);
+static_assert(Group<My_number>);
+static_assert(Someone_elses_number<My_number>);
+
+class My_container { /* … */ };
+static_assert(Random_access_iterator<My_container::iterator>);
+결국 Concepts는 단순히 술어이므로 검사할  수 있습니다. 그것들은 컴파일 타임 술어들이기 때문에 컴파일 타임에 검사할 수 있습니다.
+
+타입 정의에 일치시킬 일련의 개념을 구축할 필요가 없다는 점에 유의하십시오. ( 개념 집합을 구축할 필요는 없습니다. )
+이것은 새로운 용도가 발견될 때마다 완벽한 예측이 필요하거나 리팩토링이 필요한 일종의 계층 설계가 아닙니다.
+
+이는 객체 지향 계층 구조와 비교하여 Generic Code의 이점을 얻는데 매우 중요합니다.
+static_asserts는 타입 디자이너의 코드 안에 있을 필요도 없습니다.
+사용자는 코드 내의 에러를 검사하기 위해 이러한 테스트를 추가할 수 있습니다.
+만약 그렇다면, 라이브러리 코드를 수정하지 않고 이렇게 하는 것이 필수적입니다.
+
+
+5.6 개념의 점진적 도입
+ 
+어떻게 개념을 사용하기 시작할 수 있을까? 
+우리는 다른 사람의 코드( 예를 들어, 라이브러리 )에 의존하고, 기존 코드 베이스를 업데이트 하고 있다면 다른 사람의 코드는 우리의 코드에 의존합니다.
+특히, 일반적으로 라이브러리( 예를 들어, 표준 라이브러리 또는 인기 있는 네트워크 라이브러리 )에 의존하고 있으며, 수년 동안 그러한 라이브러리는 concepts를 사용하지 않을 수 있습니다.
+그러므로 concepts를 사용하지 않는 우리의 코드 호출 템플릿을 발견할 것입니다.
+
+template<Sortable S>
+void sort(S& s)
+{
+    std::sort(s.begin(),s.end());
+}
+우리의 sort는 s가 Sortable임을 요구해야하는데, std::sort는 요구합니까? 
+
+이 특별한 경우, 표준을 살펴볼 수 있지만, 일반적으로 구현에 대한 세부사항은 정확하게 명시되어 있지 않습니다.
+또한 구현에는 'scaffolding code'가 포함될 수 있습니다.
+즉, 호출 시점에서 구현이 요구사항을 충족하는지 알 수 없습니다. ( 컴파일 에러를 배출하지 않습니다. )
+라이브러리 업체가 템플릿 인터페이스를 업그레이드 함에따라, 오류 검사가 가능해집니다.
+호출 지점에 오류가 나타날 것이고, 오류 메세지의 품질이 향상될 것 입니다.
+ 
+컴파일러를 사용하여 컴파일 할 수 있어야 하는 경우, Concepts를 지원하는지 안하는지에 대한 몇 가지 해결 방법이 필요합니다.
+한 가지 분명한 기술은 매크로를 사용하는 것입니다.
+
+#ifdef GOOD_COMPILER
+#define REQUIRES requires
+#elseif
+#define REQUIRES //
+#endif
+속기 표기를 사용하는 경우 Concepts를 사용해야 합니다.
+
+#ifdef GOOD_COMPILER
+#define SORTABLE Sortable
+#define ITERATOR Iterator
+#elseif
+#define Sortable auto
+#define ITERATOR auto
+#endif
+concepts 기반 overloading을 위해 enable_if 같은 것을 사용할 수 있습니다.
+
+이것은 효과가 있지만, 실제 코드를 유지하는 것이 상당히 고통스럽다고 합니다. ( 예를 들어, Ranges 라이브러리 )
+특히 양수와, 음수를 모두 체크하는 것을 잊지마세요.
+
+6. 개념 오버로딩 ( overloading )
+ 
+generic programming은 다른 타입에 대한 동일한 작업에 동일한 이름을 사용할 수 있습니다. 따라서 overloading이 필수적입니다.
+overloading을 할 수 없는경우, 다른 해결방법이 있습니다. ( traits, enable_if 또는 도우미 함수 ) 
+Concepts는 주어진 인수의 속성에 따라 함수 중에서 선택할 수 있게 해줍니다.
+ 
+예를 들어, 표준 라이브러리의 std::advance의 간단한 버전을 생각해 봅시다.
+
+template <typename Iter> void advance(Iter p, int n);
+advance의 다른 버전도 필요합니다
+
+forward_iteartor를 위한 한 번에 한단계 씩 순차적으로 진행하는 advance
+random_access_iterator를 위한 한 번의 작업에 원하는 위치로 이동하는 advance 
+이러한 컴파일 타임 선택은 generic code의 실행을 위해 필수적입니다.
+
+전통적으로, 헬퍼 함수와 태그 디스패치( Tag Dispatch )를 통해 구현했지만, Concepts를 사용하면 간단하고 분명합니다.
+
+void advance(Forward_iterator p, int n) { while(n--) ++p; }
+void advance(Random_access_iterator p, int n) { p+=n; }
+
+void use(vector<string>& vs, list<string>& ls)
+{
+    auto pvs = find(vs,"foo");
+    advance(pvs,2); // use fast advance
+    auto pls = find(ls,"foo");
+    advance(pls,2); // use slow advance
+}
+컴파일러는 어떻게 올바른 advance를 호출하는 방법을 알아낼까요?
+iterator들의 계층을 정의하지도 않았고, 태그 디스패치도 하지 않았습니다.
+ 
+Concepts에 기반한 overloading 해결은 간단합니다.
+
+함수가 단 하나의 개념 요구 사항만 일치하는 경우, 호출합니다.
+함수가 단 하나의 개념 요구 사항'도' 일치하지 않는경우, 에러입니다.
+함수가 두 개의 개념 요구 사항과 일치하는 경우, 한 개념의 요구사항이 다른 개념 요구사항의 하위 집합( subset )인지 확인합니다.
+- 만약 하위 집합이라면, 가장 많은 요구사항( 가장 엄격한 요구사항 )을 가진 함수를 호출합니다.
+- 만약 하위 집합이 아니라면, 모호하므로( ambiguous ) 에러입니다. 
+예시를 보면, Random_access_iterator는 Forward_iterator보다 더 많은 요구사항을 가지고 있습니다. ( 즉, 더 엄격한 요구사항입니다. )
+
+그래서 Random_access_iterator가 일치하는 std::vector는 더 빠른 advance를 선택합니다.
+std::list의 경우, Forward_iterator만 일치하므로, 느린 버전의 advance를 선택합니다.
+ 
+Random_access_iterator는 Forward_iterator보다 더 엄격합니다. 그 이유는 Forward_iterator를 포함하여 operator[] 및 operator+같은 추가 연산자를 수행하기 때문입니다.
+ 
+엄격함을 위한 개념의 정확한 비교와 관련된 몇 가지 기술들이 있지만, overloading을 위해 그 기술들이 들어갈 필요는 없습니다.
+중요한것은 Concepts들 사이에서 '상속 계층'을 명시하거나, 특정 클래스를 정의하거나, 태그 디스패치 헬퍼를 추가할 필요가 없다는 것입니다. ( SFINAE )
+컴파일러는 우리를 위해 '진짜 계층( real hierarchies )' 을 계산합니다. 이것은 더 간단하고, 더 유연하며, 오류 발생 가능성이 적습니다.
+ 
+Concepts-based overloading은 generic code와 meta programming code에서 많은 양의 상용구를 제거합니다. ( 대부분 enable_if 사용 )
+여기서 일반적인 원칙( general principle )은 프로그래머가 컴파일러에게 더 적합한 일을 하도록 강요하지 않는 것입니다.
+Concepts-based overloading을 통해 코드는 서로 다르고 잠재적으로 미묘한 구현 세부사항 ( 예 : 어떤 타입의 속성에 기초하여 overloading을 표현할 때, enable_if의 양( positive )과 음( negative )의 형태를 모두 사용하는 것을 기억하는 것과 같은 )
+을 갖는게 아닌, 일반적이고 널리 사용되는 해결 규칙을 따르도록 보장합니다.
+ 
+
+한 가지 분명한 질문 : 구문론적( syntactically )으로는 동일하지만 의미론적( semantics )으로 다른 유형을 어떻게 구별할 것인가?
+표준의 예로써는, Input_iterator와 Forward_iteartor이고 반복되는 순회에서만 Forward_iteartor가 허용된다는 것입니다.
+ 
+가장 간단한 대답은 '타입 중 하나에 연산을 추가하여 구별할 수 있게 하라' 입니다. 
+좀 더 관습적이고 복잡한 대답은 '특성 ( traits ) 클래스를 사용하라' 입니다. 후자는 우리가 어떤 타입도 구별할 수 없을 때 하는 것입니다.
+ 
+
+예를 들어, Input_iterator 및 Forward_iterator의 경우, Input_iterator는 순회만 가능하고 복사할 수 없기 때문에,
+( std::is_copy_constructible 을 사용 ) 실제로 구별할 수 있었습니다. 
+ 
+
+7. 짧은 형식의 표기법
+ 
+디자인 목표 중 하나는 C++을 단순하게 만드는 것입니다. 따라서 속기 표기법( 3 단락 )을 사용하여 반복적인 작성을 방지하고, 요구 사항을 보다 간결하게 설명합니다.
+ 
+즉,
+
+template <typaname Sequence>
+    requires Sortable<Seq>
+void Sort(Seq& s);
+이를
+
+template <Sortable Seq>
+void Sort(Seq& s);
+이렇게 줄일 수 있습니다.
+
+그러나 이 코드는 여전히
+
+void sort(Sortable& s);
+이와같은 '일반적인 non-generic'에 대한 이상적인 동등성을 얻지 못합니다.
+
+
+이를 위해 추가 '재작성 규칙'이 있습니다. 간단합니다.
+가장 간단한 경우에는 가장 짧은 형식을 사용합니다. 더 복잡한 표현이 필요할때, 즉 '둘 이상의 템플릿 인수를 포함하는' 요구사항이 필요할 때는 
+
+template <Sequence S, typename T>
+requires Equality_comparable<Value_type<S>, T>
+Iterator_of<S> find(S& seq, const T& value);
+이와 같이 작성합니다.
+ 
+
+귀찮게 왜? 이런 긴 형식은 대부분의 코드에대해 불쾌할 정도로 장황하며, 템플릿 구문의 장황함( 'heaviness' )은 사용자들로부터 끊임없는 불폄의 원인이 됐습니다.
+그러나, 복잡한 요구 사항을 표현하는 긴 형식이 필요합니다 : 짧게 만든 요구사항은 완벽하게 '일반적( generic )'이지 않습니다.
+ 
+이 디자인은 ' onion principle '을 따릅니다. 기본적으론 짧고 간결하게 작성하세요.
+그러나, 간단하게 표현할 수 없을 땐 ' onion principle ' 처럼 한 layer씩 떼 나가야 합니다.
+각 층은 당신에게 더 많은 유연성을 추가해주고, 더 많이 울게( cry ) 할 것입니다. ( 추가된 일과 실수들 때문에 )
+ 
+구식의 for 반복문( 완전히 일반적인 )과 range-for 반복문( 더 간단하고 오류가 덜 발생하는 )은 그 원리의 또 다른 예 입니다.
+ 
+세 가지 형식은 함수에 대해 말하는 방식과 일치합니다.
+
+// 템플릿 인수는 type이여야 하며,
+// 타입은 반드시 sequence여야 합니다
+// s는 해당 타입에 대한 참조여야 합니다.
+template <typename Seq>
+requires Sequence<Seq>
+void algo(Seq& s);
+
+// 템플릿 인수는 Sequence 여야 하며,
+// s는 해당 타입에 대한 참조여야 합니다.
+template <Sequence Seq>
+void algo(Seq& s);
+
+// s는 Sequence에 대한 참조여야 합니다.
+void algo(Sequence& s);
+이유가 없는 한, 더 짧은 형식을 사용합니다.
+ 
+
+7.1 인수로 auto 사용
+ 
+짧은 형식은 제약없는 변형도 제공합니다.
+
+void f(auto x);
+즉, auto는 가장 제약이 적은 Concepts입니다. 먼저 인수 및 반환 유형에 대해 auto를 제안했고, C++14에는 lambda에도 지원합니다.
+
+concept Any = true; // 모든 타입은 Any입니다.
+void g(Any x); // 어떤 타입이든 가져옵니다.
+제약이 없는 인수를 지정하는 이 두 가지 방법은 다를 수도 있습니다.
+
+void ff(auto x, auto y); // x와 y는 다른 유형일 수 있습니다.
+void gg(Any x, Any y);   // x와 y는 동일한 유형이여야 합니다.
+ 즉, gg는 STL iterator 쌍과 같이, '동일한 유형의 인수집합' 을 의미합니다.
+
+반면, ff는 전혀 관계가 없는 템플릿 인수를 나타냅니다. 두 스타일 모두 유용하고 흔합니다.
+ 
+void user(vector<string>& vs, list<double> ld)
+{
+    ff(&vs, &ls); // OK
+    gg(vs.begin(), vs.end()); // OK, 쌍 반복자는 같은 타입임
+    gg(vs.begin(), ld.end()); // ERROR, 쌍 반복자는 다른 타입임
+}
+ 
+
+7.2 가독성
+ 
+나는 Concepts를 사용하는 사람들이 개념의 표현력과 개선된 오류 메세지를 칭찬하기를 기대했습니다.
+그런 측면들이 ( 학생과 전문 개발자들에 의해 ) 언급되었지만, 사람들은 개념을 이용한 코드의 가독성이 엄청나게 향상되었음을 거듭 강조했습니다.
+근본적으로 Concepts는 더 나은 인터페이스 사양을 가능하게 하고 좋은 인터페이스는 이해를 단순화하게 합니다.
+ 
+다음과 같이 세 가지 측면이 강화되었다고 들었습니다.
+
+선언문이 더 정확하고 유익해 졌습니다. Concepts를 사용한 선언문은 '완전히 일반적 유형과 코멘트에 대한 서술적 이름을 사용하는 선언' 보다 읽기 쉽고 신뢰성이 높습니다. 또한 Concepts를 사용한 선언문은 '제약 조건을 문서화 하는데 사용되는 주석' 보다 더 짧습니다.
+call point에서 auto를 Concepts로 대체하면, a의 특성에 대한 불확실성이 제거됩니다.
+예를들어 if (auto = foobar(z)) 는 if(InputChannel x = foobar(z)) 보다 훨씬 읽기 어렵습니다.
+Concepts는 읽을 수 없는 해결책과 복잡한 boilerplate를 제거합니다. 즉 
+종종 이해하기 위해 템플릿의 정의와 매크로를 조사해야합니다. ( 이해하기 위해, 디버그 하고 개선하기 위해서 )
+해결책은 종종 인터페이스로 블리딩 됩니다. ( 예 : enable_if의 형태로 )
+분명 이러한 관찰들은 실험적이기보다는, 개인의 주관적인 판단입니다만 중요하다고 생각합니다.
+
+프로그래머의 미적 판단이 중요합니다.
+가독성의 문제가 디자인 및 유지 관리향상에 기여한다고 생각합니다.
+ 
+
+8. 언어 디자인 질문
+ 
+사랃믈이 언어 디자인에 대해 자주 묻고 때로는 제안하기 때문에 이 섹션을 추가했습니다.
+이 글은 언어 설계 문서가 아니므로, 여기서의 논의는 간략합니다. 
+
+언어 디자인 결정에 대한 자연스러운 호기심 충족
+명백한 대안이 고려되었음을 잠재 사용자들에게 확신 시켜준다.
+디자인이 C++의 generic 디자인 원칙을 어떻게 따르는지 보여줍니다.
+
+8.1 정말 Concepts가 필요한가요?
+ 
+템플릿의 설계와 사용의 초기부터 나와 다른 사람들은 언어 지원 없이 템플릿 자체를 사용하여 어떤 형태의 인터페이스 점검이 표현될 수 있다는 것을 깨달았습니다.
+Boost의 concept check가 예시입니다.
+오늘날 static_assert ,constexpr 함수, constexpr if, 표준 라이브러리의 type traits, 템플릿 메타프로그래밍의 기술들, 많은 타입들의 변수들들을 듣습니다.
+ 
+일반적으로 달성되는 것은 이상에 못 미치는 인스턴스화 시간 확인으로 이어지고 이는 이상적이지 않습니다.
+C++은 단순한 어셈블리가 아닙니다.
+
+Concepts는 컴파일 타임에 덕 타이핑을 해야하는 전문가를 위한 고급 기능이 아닙니다.
+Concepts는 type traits 및 enable_if에 대한 단순한 syntactic sugar가 아닙니다.
+Concepts는 이상적인 세계에서 존재해야할 기본 기능입니다. 모든 템플릿의 사용을 위한 기초입니다.
+만약 1990년에 Concepts가 있었다면, 템플릿과 템플릿 라이브러리가 훨씬 더 간단해졌을 겁니다.
+ 
+8.2 정의 확인
+ 
+Concepts는 현재 템플릿이 요구 사항에 지정되지 않은 작업을 사용하는 것을 막지 않습니다. 예를 들어
+
+template <Number N>
+vodi algo(vector<N>& v)
+{
+    for( auto& x : v ) x %= 2;
+}
+Number 에는 operator%=를 요구하지 않습니다. 따라서 algo의 호출이 성공하는지는 Concepts에 의해 확인되는 것뿐만 아니라, 인수 유형의 실제 속성에 따라 달라질 것입니다.
+-> 실제 타입이 operator%=를 제공하지 않는다면, 인스턴스화될 시점에 error가 날 것 입니다.
+ 
+일부 사람들은 이것을 심각한 오류라고 생각합니다. 하지만 그렇지 않습니다. 템플릿의 Concepts와 비교하여, 템플릿 정의를 확인하지 않은 것은 의도적인 설계 선택이였습니다.
+우리( 여기서 우리는 사용자가 아닌 '표준 위원회' ) 는 현재 지정된 Concepts로 정의 확인을 구현하는 방법을 알고 있습니다.
+우리는 분석과 실험을 했습니다. 그러나 우리는 매우 의도적으로 초기 concepts 설계에 그러한 특징을 포함하지 않도록 결정했습니다.
+
+초기 설계를 지연( delay )하고 복잡( complicate )하게 만들고 싶지 않았습니다.
+우리는 개념의 이점의 90%가 향상된 사양과 인스턴스화가 될 때의 검사가 아닌, 코드 작성 시점의 가치에 있다고 추정합니다.
+템플릿 구현자는 정상적인 테스트 기술을 통해 제공할 수 있습니다.
+언제나 그렇듯이, 형식상의 오류는 항상 불편할 정도로 늦게 포착됩니다.
+정의를 확인함으로써 구형의 제약되지 않은 코드에서 Concepts 기반 템플릿으로 변환할 때, 복잡하게 만들 수 있다.
+정의를 확인함으로써, 우리는 디버깅 보조장치, 로깅 코드, 성능 카운터 및 기타 ' 스캐폴딩 코드' 를 인터페이스에 영향을 주지않고 제공할 수 있습니다.
+또한 이 두가지가 가장 중요합니다.
+
+일반적인 템플릿은 구현시 다른 템플릿을 호출합니다.
+Concepts를 사용하는 템플릿이 그렇지 않은 라이브러리에서 템플릿을 호출할 수 없는경우, Concepts를 가진 라이브러리는 라이브러리가 지원하기 이전 라이브러리를 사용할 수 없습니다.
+이건 특히 두 개의 라이브러리를 사용하여 한개 이상의 조직에서 개발, 유지, 사용될 때 심각한 문제입니다.
+개념의 점진적인 채택은 많은 코드 기반에서 필수적입니다.
+'Scaffolding code' ( 템플릿과, 논템플릿 모두 다 ) 는 매우 흔하며, 라이브러리의 life-time동안 계속 변경됩니다.
+만약 인터페이스가 logging을 사용하기 위해 번경되어야 한다면, 우리는 첫째로 말했던 것과 동일한 유지보수 문제를 가지고 있습니다.
+이러한 제약된 템플릿( Concepts를 사용하는 템플릿 ) 은 제약없는 템플릿( Concepts 를 사용하지 않는 템플릿 )을 호출할 수 있습니다.
+
+이 경우 인스턴스화 시간까지 구현 오류가 발견되지 않습니다. 마찬가지로 기존 템플릿( unconstrained )은 제한된 템플릿을 호출할 수 있습니다. 이경우, 사용 오류는 인스턴스화 시간까지 찾을 수 업습니다.
+전자는 Concepts들이 하향식( top down )으로 도입될 수 있다는 것을 암시하는 반면, 후자는 대부분의 이익( benefit )이 그렇게 함으로써 발생한다는 것을 암시합니다.
+ 
+그래서 우리는 '정의 확인'을 수행하는 방법을 알고 있지만, 이런 두 가지 문제를 해결하기 위해 추가하지 않았습니다.
+C++의 설계는 '모든 것을 방지하는 것보다 유용한 기능을 허용하는 것이' 더 중요합니다.
+이것은 오늘 날 C++을 다른 많은 언어와 구별하는 규칙 중 하나입니다.
+ 
+8.3 템플릿 분리 컴파일
+ 
+템플릿의 완전한 분리 컴파일이 추가 된다면 많은 간접 함수 호출이 포함되어 성능이 저하됩니다.
+명백한 대안은 모듈 시스템의 일부로 반 컴파일 된 템플릿을 사용하기 바랍니다.
+ 
+8.4 다중 표기법
+ 
+Concepts는 여러 가지 표현 방법을 제공합니다. 이는 이상적이라고 생각합니다.
+그러나 '방법이 한 가지 밖에 없다' 라고 생각하는 사람들이 있습니다. 그러한 단순성은 표현성은 한계( 예 : 짧은 개념만 사용 ) 또는 복잡함( 예 : 긴 개념만 사용 )을 초래합니다.
+ 
+개념은 템플릿 변수 또는 템플릿 함수로 정의할 수 있습니다. 예를 들면
+ 
+template <typename T>
+concept Eq1 = 
+    requires(T a, T b) {
+        { a == b } -> std::same_as<bool>;
+        { a != b } -> std::same_as<bool>;
+    };
+    
+template <typename T>
+concept Eq2() {
+    return requires(T a, T b) {
+        { a == b } -> std::same_as<bool>;
+        { a != b } -> std::same_as<bool>;
+    };
+}
+불행히도, 템플릿 변수를 사용하는 구문과 템플릿 함수를 호출하는 구문 기능은 다릅니다.
+이것은 Concepts와는 관련이 없습니다만
+
+template <typename T> requires Eq1<T> void f(T&);
+template <typename T> requires Eq2<T>() void g(T&);
+() 추가 여부를 기억 해야하는 것은 성가신 일입니다. 그러나 C++에서 함수를 호출하려면 ()가 필요하고, 변수는 그렇지 않습니다.
+
+변수와 함수를 모두 허용하는 이유는 generality 때문입니다. C++에서 표현식이 정의되는 방식에서 따랐습니다.
+
+
+8.5 Opt in
+ 
+Concepts 설계는, 컴파일러가 이미 알고 있는 것 ( 그리고 종종 프로그래머보다 더 잘 알고 있는 것 )을 프로그래머에게 강요해서는 안 된다는 원칙을 따릅니다.
+이로 인해 코드가 짧고 깨끗하며 오류가 감소합니다.
+
+Concepts 기반 overloading을 사용하지 않습니다.
+이것은 장황하지 않고, C++의 정신으로 일관됩니다. 몇몇 사람들은 traits를 추가하는 것에 익숙해져 있습니다.
+충분히 매력적이지만, 그것은 기본적으로 해결책이고 'generic programming' 과 'ordinary programming'의 차이입니다. 
+Concepts 사이 관계 계층 구조를 선택하거나 명시적으로 정의하지 않는다.
+컴파일러는 개념 간의 적절한 관계를 계산하고, 매우 간단한 해결 메커니즘 ( 6 단락 ) 을 사용합니다.
+명시적 개념 계층 구조의 사양을 요구하면, 유연성을 제한하고 Concepts가 여러 계층 구조의 일부가 되도록 실현 가능해야 하며
+결국 여러 계층 구조 및 라이브러리 디자이너의 더 많은 예측력( foresight ) 이 필요해집니다.
+개념에 맞는 타입을 택하지 않는 경우 : 형식에 요구하는 속성이 있는 경우, 개념에서 요구하는 것과 일치합니다. 즉, '모델링 선언'을 위한 코드를 가지고 낭비할 필요가 없습니다.
+( 예를 들면, vector<T>는 Container 이다. List<T>::Iterator는 Bidirectional_iterator 이다. 같은 )
+( 컴파일러가 확인하지 않는 한 ) 라이브러리 사용을 복잡하게 만들도록 요구하는 것은 오류의 원인이 될 수 있으면 또한 라이브러리 설계자로부터 더 많은 예측을 필요로 할 수 있습니다.
+두 개념이 두문적으로 동일하지만 의미가 다른 경우 ( 예 : Input_iterator와 Forward_iterator )
+
+명확화 : operations 또는 member type을 추가하여 명확하게 하거나, 특성 클래스에 대한 작업을 구현해야 합니다.
+타입이 개념을 충족하는지 확인하려면 static_assert를 사용하세요.
+ 
+8.6 템플릿을 찾을 수 없음 ( Can't spot the templates )
+
+void sort(Sortable&);
+일부 숙련된 C++ 프로그래머는 이것이 템플릿이라는 구문상의 단서가 없다고 생각합니다.
+하지만, 연산자에 대한 속성이 ' 영원히' 있다는 점에 유의하세요. 이 표기법을 사용하여 혼란스럽거나 나쁜 코드를 작성하지 않습니다.
+수십 년 동안 C++이 확립된 영역에서, 개념과 같은 새로운 기능은 기존 기능보다 사용하기가 더 간단합니다.
+ 
+이를 뒷받침하기 위해, 'erasure' 라는 것을 이미 도입했습니다.
+예를들어
+
+std::pair p{9.2, 4};
+std::pair<double, int> p {9.2, 4};
+이 둘은 동일합니다. 이름을 변경하라는 제안또한 듣지 못했습니다.
+
+템플릿은 사용자에게, 자신이 템플릿임을 알립니다.
+
+
+8.7 Concepts는 일종의 클래스여야 합니까?
+ 
+다른 언어에 대한 경험과 C++0x 개념에 대한 실험을 바탕으로, 일부 사람들은 Concepts가 클래스와 유사하게 정의되어야 한다고 생각하게 되었습니다. ( 목록으로 선언되기 때문에 )
+실제로 Signature 방면으로, Concepts를 정의할 수 있습니다.
+이 기술을 권장하진 않지만, 여기선 Base에서 파생되는 데 필요한 유형의 개념을 정의할 수 있는 한가지 방법입니다.
+
+template<class T>
+concept Hack =
+ requires(T t, Base* p, int(T::*pp)(double), int* ppp) {
+ { &t==std:addressof(t) }; // make sure operator & isn’t overloaded in a nasty way
+ { p = &t }; // T is derived from Base
+ { pp = &T::f }; // T has a member int f(double)
+ { ppp = &t.m}; // T has a member int m
+ };
+이것은 overloading을 다루지 않지만, Signature를 기반으로 한 많은 언어가 overloading 을 잘 처리하지 못하므로,
+결국 이것은 우리가 일반적으로 추천하는 기술이 아닙니다.
+ 
+8.8 Concepts는 Traits 클래스가 아닙니다.
+ 
+C++ Concepts는 0 개 이상의 템플릿 인수 타입에 대한 컴파일 시간 조건자 입니다.
+
+Concpets에 대한 연산자의 요구는 함수 Signature가 아닌, 유효한 표현식의 관점에서 지정됩니다
+Concepts는 함수를 포함하여, 일반 술어로 지정됩니다. ( bool을 반환함 )
+Concepts와 일치하기 위해 타입을 명시적으로 정의할 필요가 없습니다. 일치가 추론됩니다.
+Concepts는 값 인수( arguments )를 사용할 수 있습니다. ( 단순한 타입 인수가 아닙니다. )
+Concepts는 많은 인수를 가질 수 있습니다.
+Concepts 함수는 overloading이 가능합니다.
+algorithm은 Concepts 안에서 overloading 될 수 있습니다.
+Concepts는 기본적인 구현 ( default constrain implementations )을 제약하지 않습니다.
+개념은 계층의 멤버로 정의되지 않습니다. 개념들 간의 관계는 추론됩니다.
+개념은 템플릿의 템플릿 인수를 제한할 수 있습니다.
+이것은 유형 클래스 ( 예 : Haskell의 유형 클래스 ) 와 다릅니다. 
+ 
+결론
+ 
+개념은 원래 구상된대로 C++ 템플릿을 완성합니다.
+
+
+개념은 사용 및 정의가 매우 간단합니다. 그들은 genericcode의 개선에도 도움이 됩니다. 
+하지만 효과적인 사용을 위해 언어 기술 세부 사항뿐만 아니라 원칙을 이해해야합니다. 
+그 점에서 개념은 다른 기본 구조 ( 함수, 클래스 및 템플릿 같은 )와 유사합니다.
+
+제한되지 않은 템플릿에 비해 '실행' 이 업슷ㅂ니다. 즉 개념을 사용하여 발생하는 시간 오버헤드가 없습니다.
+
+
+개념은 C++에 적합하고 C++의 디자인 원칙을 따르도록 신중하게 설계되었습니다.
+
+좋은 인터페이스 제공 ( 이게 초반에 말한 well-specified 인터페이스를 뜻하는 것 같음 )
+의미적 일관성( semantic coherence )를 가짐
+사용자가 기계 친화적으로 코드를 작성하지 않아도 됨
+단순한 일을 단순하게 처리할 수 있음
+오버헤드가 없음
+친순함과 단순함을 혼동하지 마세요.  장황한 것과 '이해하기 쉬운' 것을 혼동하지도 마세요.
+
+개념을 사용해 보세요. 
+그것은 당신의 generic programming을 극적으로 향상시키고 
+현재 해결 방법들 ( traits class ) 이나 저수준 기술 ( enable_if 기반 오버로딩 ) 이 
+오류가 발생하기 쉽고 지루한 어셈블리 프로그래밍처럼 느껴지게 만들것입니다.
+
+

@@ -59,7 +59,7 @@ int main()
 
 
 https://blog.naver.com/kmc7468/221705880457
-/*
+
 //C++20 - consteval, constinit   //테스트 필요함
 //C++20
 //	    constexpr vector
@@ -92,5 +92,13 @@ int main() {
 	b = 4; // Error
 }
 
+//전역 변수나 static 객체는 두 단계로 초기화될 수 있습니다.
+//	정적 초기화(compile - time)
+//	동적 초기화(runtime, main 이전 실행) ← 문제의 근원
+//	constinit을 쓰면 2번이 발생하면 컴파일 에러가 납니다.
 
-*/
+//const, constexpr, constinit 차이
+// 키워드			의미
+// const			수정 불가(초기화 시점은 상관없음)
+// constexpr		컴파일 타임 평가 가능 + 상수 표현식
+// constinit		컴파일 타임 초기화 강제 (상수일 필요는 없음)

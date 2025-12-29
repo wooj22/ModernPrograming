@@ -38,6 +38,7 @@ template<typename T> void foo(T a)
     // 포인터 타입 여부 확인
     bool isPointer = is_pointer<T>::value;
 }
+
 int main()
 {
     int n = 0;

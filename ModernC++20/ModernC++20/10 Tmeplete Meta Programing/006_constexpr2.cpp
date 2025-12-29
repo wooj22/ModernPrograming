@@ -2,7 +2,7 @@
 
 	//타입에 따라 형태가 달라지는 함수를 짜고 싶다면, if 문은 템플릿 특수화, 템플릿 타입 유추를 통해 구현.
 	//if constexpr 로 처리 가능.
-	//if constexpr 은 조건이 반드시 bool 로 타입 변환될 수 있어야 하는 컴파일 타임 상수식이어야만 합니다.
+	//if constexpr 은 조건이 반드시 bool 로 타입 변환될 수 있어야 하는 컴파일 타임 상수식이어야만 합니다. ***
 	//if constexpr 이 참이라면 else 에 해당하는 문장은 컴파일 되지 않고 (완전히 무시), 따라서 오류 발생 안함.
 
 	#include <iostream>
@@ -20,7 +20,7 @@
 
 	int main() 
 	{
-		int x = 3;		show_value(x);
+		int x = 3;		show_value(x);	
 		int* p = &x;	show_value(p);
 	}
 
@@ -28,7 +28,6 @@
 
 	template <typename T>
 	void show_value(T t) {  std::cout << "포인터가 아니다 : " << t << std::endl;	}
-
 	template <typename T>
 	void show_value(T* t) {  std::cout << "포인터 이다 : " << *t << std::endl; }
 
@@ -60,7 +59,7 @@
 			return t;
 		}
 
-	// Tag dispatching 
+	// Tag dispatching (이벤트나 메시지를 다른 부분으로 전달하는 메커니즘)
 
 		template <typename T>
 		auto get_value(T t, std::true_type)	{
@@ -78,11 +77,11 @@
 		}
 
 
-// if constexpr 예제 // recursive templates 단순화
+// if constexpr 예제	   // recursive templates 단순화
 
 	// without if constexpr
 		template <int N1>
-		constexpr auto sum() 
+		constexpr auto sum()	//재귀 종료용
 		{
 			return N1;
 		}
@@ -103,32 +102,13 @@
 				return N + sum<Ns...>();
 		}
 
-		int main()
-		{
-			int x = sum<1, 2, 5>();
-
-			return 0;
-		}
-
-// if constexpr 예제 // decomposite value
-
-	class MyClass
+	int main()
 	{
-	private:
-		int a;
-		float b;
-		std::string c;
-		std::vector<int> d;
-	public:
-		template <std::size_t N>
-		constexpr auto get()
-		{
-			if constexpr      (N == 0) return a;
-			else if constexpr (N == 1) return b;
-			else if constexpr (N == 2) return c;
-			else if constexpr (N == 3) return d;
-		}
-	};
+		int x = sum<1, 2, 5>();
+		return 0;
+	}
+
+// if constexpr 예제   // decomposite value  //분해하기
 
 
 	//without if constexpr
@@ -157,4 +137,24 @@
 
 	template <>
 	auto MyClass::get<3>(){	return d;}
+
+	//with if constexpr
+
+	class MyClass
+	{
+	private:
+		int a;
+		float b;
+		std::string c;
+		std::vector<int> d;
+	public:
+		template <std::size_t N>
+		constexpr auto get()
+		{
+			if constexpr (N == 0) return a;
+			else if constexpr (N == 1) return b;
+			else if constexpr (N == 2) return c;
+			else if constexpr (N == 3) return d;
+		}
+	};
 

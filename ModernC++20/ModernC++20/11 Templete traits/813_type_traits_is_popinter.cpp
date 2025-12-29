@@ -34,7 +34,9 @@ int main()
         && not std::is_pointer<std::nullptr_t>::value
         );
 }
+
 //---------------------------------------------------------------------------
+//is_pointer 구현
 
 #include <iostream>
 #include <type_traits>

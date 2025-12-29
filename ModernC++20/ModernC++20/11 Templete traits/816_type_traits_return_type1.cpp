@@ -70,6 +70,9 @@ int main()
 
 //C++11 표준의 함수 리턴 타입 구하기 -----------------------------------
 //
-//  result_of(C++17 미만)
-//  invoke_result(C++17 이상)
+//  result_of (C++17 미만)
+//  invoke_result (C++17 이상) ***
 //  decltype 사용해서 구현(일반함수, 함수 객체, 람다표현식등의 모든 callable object 고려)
+
+//std::result_of는 더 이상 쓰면 안 됩니다.
+//  C++17에서 deprecated, C++20에서 제거되었습니다.

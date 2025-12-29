@@ -1,7 +1,7 @@
 ﻿//CRTP 활용하기
  
 //CRTP 활용한 Unique한 기반 클래스 만들기
-//      기반 클래스의 static memeber data는 모든 파생 클래스에 의해 공유됨
+//      기반 클래스의 static member data는 모든 파생 클래스에 의해 공유됨
 //      파생 클래스 별로 다른 static member data가 필요한 경우, 서로 다른 기반 클래스를 사용해야 함
 //      CRTP를 사용하면 
 //      모든 파생클래스 별로 다른 타입의 기반클래스를 만들 수 있음 ***

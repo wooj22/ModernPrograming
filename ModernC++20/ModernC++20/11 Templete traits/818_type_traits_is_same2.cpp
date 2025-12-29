@@ -1,5 +1,5 @@
 ﻿// template class 타입 제한하기. 
-//		enable_if, is_same 활용
+//		enable_if, is_same 활용하는 경우
 
 #include <iostream>
 using namespace std;

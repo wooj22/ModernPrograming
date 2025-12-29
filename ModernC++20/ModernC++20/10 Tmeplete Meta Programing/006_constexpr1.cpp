@@ -49,12 +49,23 @@
 		return x * x;
 	}
 
-	float a[ square(9) ];		// OK, since C++11: a has 81 elements
-
+	float a[ square(9) ];		// OK, since C++11: a has 81 elements	
 
 	//constexpr 키워드가 등장하기 이전에는 
 	//		컴파일 타임 상수인 객체를 만드는 함수를 작성하는 것이 불가.
 	//		난해한 템플릿 메타프로그래밍을 사용해야 했습니다.
+
+	/*
+		template <int X>
+		struct Square
+		{
+			static constexpr int value = X * X;
+		};
+
+		constexpr int result = Square<5>::value;
+	*/
+
+//constexpr 함수 예시
 
 	#include <iostream>
 
@@ -74,8 +85,6 @@
 	//함수의 리턴 타입에 constexpr 을 추가한다면
 	//	조건이 맞을 때, 해당 함수의 리턴값을 컴파일 타임 상수로 만들어버릴 수 있다.
 
-	#include <iostream>
-
 	constexpr int Factorial(int n) {
 	  int total = 1;
 	  for (int i = 1; i <= n; i++) { total *= i; }
@@ -83,10 +92,10 @@
 	}
 
 	template <int N>
-	struct A { int operator()() { return N; } };	//함수객체
+	struct A { int operator()() { return N; } };	
 
 	int main() {
-	  A<Factorial(10)> a;
+	  A<Factorial(10)> a;		// constexpr 함수 호출
 	  std::cout << a() << std::endl;
 	}
 
@@ -114,7 +123,8 @@
 	Aggregate 타입(사용자 정의 생성자, 소멸자가 없으며 모든 데이터 멤버들이 public).쉽게 말해 pair 같은 종류.
 	constexpr 생성자를 가지며 복사 및 이동 생성자가 없음
 
-//C++14 constexpr 함수 제한 조건 완화
+//C++14 constexpr 함수 제한 조건 완화 ***
+// 
 //		변수 선언 가능 (static, thread_local 제외)
 //		if / switch 분기문 사용 가능
 //		range-based for 루프를 포함한 모든 반복문 사용 가능
@@ -171,7 +181,7 @@
 	//리터럴 타입은 쉽게 생각하면 컴파일러가 컴파일 타임에 정의할 수 있는 타입을 의미.
 	// 
 	//단, constexpr 생성자의 인자들은 반드시 리터럴 타입이여야만 하고, 
-	//해당 클래스는 다른 클래스를 가상 상속 받을 수 없습니다.
+	//해당 클래스는 다른 클래스를 가상상속 받을 수 없습니다.
 
 	#include <iostream>
 

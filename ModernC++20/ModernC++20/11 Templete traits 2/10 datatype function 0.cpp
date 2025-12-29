@@ -50,21 +50,6 @@ public:
     typedef T Type;
 };
 
-template <typename T>
-void print_element_type(T const& c)
-{
-    std::cout << "Container of "
-        << typeid(typename ElementT<T>::Type).name()
-        << " elements.\n";
-}
-
-int main()
-{
-    std::stack<bool> s;
-    print_element_type(s);
-}
-
-
 //데이터형이 value_type이라는 멤버형을 정의한다면 다음과 같이 작성될 수 있다.
 
 template <typename C>

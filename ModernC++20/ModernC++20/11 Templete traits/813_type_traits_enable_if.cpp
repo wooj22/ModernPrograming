@@ -8,9 +8,8 @@
 	struct enable_if
 	{
 		// 기본적으로 _Ty에 대한 type aliasing을 제공하지 않는다.
-	};
-	// _Test가 true인 템플릿 부분 특수화 버전. 
-	template <typename _Ty>
+	};	
+	template <typename _Ty>  // _Test가 true인 템플릿 부분 특수화 버전. 
 	struct enable_if<true, _Ty>
 	{	
 		using type = _Ty ;  // _Type에 대한 type aliasing을 제공한다.

@@ -2,7 +2,7 @@
 
 // std::conditional< Bool조건, TrueType, FalseType >::type
 // 
-//      조건이 참(true)일 경우, type은 TrueType
+//      조건이 참(true)일 경우,   type은 TrueType
 //      조건이 거짓(false)일 경우, type은 FalseType
 
 /*
@@ -47,7 +47,9 @@ int main()
     std::cout << typeid(Type3).name() << '\n';
 }
 
-/*
+
+//연습문제) //b 의 자료형은?
+
 #include <iostream>
 #include <type_traits>
 
@@ -59,4 +61,3 @@ int main()
     type b;             //b 의 자료형은?
 }
 
-*/
