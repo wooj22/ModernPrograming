@@ -1,0 +1,186 @@
+
+'ABI 안정성 (ABI Stability)'는 
+
+C++에서 '바이너리 레벨에서 약속을 지킬 수 있느냐'의 문제입니다.
+면접·실무·라이브러리 설계 모두에서 아주 중요한 개념이라, 
+정의 → 왜 어려운가 → Module과의 관계 → 설계 전략 순서로 정리하겠습니다.
+
+1. ABI 안정성이란?
+
+ABI (Application Binary Interface)
+→ 컴파일된 바이너리들이 재컴파일 없이 서로 정상 동작하기 위한 규약
+
+포함 요소
+	함수 호출 규약 (calling convention)
+	이름 맹글링
+	객체 메모리 레이아웃
+	vtable 구조
+	예외 처리 방식
+	템플릿 인스턴스 방식
+	👉 API가 같아도 ABI는 깨질 수 있음
+
+2. 왜 C++에서 ABI 안정성이 어려운가?
+
+2.1 사소한 변경도 ABI 파괴
+
+	struct A {
+	    int x;
+	};
+
+	struct A {
+	    int x;
+	    int y;   // ABI 파괴
+	};
+
+	크기 변경
+	정렬 변경
+	생성자/소멸자 변화
+
+2.2 가상 함수는 더 위험
+
+	struct Base {
+	    virtual void f();
+	};
+
+	struct Base {
+	    virtual void f();
+	    virtual void g(); // vtable 변경
+	};
+
+	➡️ 기존 바이너리 즉시 깨짐
+
+2.3 템플릿은 본질적으로 ABI 불안정
+
+	인스턴스화 위치
+	컴파일러 버전
+	최적화 옵션
+	👉 헤더-only 라이브러리는 ABI 악몽
+
+3. 전통적인 ABI 안정화 기법
+
+3.1 PImpl (Pointer to Implementation)
+
+	class Foo {
+	public:
+	    Foo();
+	    ~Foo();
+	    void run();
+	
+	private:
+	    struct Impl;
+	    std::unique_ptr<Impl> impl;
+	};
+
+	✔ 헤더 변경 없이 구현 변경 가능
+	❌ 간접 호출 비용
+
+3.2 C API 경계
+
+	extern "C" {
+	    void foo_run(FooHandle*);
+	}
+
+	✔ 가장 안정적
+	❌ C++ 기능 포기
+
+3.3 inline / template 최소화
+
+	ABI 노출 엔티티 최소화
+	STL 타입을 public API에 직접 노출 ❌
+
+
+4. Module이 ABI 안정성에 미치는 영향 (중요)
+
+핵심 결론
+
+	Module은 ABI를 “보장”하지는 않지만,
+	ABI를 “관리 가능”하게 만든다.
+
+4.1 export 경계 = ABI 경계
+
+	export module lib;
+	
+	export class A {
+	public:
+	    void f();
+	};
+
+	export된 엔티티만 ABI 계약 대상
+	non-export 구현은 자유롭게 변경 가능
+	👉 ABI surface area 감소
+
+4.2 ODR 위반 감소 → 간접적 ABI 안정성
+
+	중복 정의 제거
+	템플릿 인스턴스 위치 고정
+	링크 타임 충돌 감소
+	➡️ ABI 관련 버그 발생 확률 감소
+
+4.3 매크로 차단 효과
+
+	매크로는 ABI 파괴의 주범
+	Module은 매크로 전파 차단
+
+	✔ 재현 가능한 바이너리
+	✔ 컴파일 옵션 차이에 의한 미묘한 ABI 차이 감소
+
+5. 그래도 Module만으로 ABI 안정해지는 건 아니다
+
+여전히 깨지는 것
+	클래스 레이아웃 변경
+	vtable 변경
+	inline 함수 변경
+	exported 템플릿 변경
+	👉 Module ≠ ABI 방패
+
+6. C++23/26 시대의 ABI 안정 설계 전략
+
+6.1 ABI 안정이 필요한 라이브러리
+
+	엔진 SDK
+	플러그인 시스템
+	외부 배포 라이브러리
+
+추천 구조
+
+	export module sdk;
+	
+	export class Api {
+	public:
+	    void run();
+	private:
+	    struct Impl;
+	    Impl* impl;   // PImpl 유지
+	};
+
+	✔ Module + PImpl 조합은 현재 최강
+
+6.2 ABI 안정이 필요 없는 내부 코드
+
+	게임 로직
+	서버 내부
+	툴 체인
+
+	👉 모듈 적극 사용
+	👉 inline / template 자유
+
+7. 면접에서 나오는 ABI + Module 핵심 질문
+
+Q. “Module을 쓰면 ABI가 안정적인가요?”
+
+	모범 답변
+	“아니요. 하지만 ABI 경계를 명확히 하고 관리 비용을 크게 줄여줍니다.”
+
+Q. “export된 템플릿은 ABI 안정한가요?”
+
+	“아닙니다. 템플릿은 여전히 ABI에 취약합니다.”
+
+Q. “Module이 vtable 문제를 해결하나요?”
+
+	“아니요. 클래스 레이아웃 변경은 여전히 ABI 파괴입니다.”
+
+8. 한 문장 요약 (면접용)
+
+	API: 소스 코드 약속
+	ABI: 바이너리 약속
+	Module: ABI를 직접 보장하지는 않지만, 약속을 관리할 수 있게 만든 도구

@@ -1,0 +1,262 @@
+// 기본 개념 --------------------------------------------------------
+
+루틴 == 명령들의 집합 []
+
+호출 Invocation - 루틴의 시작점으로 Jump
+활성화 Activation - 루틴 안의 임의 지점으로 Jump
+중단 Suspension - 종결하지 않고 다른 루틴의 지점으로 Jump
+종결 Finalization -루틴의 끝에 도달 한 후 루틴 상태의 소멸 및 정리
+
+프로세스Process - OS(혹은 VM) 에서 프로그램(루틴들의 집합체)을 실행하는 방법
+스레드Thread - 프로세스 내에서의 제어 흐름을 추상화한 것
+
+// 코루틴 개념 --------------------------------------------------------
+
+서브루틴 Subroutine
+	호출 / 종결할 수 있는 루틴
+	Invoke(Call) - Finalize(Return)
+
+코루틴 Coroutine
+	호출 / 종결 / 중단 / 재개 할 수 있는 루틴
+	Invoke / Finalize / Suspend / Resume
+
+연산 Operation   서브루틴 코루틴
+호출 Invoke         O        O      Goto start of a procedure(call)
+종결 Finalize        O        O      Cleanupand return
+중단 Suspend       X        O      Yield current control flow
+재개 Resume        X        O      Goto the suspended point in the procedure
+
+코루틴은 몇번이든 실행을 중단(suspend) 할 수 있고,
+중단 시점 이후 부터 실행을 재개(resume) 할 수 있다.
+
+서브루틴은 코루틴의 일부분이다.
+
+//스레드와 코루틴 ----------------------------------------------------
+
+개념적으로, 코루틴은 스레드와 무관하다
+
+Operating System          - API, Process, Thread, Fiber
+Programming Language  - Type System, Function
+Machine                      - Instruction Architecture, Coroutine, Subroutine
+
+
+//코루틴 구현 --------------------------------------------------------------------------------
+
+루틴이 상태를 가진다 ?  상태(State) == 메모리(Memory)
+
+함수 프레임 (Function Frame)
+	루틴의 상태를 저장한 메모리 객체
+
+호출 스택 (Call Stack)
+	함수 프레임을 관리하는 방법 중 하나.
+	◦ 호출 == 프레임 Push
+	◦ 반환 == 프레임 Pop
+	서브루틴에 매우 적합 - C 언어의 모든 함수는 서브루틴!
+
+호출 스택에서 코루틴을 ?
+	호출 / 반환은 OK				- 함수 프레임의	생성 / 소멸
+	하지만 중단 / 재개는 어떻게 ?		- 중단한 지점으로 돌아가기 위해선 함수 프레임이 유지되어야 한다.
+
+	문제는 함수 프레임의 수명주기(life-cycle) 관리하는 것.
+	서브루틴을 사용하면서 코루틴을 어떻게 구현할 것인가 ?
+
+코루틴과 객체 비교
+
+	Task Class
+	◦ An organized data structure                   - State (맴버 데이타)
+	◦ with its member functions                     - Operations (맴버 함수)
+
+	Coroutine
+	◦ Routine that holds its state(Function Frame)  - State (함수 프레임)
+	◦ 4 Operations from its definition              - Operations (호출 / 반환 / 중단 / 재개)
+
+	코루틴 프레임을 객체처럼 사용할 수 있다는 의미
+
+Stackful & Stackless
+	Stackful Coroutine	   - 코루틴의 프레임을 스택에 할당
+	Stackless Coroutine   - 코루틴의 프레임을 스택 바깥에(동적) 할당
+
+// C++ 코루틴 구현 -------------------------------------------------------------------------------
+
+코루틴을 위한 C++ 확장 - 이것이 C++의 접근법이다!
+
+	개념 	C++ Coroutine
+	호출 	변화 없음
+	종결 	co_return
+	중단 	co_await, co_yield		// 1항 연산자(unary operator)
+	재개 	coro.resume()		// coroutine_handle<P>::resume()
+
+
+C++ Coroutine 은 어떻게 정의 하는가 ?
+
+함수 안에 다음 중 하나가 존재하면, 그 함수는 코루틴으로 처리한다 ***
+
+	◦ co_await expression	//중단 단순히 코루틴을 중단 
+	◦ co_yield expression	//중단 호출자에게 전달 할 값이 있다면
+	◦ co_return statement          //종결 코루틴을 완전히 종료
+
+	사용법은 co_await {awaitable}로 뒤에 awaitable 객체를 사용하도록 되어 있습니다.
+
+	auto cotask0 = cotask_func_a()으로 코루틴 함수를 호출하였을 때 함수가 실행되지는 않습니다. 
+	함수의 실행은 코루틴 함수 내용을 담고 있는 cotask0()을 호출하였을 때 실제적으로 실행이 됩니다.
+
+C++코루틴은 C++이 정의한 규칙을 구현한 '코루틴 반환 객체'를 호출자에게 리턴해야 합니다
+
+	이런 코루틴 함수는 코루틴 상태 관련 객체를 리턴해야 합니다.
+	코루틴 상태 관련 객체는 일정한 스펙에 맞추어 작성되어 있어야 합니다. 
+	코루틴 상태 관련 객체는 컴파일 타임에 유효성이 검증되며 
+	런타임 타임에 관련 함수들이 호출되어 값이 채워집니다. 
+	코루틴 상태 관련 객체는 컴파일러에 의하여 리턴되는 코드가 만들어지는 관계로 
+	실제로 리턴 관련 코드를 작성하지는 않습니다. 
+
+코루틴 반환 객체
+
+	코루틴 반환 객체는 promise_type을 정의하고 있어야 합니다.(필수)
+	std::coroutine_handle<promise_type> 타입의 멤버 변수가 있어야 한다.(선택).
+
+	promise.      
+		"코루틴 내부"에서 관리 되는 객체. 코루틴의 결과나 예외를 이 객체를 통해 호출자에게 전달 하는 용도로 사용.
+	coroutine handle. 
+		"코루틴 외부"에서 관리 되는 객체. 코루틴을 resume하거나 코루틴 프레임을 제거 할 때 사용.
+
+	coroutine state. 
+		"힙 메모리 영역"에 할당 되는 코루틴 상태를 나타내는 객체.
+		coroutine state는 promise 객체를 가진다.
+		coroutine state는 코루틴 함수 파라미터의 복사된 값들을 가진다.
+		coroutine state는 resume을 위한 현재 중단 포인트와 destroy를 위한 지역 변수들을 가진다.
+		지역 변수와 임시 변수들은 현재 중단 포인트에서 살아 있는 것들을 의미한다
+
+
+C++ Coroutine의 구성요소(Component)들
+
+	◦ Operators & Awaitable Type
+	◦ Promise
+	◦ Coroutine Handle
+
+
+코루틴 실행 시 일어나는 일
+
+	1 코루틴이 최초 실행 되면 new를 이용해 힙 메모리 영역에 coroutine state를 생성합니다.
+	2 코루틴 함수의 모든 인자들을 coroutine state에 복사합니다.
+	3 promise 객체의 생성자를 호출 합니다.
+	4 promise.get_return_object() 에서 "코루틴 반환 객체"를 생성하여 최초 중단(suspend) 시 호출자에게 전달합니다.
+	5 promise.initial_suspend() 를 호출하고 그 결과를 co_await 오퍼레이터에게 전달 합니다.
+	6 co_await promise.initial_suspend() 이후 코루틴이 재게(resume)되면 본문을 실행 합니다.
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#include <iostream>
+#include <coroutine>
+
+class Task
+{
+public:
+    // 규칙 1. C++에서 정의된 규칙을 구현한 promise_type 이라는 이름의 타입이 정의되어야 한다.
+    struct promise_type
+    {
+        // 사용자 정의 "코루틴 반환 객체"를 반환 한다
+        Task get_return_object()
+        {
+            return Task{ std::coroutine_handle<promise_type>::from_promise(*this) };
+        }
+
+        // 코루틴 최초 실행 시 호출. awaitable 객체를 반환 한다.
+        auto initial_suspend() { return std::suspend_always{}; }
+
+        // 코루틴 종료 시 호출. 나중에 코루틴 종료를 설명 할 때 같이 설명
+        auto final_suspend() noexcept { return std::suspend_always{}; }
+
+        // 코루틴 수행 중 예외 발생 시 호출
+        void unhandled_exception() { std::exit(1); }
+
+        // co_return을 사용하는 경우 구현. 나중에 코루틴 종료를 설명 할 때 같이 설명
+        auto return_void() { return std::suspend_never{}; }
+    };
+
+    // 규칙 2. std::coroutine_handle<promise_type> 타입의 멤버 변수가 있어야 한다.
+    std::coroutine_handle<promise_type> co_handler;
+
+    // 규칙 3. std::coroutine_handle<promise_type> 을 인자로 받아
+    // 멤버 변수를 초기화 하는 생성자가 있어야 한다.
+    Task(std::coroutine_handle<promise_type> handler) : co_handler(handler) { }
+
+    // 규칙 4. 소멸자에서 std::coroutine_handle<promise_type> 타입의
+    // 코루틴 핸들러 멤버 변수의 destroy를 호출 해야 한다.
+    ~Task()
+    {
+        if (true == (bool)co_handler) { co_handler.destroy();  }
+    }
+};
+
+// 코루틴 함수 만들기
+//     규칙 1. co_await를 사용한다
+//     규칙 2. 코루틴 반환 객체(Task)를 리턴한다
+Task foo()
+{
+    std::cout << "foo 1" << std::endl;
+    co_await std::suspend_always{};
+    std::cout << "foo 2" << std::endl;
+}
+
+int main()
+{
+    std::cout << "main 1" << std::endl;
+    foo();			// 코루틴 함수가 실행은 안됨
+    std::cout << "main 2" << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/*
+//컴파일러가 컴파일 중 co_await 문을 만나게 되면 foo() 함수 안에 아래와 비슷한 코드를 생성합니다.
+
+ Task foo()
+ {
+    // 3. promise 객체의 생성자를 호출
+    Task::promise_type promise;
+
+    // 4. promise.get_return_object()로 부터 "코루틴 반환 객체(Task)" 생성
+    Task task = promise.get_return_object();
+
+    // 5. promise.initial_suspend()를 호출하고, 그 결과를 co_await 에게 전달
+    co_await promise.initial_suspend();
+    try
+    {
+        //        std::cout << "foo 1" << std::endl;
+        //        co_await std::suspend_always{};
+        //        std::cout << "foo 2" << std::endl;
+    }
+    catch (...)
+    {
+        promise.unhandled_exception();
+    }
+    promise.return_void();
+    co_await promise.final_suspend();
+}
+*/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// 코루틴 함수 만들기
+//     규칙 1. co_await를 사용한다
+//     규칙 2. 코루틴 반환 객체(Task)를 리턴한다
+Task foo()
+{
+    std::cout << "foo 1" << std::endl;
+    co_await std::suspend_always{};         //코루틴 중단
+    std::cout << "foo 2" << std::endl;
+}
+
+// 코루틴 사용하기
+int main()
+{
+    Task task = foo();                      //"코루틴 반환 객체(Task)" 를 받아서
+    std::cout << "main 1" << std::endl;
+    task.co_handler.resume();               //코루틴 재개한다.
+    std::cout << "main 2" << std::endl;
+    task.co_handler.resume();
+}
+
+//참고
+https://openmynotepad.tistory.com/65?category=853099
+https://kukuta.tistory.com/240

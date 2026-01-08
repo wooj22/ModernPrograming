@@ -1,0 +1,184 @@
+
+
+C++ **코루틴(Coroutines)**은 
+*함수를 중단(suspend)했다가 나중에 재개(resume)*할 수 있게 해주는 언어 차원의 제어 흐름 기능입니다. 스레드가 아니라 컴파일러가 상태 머신으로 변환해 주는 것이 핵심입니다.
+
+1️⃣ 코루틴이 왜 필요한가
+
+	기존 방식의 한계:
+	콜백 지옥
+	상태 머신 수동 구현
+	스레드는 무겁고 컨텍스트 스위칭 비용 큼
+
+코루틴의 장점:
+
+	비동기 코드를 동기 코드처럼 작성
+	스택리스(stackless) → 가볍고 예측 가능
+	게임 루프, IO, 서버, 파이프라인에 매우 적합
+
+
+2️⃣ 코루틴을 만드는 키워드 (C++20)
+
+	아래 중 하나라도 쓰이면 코루틴입니다.
+
+	co_return
+	co_await
+	co_yield
+
+	단, 이 키워드만으로는 충분하지 않고
+	반환 타입이 코루틴 프로토콜을 만족해야 합니다.
+
+3️⃣ 컴파일러 관점: 코루틴의 실체
+
+	코루틴 함수는 컴파일 시:
+
+	함수  →  상태 머신 + 힙에 저장된 coroutine frame
+
+	지역 변수 → frame에 저장
+	suspend 지점 → 상태 전이
+	resume() → switch(state)
+	👉 그래서 RAII / lifetime 이해가 매우 중요
+
+4️⃣ 핵심 구성 요소 (면접 단골)
+
+(1) promise_type
+
+	코루틴의 “컨트롤 타워”
+
+	struct promise_type {
+	    get_return_object()
+	    initial_suspend()
+	    final_suspend()
+	    return_value / return_void
+	    unhandled_exception()
+	};
+
+(2) coroutine_handle
+
+	코루틴을 외부에서 제어하는 핸들
+
+	std::coroutine_handle<promise_type>
+	
+	resume()
+	destroy()
+	done()
+
+5️⃣ 가장 작은 코루틴 예제
+
+
+#include <coroutine>
+#include <iostream>
+
+struct Task {
+    struct promise_type {
+        Task get_return_object() {
+            return {};
+        }
+        std::suspend_never initial_suspend() { return {}; }
+        std::suspend_never final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+};
+
+Task foo() {
+    std::cout << "Hello ";
+    co_await std::suspend_never{};
+    std::cout << "Coroutine\n";
+}
+
+int main() {
+    foo();
+}
+
+//co_await가 있어야 코루틴으로 변환됨
+
+6️⃣ co_await의 정체
+
+	co_await expr은 사실 아래 3단계를 따릅니다:
+
+	await_ready() → 바로 실행할지?
+	await_suspend(handle) → 중단 시점
+	await_resume() → 재개 시 반환값
+
+struct Awaiter {
+    bool await_ready();
+    void await_suspend(std::coroutine_handle<>);
+    int  await_resume();
+};
+
+	즉, awaitable = 개념(concept)
+
+7️⃣ Generator (co_yield)
+
+
+#include <coroutine>
+
+template<typename T>
+struct Generator {
+    struct promise_type {
+        T value;
+        Generator get_return_object() {
+            return Generator{
+                std::coroutine_handle<promise_type>::from_promise(*this)
+            };
+        }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(T v) {
+            value = v;
+            return {};
+        }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+
+    std::coroutine_handle<promise_type> h;
+};
+
+Generator<int> counter() {
+    for (int i = 0; i < 3; ++i)
+        co_yield i;
+}
+
+
+8️⃣ 실무에서 자주 터지는 문제들
+
+❌ coroutine_handle 누수
+	h.destroy(); // 반드시 필요
+
+❌ 참조 캡처 주의
+	co_await something(x); // x가 프레임에 복사되는지 확인
+
+❌ 스레드 안전 착각
+	코루틴 ≠ 스레드
+	스케줄링은 사용자 책임
+
+9️⃣ C++ 코루틴 vs 다른 언어
+
+언어	특징
+C++	저수준, 제로 오버헤드, 직접 제어
+C#	런타임 관리, GC
+Python	이벤트 루프 필수
+Rust	async/await + Future trait
+
+👉 C++은 “프레임워크를 만들기 위한 코루틴”
+
+
+심화/면접 포인트
+
+	final_suspend가 suspend_always인 이유
+	symmetric transfer
+	coroutine frame의 할당 위치 (custom allocator)
+	co_await vs ranges::views lazy 모델 비교
+	게임 서버 tick 기반 코루틴 설계
+
+
+
+
+
+
+
+
+
+

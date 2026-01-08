@@ -1,0 +1,59 @@
+awaitable class
+
+three required methods, 
+	await_ready, await_suspend and await_resume 
+	which are used by operator co_await. 
+
+
+co_await awaitable; 
+
+	먼저 await_ready 호출, bool 리턴
+	true 면 await_resume - 중단없이 진행
+	false 면 await_suspend - 중단 - co_awaiting will create a coroutine handle (resume point)
+
+	await_suspend 는 bool 혹은 void or coroutine handle 리턴
+
+	await_resume 은 아래 3가지 경우에 호출됨
+
+		await_ready returns true
+		await_suspend returns false
+		Call coroutine handler method resume
+
+
+//--------------------------------------------------------------------------------------------
+
+A C++20 awaitable class must be implemented with three required methods, 
+	await_ready, 
+	await_suspend and 
+	await_resume 
+which are used by operator co_await. 
+
+When co_awaiting an awaitable object, the method await_ready will be called at first 
+to check if an expecting result is already available. 
+
+If this method returns true, it means that result is indeed available now, 
+and co_awaiting will immediately call the method await_resume 
+for returning result without creating a coroutine handle or calling the method await_suspend at all. 
+
+This situation may often happen with SocketPro communication framework, when there are multiple requests streamed as shown with this example. 
+Contrarily, If the method await_ready returns false under most of the cases, it means that result is not available at the moment, 
+and co_awaiting will create a coroutine handle (resume point) and call the method await_suspend.
+
+The method await_suspend here returns a bool value. 
+Further, the method can be also defined to return void or coroutine handle. 
+If the method returns true or void under most of the cases, a coroutine handle is remembered as shown at line 44, and co_awaiting will return with a resume point. 
+It is expected that a socket pool worker thread will resume from the resume point later by calling the coroutine handle method resume at line 28. 
+In case the method returns false, co_awaiting will immediately resume, and also immediately call the method await_resume for an expected result or exception. 
+This situation may also happen with SocketPro, although chances are low. The method await_suspend could be also defined to return a customerized coroutine handle, which is beyond this short article.
+
+At the end, the method await_resume will be called through operator co_await 
+after one of the following three cases happen.
+
+	await_ready returns true
+	await_suspend returns false
+	Call coroutine handler method resume as shown at line 28 from a socket pool worker thread
+
+Inside the method await_resume, it is possible to throw an exception as shown at line 67 if there is indeed an exception recorded. 
+Here, the method returns a rvalue. It is expected that the template argument R supports moveable or copy constructor. 
+However, moveable constructor is preferred over copy constructor to avoid memory copy. 
+It is also noted that the method await_resume can be also defined to return void if there is no result expected.

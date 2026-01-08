@@ -55,6 +55,12 @@
     <Filter Include="02. Template Generic Programming\Template Traits">
       <UniqueIdentifier>{67259e2f-1146-4892-84c2-2fb918b75a3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05. Module">
+      <UniqueIdentifier>{48beddf3-7c97-4c4b-9452-4b4c3cc1ee64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Coroutine">
+      <UniqueIdentifier>{2238dc59-bfa6-4c5a-8ff8-040cde3118c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
@@ -692,6 +698,60 @@
     </ClCompile>
     <ClCompile Include="10 Tmeplete Meta Programing\910 Variadic Templete7.cpp">
       <Filter>02. Template Generic Programming\Template Meta Programing</Filter>
+    </ClCompile>
+    <ClCompile Include="16 Module\Module.cpp">
+      <Filter>05. Module</Filter>
+    </ClCompile>
+    <ClCompile Include="16 Module\Module1.cpp">
+      <Filter>05. Module</Filter>
+    </ClCompile>
+    <ClCompile Include="16 Module\Module2.cpp">
+      <Filter>05. Module</Filter>
+    </ClCompile>
+    <ClCompile Include="16 Module\Module3.cpp">
+      <Filter>05. Module</Filter>
+    </ClCompile>
+    <ClCompile Include="16 Module\Module4.cpp">
+      <Filter>05. Module</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\01 coroutine.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\02 coroutine1.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\02 coroutine2.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\03 Test1.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\03 Test2.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\03 Test3.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\10 coroutine_ex0.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\10 coroutine_ex1.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\10 coroutine_ex2.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\10 coroutine_ex3.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\15 awaitable object.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\15 awaitable object2.cpp">
+      <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="17 Coroutine\15 awaitable object3.cpp">
+      <Filter>06. Coroutine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
