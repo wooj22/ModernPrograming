@@ -1,0 +1,7 @@
+1 lazy 와 eager 개념을 정리하고, Ranges 와 관련하여 활용 예시를 작성하세요.
+
+2. view와 borrowed range의 차이점을 정리하세요.
+
+2. Range를 안전하게 사용하기 위한 방법은? 기본적인 댕글링 체크 예제를 작성하세요.
+
+4. std::ranges::owning_view 와 std::ranges::to 에 대해 비교해서 설명하세요.
