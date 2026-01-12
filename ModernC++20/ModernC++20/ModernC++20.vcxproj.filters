@@ -61,6 +61,15 @@
     <Filter Include="06. Coroutine">
       <UniqueIdentifier>{2238dc59-bfa6-4c5a-8ff8-040cde3118c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lab\Lab2">
+      <UniqueIdentifier>{2aec0415-afc7-4c13-b100-a95bdc21d221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lab\Lab3">
+      <UniqueIdentifier>{a95dca6b-70f8-4cc3-8dc1-00e30eb5726a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lab\Lab4">
+      <UniqueIdentifier>{424e9746-bb4b-4e3f-9358-89f420c1c68d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
@@ -752,6 +761,36 @@
     </ClCompile>
     <ClCompile Include="17 Coroutine\15 awaitable object3.cpp">
       <Filter>06. Coroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 Fold Expression.cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 Fold Expression2.cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 Template specialization .cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 templete templete Parameter.cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 User-defined deduction guides .cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제02\테스트 Variadic Templete.cpp">
+      <Filter>Lab\Lab2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제03\과제 - 템플릿 싱글톤.cpp">
+      <Filter>Lab\Lab3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제03\과제 - 템플릿 팩토리.cpp">
+      <Filter>Lab\Lab3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제04\테스트 연습1.cpp">
+      <Filter>Lab\Lab4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\과제\과제04\테스트 연습2.cpp">
+      <Filter>Lab\Lab4</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
