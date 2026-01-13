@@ -70,6 +70,9 @@
     <Filter Include="Lab\Lab4">
       <UniqueIdentifier>{424e9746-bb4b-4e3f-9358-89f420c1c68d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{af1295b5-f557-4fe1-beb6-0896e0835160}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="01 Modern C++\001_file.cpp">
@@ -791,6 +794,39 @@
     </ClCompile>
     <ClCompile Include="..\과제\과제04\테스트 연습2.cpp">
       <Filter>Lab\Lab4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_01.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_02.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_03.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_04.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_05.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_06.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_07.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_08.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_09.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_10.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\2025_4_2 Modern C++ 시험\ModernCpp_11.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
