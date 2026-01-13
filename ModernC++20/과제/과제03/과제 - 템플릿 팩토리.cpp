@@ -1,5 +1,4 @@
 ﻿// 템플릿, 스마트 포인터 사용하기
-// 
 // 다양한 타입의 객체를 자동으로 생성하고 이를 관리하는 
 // 팩토리 클래스를 구현하세요.                          
 
@@ -9,7 +8,7 @@
 #include <string>
 #include <functional>
 
-enum class PType { Player, Monster, Npc};
+enum class PType { Player, Monster, Npc };
 
 // Base class for objects
 class Base {
@@ -35,6 +34,30 @@ public:
 
 
 // Factory 클래스를 구현하세요.
+class Factory
+{
+    using Creator = std::function < std::unique_ptr<Base>()>;
+    std::unordered_map<PType, Creator> creators;
+
+public:
+    template <typename T>
+    void registerType(PType type)
+    {
+        static_assert(std::is_base_of_v<Base, T>, "T must derive from Base");
+
+        creators[type] = []()->std::unique_ptr<Base>
+            {
+                return std::make_unique<T>();
+            };
+    }
+
+    std::unique_ptr<Base> createObject(PType type) const
+    {
+        auto it = creators.find(type);
+        if (it == creators.end()) return nullptr;
+        return (it->second)();
+    }
+};
 
 
 int main() {

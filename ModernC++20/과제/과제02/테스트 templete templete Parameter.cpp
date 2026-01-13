@@ -4,11 +4,14 @@
 #include <list>
 
 // std::list 와 값을 받아 해당 리스트에 값을 추가하는 코드를 작성하세요.     
-//
-// addToContainer()
+template <template<typename, typename> class Container, typename T>
+void addToContainer(Container<T, std::allocator<T>>& c, const T& value)
+{
+    c.push_back(value);
+}
 
 int main() {
-    
+
     // int 타입의 std::list
     std::list<int> intList;
 

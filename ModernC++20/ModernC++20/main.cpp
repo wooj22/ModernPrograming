@@ -1,35 +1,72 @@
-// Range
-// 
-// Range 코드입니다. 코드를 분석하고 아래 질문에 답하세요.
-
-#include <vector>
-#include <ranges>
 #include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
 
-std::vector<int> make() 
-{ 
-    return { 1,2,3,4,5 }; 
-}
-
-auto odds() {
-    return make()       // { 1,2,3,4,5 }
-        | std::views::filter([](int x) { return x % 2; })        // {1, 3, 5}
-        | std::views::transform([](int x) { return x * x; });    // {1, 9, 15}
-}
+struct Person {
+    std::string name;
+    int score;
+};
 
 int main() {
-    for (int v : odds()) { std::cout << v << " "; }
+
+    // 이름과 점수를 저장하는 벡터
+    std::vector<Person> people = {
+        {"Alice", 90},
+        {"Bob", 85},
+        {"Charlie", 90},
+        {"Dave", 70},
+        {"Eve", 60},
+        {"Frank", 85}
+    };
+
+    // 점수를 내림차순으로 정렬하고,
+    // 랭킹 계산한 후 (동일 점수에 동일 랭킹 부여한다.)
+    // <이름, 랭킹> 을 map 에 저장하고,
+    // 결과를 출력하세요.
+
+    //랭킹:
+    //    1 Alice    90
+    //    1 Charlie  90
+    //    3 Bob      85
+    //    3 Frank    85
+    //    5 Dave     70
+    //    6 Eve      60
+
+    // 점수 내림차순 정렬
+    sort(people.begin(), people.end(),
+        [](const Person& a, const Person& b) {
+            return a.score > b.score;
+        });
+
+    // map<이름, 랭킹>
+    map<string, int> rankingMap;
+    int rank = 1;
+    int prevScore = -1;
+    int prevRank = 1;
+
+    for (size_t i = 0; i < people.size(); ++i)
+    {
+        if (people[i].score == prevScore)
+        {
+            rankingMap[people[i].name] = prevRank;
+        }
+        else
+        {
+            rank = i + 1;
+            rankingMap[people[i].name] = rank;
+            prevRank = rank;
+            prevScore = people[i].score;
+        }
+    }
+
+    // 결과 출력
+    for (const auto& p : people) {
+        cout << rankingMap[p.name] << " "
+            << p.name << " "
+            << p.score << endl;
+    }
+
+    return 0;
 }
-
-//질문
-1. 이 코드는 올바르게 정의된 동작을 수행하는가 ?
-출력 결과는 나오지만, 항상 잘 나온다고 보장할 수 없습니다.
-
-2. 문제가 있다면 원인은 ?
-R value 컨테이너는 범위의 작업이 끝나기 전에 소멸될 가능성이 있습니다.
-파이프 연산자의 왼쪽에는 view 또는 borrowed_range가 와야 안전합니다.
-
-3. 수정 방안을 기술하세요.
- 1) 변수에 저장하여 lvalue로 변환
- 2) std::ranges::owning_view 사용
- 3)  std::move를 사용하여 컨테이너를 전달

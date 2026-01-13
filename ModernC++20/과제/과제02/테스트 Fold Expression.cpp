@@ -1,10 +1,13 @@
 ﻿//가변템플릿 활용 (Fold Expression)
-
 // 100 에서, 임의의 가변 데이타를 빼는 함수 구현하기 ***
 
 #include <iostream>
 
-//template <typename Int, typename... Ints>
+template<typename... Ints>
+int diff_from(int base, Ints...values)
+{
+	return (base - ... - values);
+}
 
 int main()
 {

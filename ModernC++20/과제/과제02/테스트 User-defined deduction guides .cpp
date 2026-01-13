@@ -5,14 +5,16 @@
 #include <type_traits>
 using namespace std;
 
-template<typename T> class Vector
+template<typename T>
+class Vector
 {
     T* buff;
 public:
-    Vector() {}             // 타입 추론이 불가능 할경우 유저 정의 추론 가이드 필요
+    Vector() {}
     Vector(int sz, T initValue) {}
-
 };
+
+Vector()->Vector<int>;
 
 int main()
 {

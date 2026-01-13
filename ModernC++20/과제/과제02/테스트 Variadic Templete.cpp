@@ -1,8 +1,20 @@
-﻿//가변템플릿을 사용하여
-// 
-//아래와 같이 다양한 인수를 처리하는 함수를 작성하세요.
+﻿// 가변템플릿을 사용하여
+// 아래와 같이 다양한 인수를 처리하는 함수를 작성하세요.
 
 #include <iostream>
+using namespace std;
+
+void print()
+{
+    cout << endl;
+}
+
+template<typename... Args>
+void print(Args... args)
+{
+    ((cout << args << " "), ...);
+    cout << endl;
+}
 
 int main()
 {

@@ -11,16 +11,14 @@ int main()
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
 
     // 짝수 요소중에 3개만 선택해서 역순 출력
+    auto view =
+        v
+        | std::views::filter([](int x) {return x % 2 == 0; })
+        | std::views::take(3)
+        | std::views::reverse;
 
-    std::vector<int> v2;
-    std::copy_if(v.begin(), v.end(), std::back_inserter(v2), [](int a) { return a % 2 == 0; });    
-    //for (auto e : v2) std::cout << e << std::endl; //2,4,6,8,0
-
-    v2.erase(v2.begin() + 3, v2.end());        
-    //for (auto e : v2) std::cout << e << std::endl; //2,4,6
-
-    std::sort(v2.begin(), v2.end(), std::greater<int>());
-    for (auto e : v2) std::cout << e << std::endl;  //6,4,2
+    for (int x : view)
+        std::cout << x << std::endl;
 }
 
 
@@ -39,7 +37,11 @@ int main()
 {
     std::vector<int> v = { 10, 5, 6, 1, 3, 7, 7 };
 
-  
+    std::ranges::sort(v, std::greater<int>());
+    auto top3 = v | std::views::take(3);
+
+    for (int x : top3)
+        std::cout << x << std::endl;
 }
 
 
@@ -54,5 +56,14 @@ int main()
 {
     std::string str = "hello,hi,good";   //출력: 5 2 4
 
+    auto view =
+        str
+        | std::views::split(',')
+        | std::views::transform([](auto&& part)
+            {
+                return std::ranges::distance(part);
+            });
 
+    for (auto len : view)
+        std::cout << len << " ";
 }

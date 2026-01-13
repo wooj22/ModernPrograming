@@ -1,8 +1,28 @@
-﻿// 템플릿을 활용한 싱글톤을 구현하고, 사용 예시를 작성하세요. // CRTP
+﻿// 템플릿을 활용한 싱글톤을 구현하고, 사용 예시를 작성하세요. 
+// CRTP
 
 #include <iostream>
 
-//Singleton<T>
+template<typename T>
+class Singleton
+{
+protected:
+    struct token {};
+
+    Singleton() = default;
+    ~Singleton() = default;
+
+public:
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+    static T& instance()
+    {
+        static T instance{ token{} };
+        return instance;
+    }
+};
+
 
 class Test final : public Singleton<Test>
 {
@@ -16,5 +36,4 @@ public:
 int main() {
 
     Test::instance().use();
-
 }
